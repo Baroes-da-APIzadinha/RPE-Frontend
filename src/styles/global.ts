@@ -1,23 +1,37 @@
 import { createGlobalStyle } from 'styled-components';
 
-export const GlobalStyles = createGlobalStyle`
-  * {
-    padding: 0;
-    margin: 0;
+const GlobalStyle = createGlobalStyle`
+  *, *::before, *::after {
     box-sizing: border-box;
-  }
+    margin: 0;
+    padding: 0;
+    font-family: inter, sans-serif;
 
-  html {
+  }
+  body {
     font-size: 62.5%;
-    font-family: 'Inter';
+    min-width: 320px;
+    min-height: 100vh;
+    background: ${({ theme }) => theme.colors.background};
+    color: ${({ theme }) => theme.colors.text.primary};
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
-
-  html, body, #__next {
-    height: 100%;
-  }
-
   a {
+    color: inherit;
     text-decoration: none;
-    cursor: pointer;
   }
 `;
+
+export default GlobalStyle;
+
+
+
+//   html {
+//     font-size: 62.5%;
+//     font-family: 'Inter';
+//   }
+
+//   html, body, #__next {
+//     height: 100%;
+//   }

@@ -33,7 +33,7 @@ export default {
   },
 
   colors: {
-    background: "#FFFFFF",
+    background: "#F0F0F0",
 
     surface: {
       default: "#FAFAFA",
@@ -94,6 +94,10 @@ export default {
       gray: "#9CA3AF"
     },
 
+    button: {
+        default: "#000000",
+        hover: "#1F1F1F",
+      
   },
 
   spacings: {
@@ -123,4 +127,5 @@ export default {
     xl: '1440px',
   },
 
-};
+}
+}
