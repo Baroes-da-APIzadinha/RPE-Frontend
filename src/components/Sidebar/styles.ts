@@ -1,0 +1,114 @@
+import styled, { css } from 'styled-components'
+import theme from '../../styles/theme'
+
+export const Container = styled.aside`
+  width: 260px;
+  height: 100vh;
+  background-color: ${theme.colors.surface.default};
+  padding: 2.4rem 1.6rem;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid ${theme.colors.border};
+`
+
+export const ScrollArea = styled.div`
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 0.4rem; 
+  display: flex;
+  flex-direction: column;
+`
+
+export const Header = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  padding-bottom: 1.6rem;
+  margin-bottom: 2.4rem;
+  border-bottom: 1px solid ${theme.colors.border};
+`
+
+export const Logo = styled.div`
+  width: 40px;
+  height: 40px;
+  background-color: ${theme.colors.primary.default};
+  border-radius: 8px;
+`
+
+export const Title = styled.h1`
+  font-size: ${theme.font.sizes.medium};
+  font-weight: ${theme.font.bold};
+  color: ${theme.colors.text.primary};
+`
+
+export const Subtitle = styled.p`
+  font-size: ${theme.font.sizes.xsmall};
+  color: ${theme.colors.text.secondary};
+`
+
+export const Nav = styled.nav`
+  display: flex;
+  flex-direction: column;
+  margin-top: 1.2rem;
+  gap: 0.8rem;
+`
+
+export const NavItem = styled.button<{ active?: boolean }>`
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  background: transparent;
+  border: none;
+  font-size: ${theme.font.sizes.xsmall};
+  color: ${theme.colors.text.primary};
+  padding: 1rem;
+  border-radius: ${theme.border.radius.medium};
+  cursor: pointer;
+  text-align: left;
+  transition: color 0.2s, background 0.2s;
+
+  &:hover {
+    color: ${theme.colors.primary.default};
+  }
+
+  ${({ active }) =>
+    active &&
+    css`
+      background-color: ${theme.colors.primary.light};
+      color: ${theme.colors.primary.default};
+    `}
+`
+
+
+export const Footer = styled.div`
+  padding-top: 1.4rem;
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+`
+
+export const User = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  font-size: ${theme.font.sizes.xsmall};
+  color: ${theme.colors.text.primary};
+`
+
+export const Logout = styled.button`
+  display: flex;
+  align-items: center;
+  font-size: ${theme.font.sizes.xsmall};
+  color: ${theme.colors.text.primary};
+  background: none;
+  border: none;
+  gap: 1.2rem;
+  cursor: pointer;
+  transition: color 0.2s;
+
+
+  &:hover {
+    color: ${theme.colors.error.default};
+  }
+`

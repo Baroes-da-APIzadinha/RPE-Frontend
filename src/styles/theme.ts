@@ -21,12 +21,12 @@ export default {
     semibold: 600,
     bold: 700,
     sizes: {
-      xsmall: '1.2rem',
-      small: '1.4rem',
-      medium: '1.6rem',
-      large: '1.8rem',
-      xlarge: '2.0rem',
-      xxlarge: '2.8rem',
+      xsmall: '1.0rem',
+      small: '1.2rem',
+      medium: '1.4rem',
+      large: '1.6rem',
+      xlarge: '1.8rem',
+      xxlarge: '2.6rem',
       '3xlarge': '3.2rem',
       '4xlarge': '4.8rem',
     },
@@ -99,6 +99,7 @@ export default {
         hover: "#1F1F1F",
       
   },
+},
 
   spacings: {
     xxsmall: '0.8rem',
@@ -126,6 +127,4 @@ export default {
     lg: '1170px',
     xl: '1440px',
   },
-
-}
 }

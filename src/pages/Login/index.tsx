@@ -1,12 +1,14 @@
 import React, { useState } from 'react'
-import * as S from './styles.ts'
-import Button from '../../components/Button/index.tsx'
+import * as S from "./styles.ts";
 import { MdRocketLaunch } from "react-icons/md";
 import Input from '../../components/Input'
+import Button from '../../components/Button/index.tsx';
+import { useNavigate } from 'react-router-dom';
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const navigate = useNavigate()
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -45,7 +47,8 @@ const Login: React.FC = () => {
           label="Senha"
         />
         <Button
-        variant="default">
+        variant="default"
+        onClick={() => navigate('/home')}>
           Entrar
         </Button>        
       </S.Form>
