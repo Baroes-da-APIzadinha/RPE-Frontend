@@ -39,7 +39,7 @@ const CardBox: React.FC<CardBoxProps> = ({ title, bigSpan, progress, span, miniS
       {miniSpan && (
         <S.MiniSpan $status={color}>
           {miniIcon}
-          {miniSpan}
+          {miniSpan} vs anterior
         </S.MiniSpan>
       )}
     </S.Container>
