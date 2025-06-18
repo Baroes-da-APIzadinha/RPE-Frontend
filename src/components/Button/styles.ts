@@ -22,12 +22,12 @@ export const ButtonContainer = styled.button<ButtonProps>`
   ${(props) =>
     props.variant === "outline"
       ? css`
-          background-color: transparent;
-          color: ${theme.colors.primary.default};
-          border: 2px solid ${theme.colors.primary.default};
+          background-color: ${theme.colors.surface.default};
+          color: ${theme.colors.text.title};
+          border: 2px solid ${theme.colors.text.title};
 
           &:hover {
-            background-color: ${theme.colors.primary.light};
+            background-color: ${theme.colors.surface.alt};
           }
         `
       : props.variant === "primary"

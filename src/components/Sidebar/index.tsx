@@ -38,10 +38,10 @@ export function Sidebar({ roles, mainRole, userName }: SidebarProps) {
     { to: '/evolucao', label: 'Evolução', icon: <MdShowChart /> }
   ],
   rh: [
-    { to: '/dashboard', label: 'Dashboard (RH)', icon: <MdGridView /> },
-    { to: '/colaboradores', label: 'Colaboradores (RH)', icon: <MdGroup /> },
-    { to: '/criterios', label: 'Critérios', icon: <MdChecklist /> },
-    { to: '/importacao', label: 'Importação de dados', icon: <MdFileUpload /> }
+    { to: '/rh/dashboard', label: 'Dashboard (RH)', icon: <MdGridView /> },
+    { to: '/rh/colaboradores', label: 'Colaboradores (RH)', icon: <MdGroup /> },
+    { to: '/rh/criterios', label: 'Critérios', icon: <MdChecklist /> },
+    { to: '/rh/import', label: 'Importação de dados', icon: <MdFileUpload /> }
   ],
   gestor: [
     { to: '/gestor/home', label: 'Dashboard (Gestor)', icon: <MdHome /> },
