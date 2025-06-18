@@ -5,7 +5,7 @@ import Input from '../../components/Input'
 import Button from '../../components/Button/index.tsx';
 import { useNavigate } from 'react-router-dom';
 
-const Login: React.FC = () => {
+export function Login() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const navigate = useNavigate()
@@ -56,4 +56,3 @@ const Login: React.FC = () => {
   )
 }
 
-export default Login
