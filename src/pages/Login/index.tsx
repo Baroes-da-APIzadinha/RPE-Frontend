@@ -1,20 +1,20 @@
-import React, { useState } from 'react'
+import React, { useState } from "react";
 import * as S from "./styles.ts";
 import { MdRocketLaunch } from "react-icons/md";
-import Input from '../../components/Input'
-import Button from '../../components/Button/index.tsx';
-import { useNavigate } from 'react-router-dom';
+import Input from "@/components/Input";
+import Button from "@/components/Button/index.tsx";
+import { useNavigate } from "react-router-dom";
 
 export function Login() {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const navigate = useNavigate()
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
     // Lógica de autenticação aqui
-    alert(`Email: ${email}\nSenha: ${password}`)
-  }
+    alert(`Email: ${email}\nSenha: ${password}`);
+  };
 
   return (
     <S.Container>
@@ -32,7 +32,7 @@ export function Login() {
           id="email"
           type="email"
           value={email}
-          onChange={e => setEmail(e.target.value)}
+          onChange={(e) => setEmail(e.target.value)}
           required
           placeholder="Digite seu email"
           label="Email"
@@ -41,18 +41,15 @@ export function Login() {
           id="password"
           type="password"
           value={password}
-          onChange={e => setPassword(e.target.value)}
+          onChange={(e) => setPassword(e.target.value)}
           required
           placeholder="Digite sua senha"
           label="Senha"
         />
-        <Button
-        variant="default"
-        onClick={() => navigate('/home')}>
+        <Button variant="default" onClick={() => navigate("/home")}>
           Entrar
-        </Button>        
+        </Button>
       </S.Form>
     </S.Container>
-  )
+  );
 }
-
