@@ -34,6 +34,8 @@ export default {
 
   colors: {
     background: "#F0F0F0",
+    black: "#000000",
+    lightGray: "#D9D9D9",
 
     surface: {
       default: "#FAFAFA",
