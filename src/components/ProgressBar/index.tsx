@@ -1,5 +1,5 @@
 import React from "react";
-import { ProgressBarWrapper, Progress, ProgressLabel } from "./styles";
+import { ProgressBarWrapper, Progress, ProgressLabel } from "./styles.ts";
 
 interface ProgressBarProps {
   value: number; // 0-100

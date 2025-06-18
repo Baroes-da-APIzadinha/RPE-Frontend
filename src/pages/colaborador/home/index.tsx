@@ -4,8 +4,6 @@ import { MdOutlineInsertInvitation } from "react-icons/md";
 import { MdOutlineTimelapse } from "react-icons/md";
 import { MdGrade } from "react-icons/md";
 import CardContainer from "@/components/CardContainer/index.tsx";
-import ChartBox from "@/components/ChartBox";
-import ReactApexChart from "react-apexcharts";
 import { useTheme } from "styled-components";
 import { Sidebar } from "@/components/Sidebar";
 import RowProgressBox from "@/components/RowProgressBox";
