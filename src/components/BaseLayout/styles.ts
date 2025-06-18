@@ -12,4 +12,5 @@ export const Main = styled.main`
   padding: ${theme.spacings.large};
   background-color: ${theme.colors.background};
   overflow-y: auto;
+  padding-top: ${theme.spacings.small}; 
 `
