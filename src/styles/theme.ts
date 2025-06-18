@@ -98,11 +98,22 @@ export default {
     },
 
     button: {
-        default: "#000000",
-        hover: "#1F1F1F",
+      solid:{
+        default: "#1A1A1A",
+        hover: "#2A2A2A",
+        text: "#FFFFFF",
+      },
       
+      outline: {
+        default: "#FCFCFC",
+        hover: "#E6E6E6",
+        border: "#E2E2E2",
+        text: "#333333",
+      },
+    },
+
   },
-},
+
 
   spacings: {
     xxsmall: '0.8rem',
