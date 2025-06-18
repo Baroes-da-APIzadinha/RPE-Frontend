@@ -5,8 +5,12 @@ import { Title } from "@/components/Title/index.tsx";
 import { MdHistory } from "react-icons/md";
 import { CardImportHistory } from "@/components/CardImportHistory/index.tsx";
 import { CardImportData } from "@/components/CardImportData/index.tsx";
+import { useState } from "react";
+import { ModalSpecifyImport } from "@/components/ModalSpecifyImport/index.tsx";
 
 export function Import() {
+  const [showModal, setShowModal] = useState(false);
+
   return (
     <S.Wrapper>
       <Sidebar
@@ -18,9 +22,7 @@ export function Import() {
         <S.Header>
           <Title>Importação de Dados</Title>
           <S.HeaderButtons>
-            <Button>
-              Opções
-            </Button>
+            <Button onClick={() => setShowModal(true)}>Opções</Button>
             <Button variant="outline">
               {" "}
               <MdHistory /> Ver Histórico
@@ -66,6 +68,10 @@ export function Import() {
           />
         </S.CardContainer>
       </S.Main>
+      <ModalSpecifyImport
+        open={showModal}
+        onClose={() => setShowModal(false)}
+      />
     </S.Wrapper>
   );
 }
