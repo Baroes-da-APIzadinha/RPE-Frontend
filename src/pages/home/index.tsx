@@ -2,6 +2,7 @@ import { BaseLayout } from '../../components/BaseLayout'
 import  CardBox  from '../../components/CardBox'
 import { MdOutlineInsertInvitation } from "react-icons/md";
 import { MdOutlineTimelapse } from "react-icons/md";
+import { MdGrade } from "react-icons/md";
 import *  as S from './styles.ts'
 export function Home() {
   return (
@@ -24,12 +25,11 @@ export function Home() {
       progress={40}
       />
       <CardBox
-      icon={<MdOutlineInsertInvitation/>}
+      icon={<MdGrade/>}
       title='ultima Avaliação'
       bigSpan='4.3'
       miniSpan='-0.3'
-      miniSpanIcon={<MdOutlineInsertInvitation />}
-      />
+        />
       </S.CardContainer>
 
 
