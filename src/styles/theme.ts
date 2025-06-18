@@ -50,7 +50,8 @@ export default {
       secondary: "#5F6368",
       disabled: "#BFC3C9",
       placeholder: "#B1B1B1",
-      iconMuted: "#7A7A7A"
+      iconMuted: "#7A7A7A",
+      title: "#3F3F46",
     },
 
     primary: {
