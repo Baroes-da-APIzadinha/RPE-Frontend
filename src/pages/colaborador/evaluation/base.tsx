@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import * as S from "./styles";
 import { Sidebar } from "@/components/Sidebar";
 import { ToggleBar } from "@/components/ToggleBar";
