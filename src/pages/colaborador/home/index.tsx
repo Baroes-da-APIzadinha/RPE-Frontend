@@ -8,7 +8,7 @@ import { useTheme } from "styled-components";
 import { Sidebar } from "@/components/Sidebar";
 import RowProgressBox from "@/components/RowProgressBox";
 import StatusRowBox from "@/components/StatusRowBox";
-
+import {Title} from "@/components/Title";
 export function ColaboradorHome() {
   const theme = useTheme();
   return (
@@ -20,7 +20,7 @@ export function ColaboradorHome() {
           userName="João Gomes"
         />
         <S.Main>
-          <h1>Página Inicial</h1>
+          <Title>Olá, João Gomes</Title>
           <CardContainer>
             <CardBox
               icon={<MdOutlineInsertInvitation />}

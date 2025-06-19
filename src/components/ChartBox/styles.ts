@@ -9,7 +9,6 @@ export const Container = styled.div`
   flex-direction: column;
   align-items: flex-start;
   width: 100%;
-  max-width: 600px;
   min-width: 260px;
   min-height: 220px;
   position: relative;
