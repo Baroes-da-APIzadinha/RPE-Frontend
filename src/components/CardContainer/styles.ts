@@ -8,6 +8,8 @@ const StyledCardContainer = styled.div`
   gap: 1.6rem;
   margin-left: 0;
   margin-bottom: 1.5rem;
+
+  
 `;
 
 export default StyledCardContainer;

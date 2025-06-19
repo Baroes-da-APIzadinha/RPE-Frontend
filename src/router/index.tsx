@@ -1,13 +1,14 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Login } from "@/pages/Login";
 import { Home } from "@/pages/home";
-import { Import } from "@/pages/rh/Import";
 
 import { ColaboradorHome } from "@/pages/colaborador/home";
 import { ColaboradorEvolution } from "@/pages/colaborador/evolution";
 import { EvaluationBasePage} from "@/pages/colaborador/evaluation/base.tsx";
 
-// import { EvaluationCriteria } from "@/pages/rh/EvaluationCriteria";
+import { Import } from "@/pages/rh/Import";
+import { EvaluationCriteria } from "@/pages/rh/EvaluationCriteria";
+import { RhDashboard } from "@/pages/rh/Dashboard";
 
 
 function AppRoutes() {
@@ -20,8 +21,10 @@ function AppRoutes() {
         <Route path="colaborador/home" element={<ColaboradorHome />} />
         <Route path="colaborador/evolution" element={<ColaboradorEvolution />} />
         <Route path="colaborador/evaluation" element={<EvaluationBasePage />} />
+        {/* RH */}
+        <Route path="/rh/dashboard" element={<RhDashboard />} />
+        <Route path="/rh/criteria" element={<EvaluationCriteria />} />
         <Route path="/rh/import" element={<Import />} />
-        {/* <Route path="/rh/criteria" element={<EvaluationCriteria />} /> */}
       </Routes>
     </BrowserRouter>
   );

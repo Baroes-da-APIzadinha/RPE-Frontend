@@ -75,3 +75,14 @@ export const MiniSpan = styled.span<{ $status?: 'positive' | 'negative' | 'neutr
   align-items: center;
   gap: 0.3rem;
 `;
+
+export const AlertSpan = styled.span`
+  color: ${({ theme }) => theme.colors.error.default};
+  font-size: 0.85rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-weight: 500;
+  margin-top: 0.3rem;
+`;
+

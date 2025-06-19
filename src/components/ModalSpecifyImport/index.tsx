@@ -61,7 +61,11 @@ export function ModalSpecifyImport({ open, onClose }: Props) {
               label: "Avaliações",
               icon: <MdAssignment />,
             },
-            { value: "criterios", label: "Critérios", icon: <MdChecklist /> },
+            { 
+              value: "criterios", 
+              label: "Critérios", 
+              icon: <MdChecklist /> 
+            },
           ]}
         />
 
