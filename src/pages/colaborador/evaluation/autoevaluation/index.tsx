@@ -4,6 +4,9 @@ import CriteryBox from "@/components/CriteryBox";
 import { Title } from "@/components/Title";
 import { useForm, Controller } from "react-hook-form";
 import { Sidebar } from "@/components/Sidebar";
+import { ToggleBar } from "@/components/ToggleBar";
+import { useState } from "react";
+
 
 const criteriosComportamento = [
   { id: "sentimento_dono", nome: "Sentimento de Dono", subtitle: "Demonstrou responsabilidade e comprometimento com os resultados" },
@@ -16,9 +19,10 @@ const criteriosLogistica = [
   { id: "gestao_recursos", nome: "Gestão de Recursos", subtitle: "Utilizou recursos de forma responsável" },
 ];
 
+type valuesType = "Autoavaliação" | "Avaliação 360°" | "Avaliações Concluídas";
 export function ColaboradorEvaluation() {
   const { handleSubmit, control, getValues } = useForm();
-
+  const [type, setType] = useState<valuesType>("Autoavaliação");
   const onSubmit = () => {
     const values = getValues();
     const data = {
@@ -53,6 +57,15 @@ export function ColaboradorEvaluation() {
               />
               
       <S.Main>
+        <ToggleBar
+        items={[
+          { label: "Autoavaliação", value: "Autoavaliação" },
+          { label: "Avaliação 360°", value: "Avaliação 360" },
+          { label: "Avaliação de gestor", value: "Avaliação de gestor" },
+        ]}
+        value={type}
+        onChange={(value) => {setType(value as valuesType);}}
+        />
         <form onSubmit={handleSubmit(onSubmit)}>
           <Title>Sua autoavaliação</Title>
 
