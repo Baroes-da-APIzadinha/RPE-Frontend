@@ -1,9 +1,13 @@
-import * as S from "../styles.ts";
 import EvaluationFrame from "@/components/EvaluationFrame";
 import CriteryBox from "@/components/CriteryBox";
 import { Title } from "@/components/Title";
 import { useForm, Controller } from "react-hook-form";
-
+import RowProgressBox from '@/components/RowProgressBox';
+import ButtonFrame from "@/components/ButtonFrame/index.tsx";
+import { FaPaperPlane } from "react-icons/fa";
+import Button from "@/components/Button/index.tsx";
+import { useEffect, useState } from "react";
+  
 const criteriosComportamento = [
   { id: "sentimento_dono", nome: "Sentimento de Dono", subtitle: "Demonstrou responsabilidade e comprometimento com os resultados" },
   { id: "colaboracao", nome: "Colaboração", subtitle: "Trabalhou bem em equipe e ajudou colegas" },
@@ -16,7 +20,33 @@ const criteriosLogistica = [
 ];
 
 export function AutoEvaluationForm() {
-  const { handleSubmit, control, getValues } = useForm();
+  const { handleSubmit, control, getValues, watch } = useForm();
+  const [progress, setProgress] = useState(0);
+  const totalCriterios = criteriosComportamento.length + criteriosLogistica.length;
+
+  const calculateProgress = () => {
+    const values = getValues();
+    let filled1 = criteriosComportamento.filter((c) => {
+      const value = values[`comportamento_${c.id}`];
+      return value?.nota > 0 && value?.justificativa.trim() !== '';
+    }).length;
+
+    let filled2 = criteriosLogistica.filter((c) => {
+      const value = values[`logistica_${c.id}`];
+      return value?.nota > 0 && value?.justificativa.trim() !== '';
+    }).length;
+
+    let filled = filled1 + filled2;
+    
+    setProgress((Number((filled / totalCriterios).toPrecision(2)) * 100));
+  };
+
+  useEffect(() => {
+    const subscription = watch(() => {
+      calculateProgress();
+    });
+    return () => subscription.unsubscribe();
+  }, [watch]);
 
   const onSubmit = () => {
     const values = getValues();
@@ -45,6 +75,10 @@ export function AutoEvaluationForm() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
+      <RowProgressBox
+        title="Progresso da Avaliação"
+        bars={[{ subtitle: "Preenchimento", value: progress }]}
+      />
       <Title>Sua autoavaliação</Title>
       <EvaluationFrame title="Comportamento">
         {criteriosComportamento.map((c) => (
@@ -82,7 +116,13 @@ export function AutoEvaluationForm() {
           />
         ))}
       </EvaluationFrame>
-      <S.SubmitButton type="submit">Enviar</S.SubmitButton>
+
+      <ButtonFrame text="Para submeter sua autoavaliação, preencha todos os critérios.">
+      <Button onClick={handleSubmit(onSubmit)}>
+        <FaPaperPlane />
+        Enviar</Button>
+
+      </ButtonFrame>
     </form>
   );
 }
