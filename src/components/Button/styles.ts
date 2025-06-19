@@ -22,12 +22,12 @@ export const ButtonContainer = styled.button<ButtonProps>`
   ${(props) =>
     props.variant === "outline"
       ? css`
-          background-color: ${theme.colors.surface.default};
-          color: ${theme.colors.text.title};
-          border: 2px solid ${theme.colors.text.title};
+          background-color: ${theme.colors.button.outline.default};
+          color: ${theme.colors.button.outline.text};
+          border: 2px solid ${theme.colors.button.outline.border};
 
           &:hover {
-            background-color: ${theme.colors.surface.alt};
+            background-color: ${theme.colors.button.outline.hover};
           }
         `
       : props.variant === "primary"
@@ -40,11 +40,11 @@ export const ButtonContainer = styled.button<ButtonProps>`
           }
         `
       : css`
-          background-color: ${theme.colors.button.default};
-          color: ${theme.colors.primary.onPrimary};
+          background-color: ${theme.colors.button.solid.default};
+          color: ${theme.colors.button.solid.text};
 
           &:hover {
-            background-color: ${theme.colors.button.hover};
+            background-color: ${theme.colors.button.solid.hover};
           }
         `}
 `

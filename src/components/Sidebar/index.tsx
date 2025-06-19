@@ -1,4 +1,4 @@
-import { useLocation, NavLink } from "react-router-dom";
+import { useLocation, NavLink, useNavigate } from "react-router-dom";
 import {
   MdDashboardCustomize,
   MdAssignment,
@@ -29,6 +29,7 @@ type SidebarProps = {
 };
 
 export function Sidebar({ roles, mainRole, userName }: SidebarProps) {
+  const navigate = useNavigate();
   const location = useLocation();
 
   const allNavItems = {
@@ -65,6 +66,11 @@ export function Sidebar({ roles, mainRole, userName }: SidebarProps) {
     comite: "Painel do Comitê",
   };
 
+  const handleLogout = () => {
+  localStorage.clear();
+  navigate("/");
+};
+
   return (
     <S.Container>
         <S.Header>
@@ -95,7 +101,7 @@ export function Sidebar({ roles, mainRole, userName }: SidebarProps) {
           <MdAccountBox />
           {userName}
         </S.User>
-        <S.Logout>
+        <S.Logout onClick={handleLogout}>
           <MdLogout />
           Logout
         </S.Logout>
