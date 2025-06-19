@@ -12,25 +12,36 @@ export const Container = styled.div`
 `;
 
 export const InfoContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+    & div {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+    
+    }
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 1rem;
 `;
 
 export const Name = styled.span`
   font-weight: bold;
-  font-size: 1.2rem;
+  font-size: ${({ theme }) => theme.font.sizes.xsmall};
   color: ${({ theme }) => theme.colors.text.primary};
+    font-weight: ${({ theme }) => theme.font.bold};
+
 `;
 
 export const Role = styled.span`
-  font-size: 1rem;
+    font-size: ${({ theme }) => theme.font.sizes.xsmall};
   color: ${({ theme }) => theme.colors.text.secondary};
+  font-weight: ${({ theme }) => theme.font.semibold};
 `;
 
 export const WorkTime = styled.span`
-  font-size: 0.9rem;
-  color: ${({ theme }) => theme.colors.text.primary};
+  font-size: ${({ theme }) => theme.font.sizes.xsmall};
+  color: ${({ theme }) => theme.colors.text.secondary};
+
 `;
 
 export const StatusContainer = styled.div<{ $status: 'avaliado' | 'andamento' | 'pendente' }>`
@@ -58,3 +69,5 @@ export const Status = styled.span<{$status: 'avaliado' | 'andamento' | 'pendente
         ? theme.colors.secondary.hover
         : theme.colors.text.iconMuted};
 `;
+
+
