@@ -22,7 +22,7 @@ const TableRowBox: React.FC<TableRowBoxProps> = ({
         <S.WorkTime>{workTime}</S.WorkTime>
       </S.InfoContainer>
       <S.StatusContainer $status={status}>
-        <S.Status>{status}</S.Status>
+        <S.Status $status={status}>{status}</S.Status>
       </S.StatusContainer>
     </S.Container>
   );

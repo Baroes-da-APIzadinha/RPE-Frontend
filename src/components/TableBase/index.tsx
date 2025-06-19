@@ -15,6 +15,8 @@ export const TableBase: React.FC<TableProps> = ({
   <S.StyledTableBase>
     <S.StyledTableTitle>{title}</S.StyledTableTitle>
     {subtitle && <S.StyledTableSubtitle>{subtitle}</S.StyledTableSubtitle>}
+    <div style={{ display:"flex", flexDirection: "column", gap: "1rem" }}>
     {children}
+    </div>
   </S.StyledTableBase>
 );

@@ -37,10 +37,10 @@ export const StatusContainer = styled.div<{ $status: 'avaliado' | 'andamento' | 
   border: 2px solid
     ${({ $status, theme }) =>
       $status === 'avaliado'
-        ? theme.colors.success.default
+        ? theme.colors.success.text
         : $status === 'andamento'
-        ? theme.colors.warning
-        : theme.colors.border};
+        ? theme.colors.secondary.hover
+        : theme.colors.text.iconMuted};
   border-radius: 0.5rem;
   padding: 0.5rem 1rem;
   display: flex;
@@ -48,8 +48,13 @@ export const StatusContainer = styled.div<{ $status: 'avaliado' | 'andamento' | 
   justify-content: center;
 `;
 
-export const Status = styled.span`
+export const Status = styled.span<{$status: 'avaliado' | 'andamento' | 'pendente' }>`
   font-size: 1rem;
   font-weight: bold;
-  color: ${({ theme }) => theme.colors.text.primary};
+  color:     ${({ $status, theme }) =>
+      $status === 'avaliado'
+        ? theme.colors.success.text
+        : $status === 'andamento'
+        ? theme.colors.secondary.hover
+        : theme.colors.text.iconMuted};
 `;

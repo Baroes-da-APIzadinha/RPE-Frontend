@@ -3,7 +3,6 @@ import styled from "styled-components";
 export const StyledTableBase = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 0;
   margin: 1.5rem 0;
   padding: 1.5rem;
   border-radius: 0.5rem;
