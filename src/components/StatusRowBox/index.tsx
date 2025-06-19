@@ -21,7 +21,7 @@ const StatusRowBox: React.FC<StatusRowBoxProps> = ({ title, subtitle, items }) =
       {subtitle && <S.Subtitle>{subtitle}</S.Subtitle>}
       <S.StatusRow>
         {items.map((item, idx) => {
-          let label = `${item.label} ${item.value}`;
+          let label = `${item.label} ${item.value.toLocaleLowerCase()}`;
           if (item.label.includes("360") && item.concluidas !== undefined && item.total !== undefined) {
             label += ` (${item.concluidas}/${item.total})`;
           }
