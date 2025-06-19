@@ -7,6 +7,7 @@ import CardContainer from "@/components/CardContainer/index.tsx";
 import { useTheme } from "styled-components";
 import { Sidebar } from "@/components/Sidebar";
 import RowProgressBox from "@/components/RowProgressBox";
+import StatusRowBox from "@/components/StatusRowBox";
 
 export function ColaboradorHome() {
   const theme = useTheme();
@@ -39,7 +40,6 @@ export function ColaboradorHome() {
               bigSpan="4.3"
               miniSpan="-0.3"
             />
-        
           </CardContainer>
 
           <RowProgressBox
@@ -47,20 +47,29 @@ export function ColaboradorHome() {
             bars={[
               {
                 subtitle: "Autoavaliação",
-                value: 80,
+                value: 100,
                 color: theme.colors.success.default,
               },
-               {
-                subtitle: "Avaliaação 360°",
+              {
+                subtitle: "Avaliação 360°",
                 value: 10,
                 color: theme.colors.error.default,
               },
               {
                 subtitle: "Avaliação do Gestor",
-                value: 40,
+                value: 0,
                 color: theme.colors.secondary.default,
               },
-             
+            ]}
+          />
+
+          <StatusRowBox
+            title="Situação das Metas"
+            subtitle="Resumo do status de cada meta"
+            items={[
+              { value: "Concluida" , label: "Autoavaliação" },
+              { value: "Em andamento", label: "Avaliação 360", concluidas: 1, total: 5 },
+              { value: "Pendente", label: "Avaliação do gestor" },
             ]}
           />
         </S.Main>
