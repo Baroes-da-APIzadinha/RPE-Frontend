@@ -41,7 +41,7 @@ export function Sidebar({ roles, mainRole, userName }: SidebarProps) {
   rh: [
     { to: '/rh/dashboard', label: 'Dashboard (RH)', icon: <MdGridView /> },
     { to: '/rh/colaboradores', label: 'Colaboradores (RH)', icon: <MdGroup /> },
-    { to: '/rh/criterios', label: 'Critérios', icon: <MdChecklist /> },
+    { to: '/rh/criteria', label: 'Critérios', icon: <MdChecklist /> },
     { to: '/rh/import', label: 'Importação de dados', icon: <MdFileUpload /> }
   ],
   gestor: [
