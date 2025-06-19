@@ -3,11 +3,12 @@ import * as S from "./styles";
 import { Sidebar } from "@/components/Sidebar";
 import { ToggleBar } from "@/components/ToggleBar";
 import AutoEvaluationForm from "./autoevaluation/AutoEvaluationForm";
-
+import Table360 from "./360Evaluation/360Table";
 const toggleItems = [
   { value: "auto", label: "Autoavaliação" },
   { value: "360", label: "360°" },
   { value: "gestor", label: "Gestor" },
+  { value: "Refer", label: "Referencias" },
 ];
 
 export function EvaluationBasePage() {
@@ -23,6 +24,7 @@ export function EvaluationBasePage() {
       <S.Main>
         <ToggleBar items={toggleItems} value={selected} onChange={setSelected} />
         {selected === "auto" && <AutoEvaluationForm />}
+        {selected === "360" && <Table360 />}
         {/* Adicione outros formulários para gestor/360 aqui */}
       </S.Main>
     </S.Wrapper>

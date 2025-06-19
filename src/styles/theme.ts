@@ -87,6 +87,10 @@ export default {
       text: "#1C3D7C"
     },
 
+    warning: "#FFB200",
+
+    tertiary: "#A0A0A0", // Adicionando cor para texto terciário
+
     chart: {
       blue: "#3B82F6",
       purple: "#8B5CF6",
