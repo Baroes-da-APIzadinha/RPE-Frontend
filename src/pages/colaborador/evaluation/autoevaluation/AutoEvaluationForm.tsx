@@ -6,7 +6,8 @@ import RowProgressBox from '@/components/RowProgressBox';
 import ButtonFrame from "@/components/ButtonFrame/index.tsx";
 import { FaPaperPlane } from "react-icons/fa";
 import Button from "@/components/Button/index.tsx";
-
+import { useEffect, useState } from "react";
+  
 const criteriosComportamento = [
   { id: "sentimento_dono", nome: "Sentimento de Dono", subtitle: "Demonstrou responsabilidade e comprometimento com os resultados" },
   { id: "colaboracao", nome: "Colaboração", subtitle: "Trabalhou bem em equipe e ajudou colegas" },
@@ -19,8 +20,33 @@ const criteriosLogistica = [
 ];
 
 export function AutoEvaluationForm() {
-  const { handleSubmit, control, getValues } = useForm();
-  const progress = 10; // This should be calculated based on the form state
+  const { handleSubmit, control, getValues, watch } = useForm();
+  const [progress, setProgress] = useState(0);
+  const totalCriterios = criteriosComportamento.length + criteriosLogistica.length;
+
+  const calculateProgress = () => {
+    const values = getValues();
+    let filled1 = criteriosComportamento.filter((c) => {
+      const value = values[`comportamento_${c.id}`];
+      return value?.nota > 0 && value?.justificativa.trim() !== '';
+    }).length;
+
+    let filled2 = criteriosLogistica.filter((c) => {
+      const value = values[`logistica_${c.id}`];
+      return value?.nota > 0 && value?.justificativa.trim() !== '';
+    }).length;
+
+    let filled = filled1 + filled2;
+    
+    setProgress((Number((filled / totalCriterios).toPrecision(2)) * 100));
+  };
+
+  useEffect(() => {
+    const subscription = watch(() => {
+      calculateProgress();
+    });
+    return () => subscription.unsubscribe();
+  }, [watch]);
 
   const onSubmit = () => {
     const values = getValues();
