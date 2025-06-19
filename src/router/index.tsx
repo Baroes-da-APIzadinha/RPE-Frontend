@@ -4,6 +4,7 @@ import { Home } from "@/pages/home";
 import { Import } from "@/pages/rh/Import";
 import { ColaboradorHome } from "@/pages/colaborador/home";
 import { ColaboradorEvolution } from "@/pages/colaborador/evolution";
+import { ColaboradorEvaluation} from "@/pages/colaborador/evaluation";
 function AppRoutes() {
   return (
     <BrowserRouter>
@@ -13,6 +14,7 @@ function AppRoutes() {
         {/* colaboradores */}
         <Route path="colaborador/home" element={<ColaboradorHome />} />
         <Route path="colaborador/evolution" element={<ColaboradorEvolution />} />
+        <Route path="colaborador/evaluation" element={<ColaboradorEvaluation />} />
         <Route path="/rh/import" element={<Import />} />
       </Routes>
     </BrowserRouter>
