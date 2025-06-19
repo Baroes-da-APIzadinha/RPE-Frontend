@@ -22,11 +22,11 @@ export function Import() {
         <S.Header>
           <Title>Importação de Dados</Title>
           <S.HeaderButtons>
-            <Button onClick={() => setShowModal(true)}>Opções</Button>
             <Button variant="outline">
               {" "}
               <MdHistory /> Ver Histórico
             </Button>
+            <Button onClick={() => setShowModal(true)}>Opções</Button>
           </S.HeaderButtons>
         </S.Header>
 
