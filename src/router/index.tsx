@@ -4,7 +4,7 @@ import { Home } from "@/pages/home";
 import { Import } from "@/pages/rh/Import";
 import { ColaboradorHome } from "@/pages/colaborador/home";
 import { ColaboradorEvolution } from "@/pages/colaborador/evolution";
-import { ColaboradorEvaluation} from "@/pages/colaborador/evaluation";
+import { ColaboradorEvaluation} from "@/pages/colaborador/evaluation/autoevaluation";
 function AppRoutes() {
   return (
     <BrowserRouter>

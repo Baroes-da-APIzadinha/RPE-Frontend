@@ -5,7 +5,7 @@ export const Container = styled.div`
   border-radius: 1.125rem;
   border: 1px solid ${({ theme }) => theme.colors.border};
   padding: 2rem 2.5rem;
-  margin-bottom: 2rem;
+  margin-top: 2rem;
   width: 100%;
 `;
 

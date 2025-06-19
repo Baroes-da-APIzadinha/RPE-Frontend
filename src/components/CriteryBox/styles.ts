@@ -64,7 +64,7 @@ export const JustificationArea = styled.textarea`
   padding: 0.7rem;
   font-size: ${({ theme }) => theme.font.sizes.small};
   margin-bottom: 1rem;
-  resize: vertical;
+  resize: None;
   color: ${({ theme }) => theme.colors.text.primary};
   background: ${({ theme }) => theme.colors.surface.alt};
 `;
