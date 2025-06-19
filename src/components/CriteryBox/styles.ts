@@ -64,7 +64,7 @@ export const JustificationArea = styled.textarea`
   padding: 0.7rem;
   font-size: ${({ theme }) => theme.font.sizes.small};
   margin-bottom: 1rem;
-  resize: vertical;
+  resize: None;
   color: ${({ theme }) => theme.colors.text.primary};
   background: ${({ theme }) => theme.colors.surface.alt};
 `;
@@ -81,7 +81,6 @@ export const CollapseButton = styled.button<{ collapsed: boolean }>`
   z-index: 2;
   padding: 0.2rem;
   transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
-  transform: rotate(${({ collapsed }) => (collapsed ? '180deg' : '0deg')});
     &:hover {
         color: ${({ theme }) => theme.colors.text.primary};
     }

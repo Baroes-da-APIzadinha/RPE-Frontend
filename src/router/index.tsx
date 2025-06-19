@@ -5,9 +5,9 @@ import { Import } from "@/pages/rh/Import";
 
 import { ColaboradorHome } from "@/pages/colaborador/home";
 import { ColaboradorEvolution } from "@/pages/colaborador/evolution";
-import { ColaboradorEvaluation} from "@/pages/colaborador/evaluation";
+import { EvaluationBasePage} from "@/pages/colaborador/evaluation/base.tsx";
 
-import { EvaluationCriteria } from "@/pages/rh/EvaluationCriteria";
+// import { EvaluationCriteria } from "@/pages/rh/EvaluationCriteria";
 
 
 function AppRoutes() {
@@ -19,9 +19,9 @@ function AppRoutes() {
         {/* colaboradores */}
         <Route path="colaborador/home" element={<ColaboradorHome />} />
         <Route path="colaborador/evolution" element={<ColaboradorEvolution />} />
-        <Route path="colaborador/evaluation" element={<ColaboradorEvaluation />} />
+        <Route path="colaborador/evaluation" element={<EvaluationBasePage />} />
         <Route path="/rh/import" element={<Import />} />
-        <Route path="/rh/criteria" element={<EvaluationCriteria />} />
+        {/* <Route path="/rh/criteria" element={<EvaluationCriteria />} /> */}
       </Routes>
     </BrowserRouter>
   );
