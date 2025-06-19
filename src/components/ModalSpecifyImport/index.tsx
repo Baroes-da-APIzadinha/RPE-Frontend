@@ -2,6 +2,7 @@ import { useState } from "react";
 import { CardImportData } from "@/components/CardImportData";
 import * as S from "./styles";
 import { MdGroup, MdAssignment, MdChecklist, MdClose } from "react-icons/md";
+import { ToggleBar } from "../ToggleBar";
 
 type TipoImportacao = "colaboradores" | "avaliacoes" | "criterios";
 
@@ -38,11 +39,6 @@ export function ModalSpecifyImport({ open, onClose }: Props) {
     console.log(`Importando ${tipo}:`, file);
   };
 
-  const tabs = [
-    { key: "colaboradores", label: "Colaboradores", icon: <MdGroup /> },
-    { key: "avaliacoes", label: "Avaliações", icon: <MdAssignment /> },
-    { key: "criterios", label: "Critérios", icon: <MdChecklist /> },
-  ] as const;
 
   return (
     <S.Modal open={open}>
@@ -50,18 +46,24 @@ export function ModalSpecifyImport({ open, onClose }: Props) {
         <S.CloseButton onClick={onClose}>
           <MdClose size={36} />
         </S.CloseButton>
-        <S.ToggleGroup>
-          {tabs.map(({ key, label, icon }) => (
-            <S.ToggleItem
-              key={key}
-              active={tipo === key}
-              onClick={() => setTipo(key)}
-            >
-              {icon}
-              {label}
-            </S.ToggleItem>
-          ))}
-        </S.ToggleGroup>
+
+        <ToggleBar
+          value={tipo}
+          onChange={(value) => setTipo(value as TipoImportacao)}
+          items={[
+            {
+              value: "colaboradores",
+              label: "Colaboradores",
+              icon: <MdGroup />,
+            },
+            {
+              value: "avaliacoes",
+              label: "Avaliações",
+              icon: <MdAssignment />,
+            },
+            { value: "criterios", label: "Critérios", icon: <MdChecklist /> },
+          ]}
+        />
 
         <CardImportData
           title={labels[tipo]}
