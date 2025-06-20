@@ -10,6 +10,7 @@ import { Import } from "@/pages/rh/Import";
 import { EvaluationCriteria } from "@/pages/rh/EvaluationCriteria";
 import { RhDashboard } from "@/pages/rh/Dashboard";
 import { RhCollaborator } from "@/pages/rh/Collaborator";
+import { CycleHistory } from "@/pages/comite/CycleHistory";
 
 
 function AppRoutes() {
@@ -27,6 +28,8 @@ function AppRoutes() {
         <Route path="/rh/collaborators" element={<RhCollaborator />} />
         <Route path="/rh/criteria" element={<EvaluationCriteria />} />
         <Route path="/rh/import" element={<Import />} />
+        {/* Comitê */}
+        <Route path="/comite/history" element={<CycleHistory />} />
       </Routes>
     </BrowserRouter>
   );

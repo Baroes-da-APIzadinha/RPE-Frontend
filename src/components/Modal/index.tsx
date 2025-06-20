@@ -7,19 +7,27 @@ interface ModalProps {
   title?: string;
   description?: string;
   children: React.ReactNode;
+  icon?: React.ReactNode;
+  iconColor?: "default" | "info" | "success" | "warning" | "error";
+  iconSize?: "small" | "medium" | "large";
 }
 
-export function Modal({ open, title, description, onClose, children }: ModalProps) {
+export function Modal({ open, title, description, onClose, icon, iconColor, iconSize, children }: ModalProps) {
   if (!open) return null;
 
   return (
     <S.Overlay>
       <S.Container>
         <S.Header>
-          <div>
+          <S.TitleContainer>
+            {icon && (
+              <S.Icon color={iconColor} size={iconSize}>
+                {icon}
+              </S.Icon>
+            )}
             {title && <S.Title>{title}</S.Title>}
-            {description && <S.Subtitle>{description}</S.Subtitle>}
-          </div>
+          </S.TitleContainer>
+          {description && <S.Subtitle>{description}</S.Subtitle>}
           <S.CloseButton onClick={onClose}>
             <MdClose size={24} />
           </S.CloseButton>

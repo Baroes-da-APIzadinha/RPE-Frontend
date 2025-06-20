@@ -53,32 +53,3 @@ export const Label = styled.label`
   color: ${({ theme }) => theme.colors.text.secondary};
   font-size: 1rem;
 `
-
-export const Input = styled.input`
-  padding: 0.75rem 1rem;
-  margin-bottom: 1.25rem;
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: 6px;
-  font-size: 1rem;
-  background: ${({ theme }) => theme.colors.surface.alt};
-  color: ${({ theme }) => theme.colors.text.primary};
-  &:focus {
-    border-color: ${({ theme }) => theme.colors.primary.default};
-    outline: none;
-  }
-`
-
-export const Button = styled.button`
-  padding: 0.75rem 1rem;
-  background: ${({ theme }) => theme.colors.button.default};
-  color: ${({ theme }) => theme.colors.primary.onPrimary};
-  border: none;
-  border-radius: 6px;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.2s;
-  &:hover {
-    background: ${({ theme }) => theme.colors.primary.hover};
-  }
-`

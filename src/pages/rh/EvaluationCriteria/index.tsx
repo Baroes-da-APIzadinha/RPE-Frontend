@@ -66,11 +66,11 @@ export function EvaluationCriteria() {
       return;
     }
 
-    const novoCriterio = {
+    const novoCriterio: Criterio = {
       nome,
       descricao,
-      categoria,
-      peso,
+      categoria: categoria as TipoCriterio,
+      peso: peso as string,
       trilhas,
     };
 
@@ -158,14 +158,6 @@ export function EvaluationCriteria() {
                   Gerencie os critérios utilizados nas avaliações
                 </S.Subtitle>
               </div>
-              {/* <S.HeaderButtons>
-                <Button variant="outline">
-                  <MdSettings /> Configurações
-                </Button>
-                <Button variant="outline">
-                  <MdDisplaySettings /> Pesos
-                </Button>
-              </S.HeaderButtons> */}
             </S.Header>
 
             <ToggleBar

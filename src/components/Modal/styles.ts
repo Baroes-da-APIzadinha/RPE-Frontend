@@ -60,3 +60,34 @@ export const Content = styled.div`
   flex-direction: column;
   gap: 1.6rem;
 `;
+
+export const Icon = styled.div<{
+  color?: "default" | "info" | "success" | "warning" | "error";
+  size?: "small" | "medium" | "large";
+}>`
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  color: ${({ color = "default", theme }) =>
+    color === "info"
+      ? theme.colors.info.default
+      : color === "success"
+      ? theme.colors.success.default
+      : color === "warning"
+      ? theme.colors.warning
+      : color === "error"
+      ? theme.colors.error.default
+      : theme.colors.text.primary};
+  font-size: ${({ size = "medium" }) =>
+    size === "small"
+      ? "1.6rem"
+      : size === "large"
+      ? "3.2rem"
+      : "2.4rem"};
+`;
+
+export const TitleContainer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+`;

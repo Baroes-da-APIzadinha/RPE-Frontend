@@ -2,7 +2,7 @@ import styled, { css } from "styled-components"
 import theme from "../../styles/theme"
 
 type ButtonProps = {
-  variant?: "default" | "outline" | "primary"
+  variant?: "default" | "outline" | "primary" | "secondary";
 }
 
 export const ButtonContainer = styled.button<ButtonProps>`
@@ -37,6 +37,15 @@ export const ButtonContainer = styled.button<ButtonProps>`
 
           &:hover {
             background-color: ${theme.colors.primary.hover};
+          }
+        `
+        : props.variant === "secondary"
+      ? css`
+          background-color: ${theme.colors.secondary.default};
+          color: ${theme.colors.secondary.onSecondary};
+
+          &:hover {
+            background-color: ${theme.colors.secondary.hover};
           }
         `
       : css`
