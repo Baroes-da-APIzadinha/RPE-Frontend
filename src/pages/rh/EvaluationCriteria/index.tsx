@@ -5,9 +5,7 @@ import * as S from "./styles.ts";
 import {
   MdAdd,
   MdAssignment,
-  MdDisplaySettings,
   MdFileDownload,
-  MdSettings,
 } from "react-icons/md";
 import { useState } from "react";
 import { Modal } from "@/components/Modal";

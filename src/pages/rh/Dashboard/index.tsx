@@ -81,7 +81,7 @@ export function RhDashboard() {
             <ReactApexChart
               type="bar"
               height={300}
-              width={600}
+              width={"100%"}
               options={{
                 chart: { toolbar: { show: false } },
                 xaxis: {
@@ -119,8 +119,11 @@ export function RhDashboard() {
             <ReactApexChart
               type="pie"
               height={300}
+              width={"100%"}
+              series={[299, 176, 150]}
               options={{
                 labels: ["Concluídas", "Em Andamento", "Pendentes"],
+                chart: { toolbar: { show: false } },
                 colors: [
                   theme.colors.success.default,
                   theme.colors.secondary.default,
@@ -139,7 +142,6 @@ export function RhDashboard() {
                   },
                 },
               }}
-              series={[299, 176, 150]}
             />
           </ChartBox>
         </CardContainer>

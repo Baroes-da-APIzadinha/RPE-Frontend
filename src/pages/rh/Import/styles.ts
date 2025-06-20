@@ -6,7 +6,6 @@ export const Wrapper = styled.div`
   height: 100vh;
   background-color: ${theme.colors.background};
 `
-
 export const Main = styled.main`
   flex: 1;
   padding: ${theme.spacings.large};
@@ -21,12 +20,10 @@ export const Header = styled.div`
   margin-bottom: 4vh;
   gap: 1.2rem;
 `
-
 export const HeaderButtons = styled.div`
   display: flex;
   gap: 1.2rem;
 `
-
 export const CardContainer = styled.div`
   display: flex;
   justify-content: flex-start;

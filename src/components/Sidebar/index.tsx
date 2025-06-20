@@ -34,13 +34,13 @@ export function Sidebar({ roles, mainRole, userName }: SidebarProps) {
 
   const allNavItems = {
   colaborador: [
-    { to: '/home', label: 'Página Inicial', icon: <MdSpaceDashboard /> },
-    { to: '/avaliacao', label: 'Avaliação do ciclo', icon: <MdAssignmentTurnedIn /> },
-    { to: '/evolucao', label: 'Evolução', icon: <MdShowChart /> }
+    { to: '/colaborador/home', label: 'Página Inicial', icon: <MdSpaceDashboard /> },
+    { to: '/colaborador/evaluation', label: 'Avaliação do ciclo', icon: <MdAssignmentTurnedIn /> },
+    { to: '/colaborador/evolution', label: 'Evolução', icon: <MdShowChart /> }
   ],
   rh: [
     { to: '/rh/dashboard', label: 'Dashboard (RH)', icon: <MdGridView /> },
-    { to: '/rh/colaboradores', label: 'Colaboradores (RH)', icon: <MdGroup /> },
+    { to: '/rh/collaborators', label: 'Colaboradores (RH)', icon: <MdGroup /> },
     { to: '/rh/criteria', label: 'Critérios', icon: <MdChecklist /> },
     { to: '/rh/import', label: 'Importação de dados', icon: <MdFileUpload /> }
   ],
