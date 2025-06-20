@@ -2,11 +2,7 @@ import Button from "@/components/Button";
 import { Sidebar } from "@/components/Sidebar";
 import { Title } from "@/components/Title";
 import * as S from "./styles.ts";
-import {
-  MdAdd,
-  MdAssignment,
-  MdFileDownload,
-} from "react-icons/md";
+import { MdAdd, MdAssignment, MdFileDownload } from "react-icons/md";
 import { useState } from "react";
 import { Modal } from "@/components/Modal";
 import Input from "@/components/Input";
@@ -29,6 +25,9 @@ export function EvaluationCriteria() {
   const [trilhas, setTrilhas] = useState<string[]>([]);
   const [tipo, setTipo] = useState<TipoCriterio>("comportamento");
   const [criterios, setCriterios] = useState<Criterio[]>(criteriosIniciais);
+  const [criterioEditando, setCriterioEditando] = useState<Criterio | null>(null);
+  const [editIndex, setEditIndex] = useState<number | null>(null);
+  const [pesoEditandoIndex, setPesoEditandoIndex] = useState<number | null>(null);
 
   // Configurações para o formulário de adição de critério
   const categorias = [
@@ -93,6 +92,42 @@ export function EvaluationCriteria() {
   );
 
   // Lógica da página de gerenciamento de critérios
+
+  const handleEdit = (criterio: Criterio, index: number) => {
+    setCriterioEditando(criterio);
+    setEditIndex(index);
+    setNome(criterio.nome);
+    setDescricao(criterio.descricao);
+    setCategoria(criterio.categoria);
+    setPeso(criterio.peso);
+    setTrilhas(criterio.trilhas);
+    setShowModal(true);
+  };
+
+  const handleSaveEdit = () => {
+    if (editIndex !== null) {
+      const novos = [...criterios];
+      novos[editIndex] = {
+        nome,
+        descricao,
+        categoria: categoria as TipoCriterio,
+        peso: peso as string,
+        trilhas,
+      };
+      setCriterios(novos);
+      setEditIndex(null);
+      setCriterioEditando(null);
+      resetForm();
+      setShowModal(false);
+    }
+  };
+
+  const handlePesoChange = (index: number, novoPeso: string) => {
+    const novos = [...criterios];
+    novos[index] = { ...novos[index], peso: novoPeso };
+    setCriterios(novos);
+    setPesoEditandoIndex(null);
+  };
 
   return (
     <>
@@ -177,12 +212,34 @@ export function EvaluationCriteria() {
                           : criterio.trilhas.join(", ")}
                       </S.Badge>
                     </td>
-                    <td>{criterio.peso}</td>
+                    <td>
+                      {pesoEditandoIndex === index ? (
+                        <Select
+                          options={pesos}
+                          value={criterio.peso}
+                          onChange={(novoPeso) => handlePesoChange(index, novoPeso)}
+                        />
+                      ) : (
+                        <span>{criterio.peso}</span>
+                      )}
+                    </td>
                     <td>
                       <DropdownActions
-                        onEditar={() => console.log("editar")}
-                        onAjustarPeso={() => console.log("ajustar")}
-                        onDesativar={() => console.log("desativar")}
+                        actions={[
+                          {
+                            label: "Editar",
+                            onClick: () => handleEdit(criterio, index),
+                          },
+                          {
+                            label: "Ajustar peso",
+                            onClick: () => setPesoEditandoIndex(index),
+                          },
+                          {
+                            label: "Desativar",
+                            onClick: () => {/* ação de desativar */},
+                            danger: true,
+                          },
+                        ]}
                       />
                     </td>
                   </tr>
@@ -194,9 +251,14 @@ export function EvaluationCriteria() {
 
         <Modal
           open={showModal}
-          onClose={() => setShowModal(false)}
-          title="Adicionar Novo Critério"
-          description="Defina um novo critério de avaliação"
+          onClose={() => {
+            resetForm();
+            setShowModal(false);
+            setEditIndex(null);
+            setCriterioEditando(null);
+          }}
+          title={editIndex !== null ? "Editar Critério" : "Adicionar Novo Critério"}
+          description={editIndex !== null ? "Modifique as informações do critério" : "Defina um novo critério de avaliação"}
         >
           <S.ModalContent>
             <div>
@@ -210,11 +272,10 @@ export function EvaluationCriteria() {
 
             <div>
               <S.ModalText>Descrição:</S.ModalText>
-              <Input
+              <S.ModalTextArea
                 placeholder="Descreva o que será avaliado neste critério..."
                 value={descricao}
                 onChange={(e) => setDescricao(e.target.value)}
-                as="textarea"
                 rows={4}
               />
             </div>
@@ -271,11 +332,15 @@ export function EvaluationCriteria() {
                 onClick={() => {
                   resetForm();
                   setShowModal(false);
+                  setEditIndex(null);
+                  setCriterioEditando(null);
                 }}
               >
                 Cancelar
               </Button>
-              <Button onClick={handleSubmit}>Adicionar</Button>
+              <Button onClick={editIndex !== null ? handleSaveEdit : handleSubmit}>
+                {editIndex !== null ? "Salvar" : "Adicionar"}
+              </Button>
             </S.ModalButtons>
           </S.ModalContent>
         </Modal>

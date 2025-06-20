@@ -22,3 +22,8 @@ export const StyledTableSubtitle = styled.div`
   color: ${({ theme }) => theme.colors.text.secondary};
   margin-bottom: 1rem;
 `;
+export const StyledTableChildrenWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+`;

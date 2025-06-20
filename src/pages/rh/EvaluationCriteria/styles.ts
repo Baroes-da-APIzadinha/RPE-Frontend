@@ -108,3 +108,14 @@ export const ModalCheckbox = styled.div`
   gap: 0.8rem;
   margin-top: 0.8rem;
 `;
+
+export const ModalTextArea = styled.textarea`
+  width: 100%;
+  min-height: 80px;
+  margin-top: 8px;
+  padding: 8px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  font-family: inherit;
+  font-size: 1rem;
+`;
