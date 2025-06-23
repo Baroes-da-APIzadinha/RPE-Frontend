@@ -12,6 +12,7 @@ import { RhDashboard } from "@/pages/rh/Dashboard";
 import { RhCollaborator } from "@/pages/rh/Collaborator";
 import { CycleHistory } from "@/pages/comite/CycleHistory";
 import { MananegerDashboard } from "@/pages/manager/Dashboard";
+import { ManagerTeam } from "@/pages/manager/Team";
 
 
 function AppRoutes() {
@@ -26,6 +27,7 @@ function AppRoutes() {
         <Route path="/colaborador/evaluation" element={<EvaluationBasePage />} />
         {/* Gestor */}
         <Route path="/gestor/dashboard" element={<MananegerDashboard />} />
+        <Route path="/gestor/team" element={<ManagerTeam />} />
         {/* RH */}
         <Route path="/rh/dashboard" element={<RhDashboard />} />
         <Route path="/rh/collaborators" element={<RhCollaborator />} />

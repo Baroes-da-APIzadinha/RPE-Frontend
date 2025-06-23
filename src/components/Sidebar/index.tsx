@@ -46,7 +46,7 @@ export function Sidebar({ roles, mainRole, userName }: SidebarProps) {
   ],
   gestor: [
     { to: '/gestor/dashboard', label: 'Dashboard (Gestor)', icon: <MdHome /> },
-    { to: '/gestor/colaboradores', label: 'Colaboradores (Gestor)', icon: <MdSupervisorAccount /> }
+    { to: '/gestor/team', label: 'Minha equipe', icon: <MdSupervisorAccount /> }
   ],
   comite: [
     { to: '/comite/history', label: 'Histórico de ciclos', icon: <MdHistoryToggleOff /> }

@@ -21,6 +21,7 @@ export default {
     semibold: 600,
     bold: 700,
     sizes: {
+      xxsmall: '0.8rem',
       xsmall: '1.0rem',
       small: '1.2rem',
       medium: '1.4rem',
