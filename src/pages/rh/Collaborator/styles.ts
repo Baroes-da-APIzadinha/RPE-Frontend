@@ -69,20 +69,6 @@ export const Actions = styled.div`
   flex-wrap: wrap;
 `;
 
-export const SearchInput = styled.input`
-  padding: 0.8rem 1.2rem;
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: ${({ theme }) => theme.border.radius.xsmall};
-  background-color: ${({ theme }) => theme.colors.surface.alt};
-  color: ${({ theme }) => theme.colors.text.primary};
-  font-size: ${({ theme }) => theme.font.sizes.small};
-  flex: 1;
-
-  &::placeholder {
-    color: ${({ theme }) => theme.colors.text.disabled};
-  }
-`;
-
 export const Table = styled.table`
   width: 100%;
   border-collapse: collapse;

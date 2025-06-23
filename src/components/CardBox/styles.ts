@@ -8,7 +8,7 @@ export const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  width: 340px;
+  width: 440px;
   height: 170px;
   position: relative;
   margin-top: 1rem;

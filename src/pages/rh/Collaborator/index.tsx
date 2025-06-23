@@ -8,7 +8,12 @@ import { useState } from "react";
 import Input from "@/components/Input";
 import { Select } from "@/components/Select";
 import { Checkbox } from "@/components/CheckBox/index.tsx";
-import { MdFileDownload, MdFileUpload, MdOutlinePersonAdd } from "react-icons/md";
+import {
+  MdFileDownload,
+  MdFileUpload,
+  MdOutlinePersonAdd,
+} from "react-icons/md";
+import { SearchInput } from "@/components/SearchInput";
 
 export function RhCollaborator() {
   const [busca, setBusca] = useState("");
@@ -143,19 +148,21 @@ export function RhCollaborator() {
             <S.FiltersRow>
               <div>
                 <S.Title>Colaboradores</S.Title>
-                <S.Subtitle>
-                  Gerencie os usuários do sistema RPE
-                </S.Subtitle>
+                <S.Subtitle>Gerencie os usuários do sistema RPE</S.Subtitle>
               </div>
               <S.Actions>
-                <S.SearchInput
+                <SearchInput
                   placeholder="Buscar Colaboradores..."
                   value={busca}
                   onChange={(e) => setBusca(e.target.value)}
                 />
 
-                <Button variant="outline"><MdFileDownload/> Exportar</Button>
-                <Button variant="outline"><MdFileUpload/> Importar</Button>
+                <Button variant="outline">
+                  <MdFileDownload /> Exportar
+                </Button>
+                <Button variant="outline">
+                  <MdFileUpload /> Importar
+                </Button>
               </S.Actions>
             </S.FiltersRow>
 
