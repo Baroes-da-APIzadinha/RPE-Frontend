@@ -27,18 +27,20 @@ export const List = styled.div`
   gap: 1rem;
 `;
 
-export const Alert = styled.div<{ $type: "error" | "warning" | "info" }>`
+export const Alert = styled.div<{ $type: "red" | "yellow" | "blue" | "green" }>`
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 1rem 1.2rem;
   border-radius: 0.75rem;
   background: ${({ theme, $type }) =>
-    $type === "error"
+    $type === "red"
       ? theme.colors.error.light
-      : $type === "warning"
+      : $type === "yellow"
       ? theme.colors.secondary.light
-      : theme.colors.info.light};
+      : $type === "blue"
+      ? theme.colors.info.light
+      : theme.colors.success.light};
 
     
 `;

@@ -2,7 +2,7 @@ import * as S from "./styles";
 import Button from "@/components/Button";
 
 interface AlertItem {
-  type: "error" | "warning" | "info";
+  type: "red" | "yellow" | "blue" | "green";
   icon: React.ReactNode;
   title: string;
   description: string;
@@ -33,7 +33,7 @@ export function AlertList({ title, subtitle, items }: AlertListProps) {
               <S.AlertDescription>{item.description}</S.AlertDescription>
             </div>
             <S.AlertButton>
-              <Button variant={item.type === "error" ? "default" : "outline"} onClick={item.onClick}>
+              <Button variant={item.type === "red" ? "default" : "outline"} onClick={item.onClick}>
                 {item.buttonLabel}
               </Button>
             </S.AlertButton>

@@ -13,8 +13,6 @@ import {
   MdOutlineTaskAlt,
 } from "react-icons/md";
 import CardBox from "@/components/CardBox/index.tsx";
-import RowProgressBox from "@/components/RowProgressBox/index.tsx";
-import StatusRowBox from "@/components/StatusRowBox/index.tsx";
 import theme from "@/styles/theme.ts";
 import CardContainer from "@/components/CardContainer/index.tsx";
 import ChartBox from "@/components/ChartBox/index.tsx";
@@ -153,7 +151,7 @@ export function RhDashboard() {
           subtitle="Itens que requerem sua atenção"
           items={[
             {
-              type: "error",
+              type: "red",
               icon: <MdErrorOutline />,
               title: "Prazo se aproximando",
               description: "Restam apenas 12 dias para o fim do ciclo",
@@ -161,7 +159,7 @@ export function RhDashboard() {
               onClick: () => console.log("Enviar Lembrete"),
             },
             {
-              type: "warning",
+              type: "yellow",
               icon: <MdInfoOutline />,
               title: "Baixa participação na unidade Recife",
               description: "Apenas 31% das avaliações foram concluídas",
@@ -169,7 +167,7 @@ export function RhDashboard() {
               onClick: () => console.log("Ver Detalhes"),
             },
             {
-              type: "info",
+              type: "blue",
               icon: <MdGroups />,
               title: "Novos colaboradores adicionados",
               description: "5 novos colaboradores foram adicionados ao ciclo",
