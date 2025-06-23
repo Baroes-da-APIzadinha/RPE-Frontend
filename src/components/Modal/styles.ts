@@ -17,7 +17,8 @@ export const Container = styled.div`
   background: ${({ theme }) => theme.colors.surface.default};
   border-radius: ${({ theme }) => theme.border.radius.medium};
   width: 100%;
-  max-width: 600px;
+  max-width: 900px;
+  min-width: 600px;
   padding: 2.4rem;
   position: relative;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
@@ -25,9 +26,15 @@ export const Container = styled.div`
 
 export const Header = styled.div`
   display: flex;
-  justify-content: space-between;
   align-items: start;
+  justify-content: space-between;
+  gap: 1rem;
   margin-bottom: 2rem;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 `;
 
 export const Title = styled.h2`
@@ -67,7 +74,6 @@ export const Icon = styled.div<{
 }>`
   display: flex;
   align-items: center;
-  margin-bottom: 0.5rem;
   color: ${({ color = "default", theme }) =>
     color === "info"
       ? theme.colors.info.default
@@ -88,6 +94,8 @@ export const Icon = styled.div<{
 
 export const TitleContainer = styled.div`
   display: flex;
-  align-items: center;
-  gap: 0.8rem;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.4rem;
+  flex: 1;
 `;

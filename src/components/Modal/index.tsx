@@ -12,22 +12,31 @@ interface ModalProps {
   iconSize?: "small" | "medium" | "large";
 }
 
-export function Modal({ open, title, description, onClose, icon, iconColor, iconSize, children }: ModalProps) {
+export function Modal({
+  open,
+  title,
+  description,
+  onClose,
+  icon,
+  iconColor,
+  iconSize,
+  children,
+}: ModalProps) {
   if (!open) return null;
 
   return (
     <S.Overlay>
       <S.Container>
         <S.Header>
-          <S.TitleContainer>
             {icon && (
               <S.Icon color={iconColor} size={iconSize}>
                 {icon}
               </S.Icon>
             )}
+          <S.TitleContainer>
             {title && <S.Title>{title}</S.Title>}
+            {description && <S.Subtitle>{description}</S.Subtitle>}
           </S.TitleContainer>
-          {description && <S.Subtitle>{description}</S.Subtitle>}
           <S.CloseButton onClick={onClose}>
             <MdClose size={24} />
           </S.CloseButton>
