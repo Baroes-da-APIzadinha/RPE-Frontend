@@ -45,7 +45,7 @@ export function Sidebar({ roles, mainRole, userName }: SidebarProps) {
     { to: '/rh/import', label: 'Importação de dados', icon: <MdFileUpload /> }
   ],
   gestor: [
-    { to: '/gestor/home', label: 'Dashboard (Gestor)', icon: <MdHome /> },
+    { to: '/gestor/dashboard', label: 'Dashboard (Gestor)', icon: <MdHome /> },
     { to: '/gestor/colaboradores', label: 'Colaboradores (Gestor)', icon: <MdSupervisorAccount /> }
   ],
   comite: [

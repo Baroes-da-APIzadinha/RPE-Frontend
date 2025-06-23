@@ -11,6 +11,7 @@ import { EvaluationCriteria } from "@/pages/rh/EvaluationCriteria";
 import { RhDashboard } from "@/pages/rh/Dashboard";
 import { RhCollaborator } from "@/pages/rh/Collaborator";
 import { CycleHistory } from "@/pages/comite/CycleHistory";
+import { MananegerDashboard } from "@/pages/manager/Dashboard";
 
 
 function AppRoutes() {
@@ -23,6 +24,8 @@ function AppRoutes() {
         <Route path="/colaborador/home" element={<ColaboradorHome />} />
         <Route path="/colaborador/evolution" element={<ColaboradorEvolution />} />
         <Route path="/colaborador/evaluation" element={<EvaluationBasePage />} />
+        {/* Gestor */}
+        <Route path="/gestor/dashboard" element={<MananegerDashboard />} />
         {/* RH */}
         <Route path="/rh/dashboard" element={<RhDashboard />} />
         <Route path="/rh/collaborators" element={<RhCollaborator />} />
