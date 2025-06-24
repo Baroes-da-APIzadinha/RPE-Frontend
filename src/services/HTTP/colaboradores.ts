@@ -1,34 +1,23 @@
 import { getRequest, postRequest, deleteRequest } from './requests';
+// TODO: falar com eles sobre os endpoints
 
-const baseEndpoint = '/colaboradores';
+const baseEndpoint = '/colaborador';
 
-export const getColaboradores = async (params?: Record<string, any>) => {
+export async function getColaboradores(params?: Record<string, any>) {
   return await getRequest(baseEndpoint, params);
 };
 
-export const createColaborador = async (data: Record<string, any>) => {
+export async function createColaborador(data: Record<string, any>) {
   return await postRequest(baseEndpoint, data);
 };
 
 
-export const deleteColaborador = async (id: string) => {
+export async function deleteColaborador(id: string) {
   return await deleteRequest(`${baseEndpoint}/${id}`);
 };
 
-export const getColaboradorById = async (id: string) => {
+export async function getColaboradorById(id: string) {
   return await getRequest(`${baseEndpoint}/${id}`);
 };
 
-// Uso:
-// Para buscar todos colaboradores:
-// const allColaboradores = await getColaboradores();
 
-// para buscar um colaborador por ID:
-// const colaborador = await getColaboradorById('{id}');
-
-// Para criar um novo colaborador:
-// const newColaborador = await createColaborador({ name: 'John Doe', role: 'Developer' });
-
-
-// Para deletar um colaborador:
-// await deleteColaborador('{id}');
