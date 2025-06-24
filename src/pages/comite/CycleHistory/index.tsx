@@ -4,30 +4,59 @@ import { Title } from "./styles.ts";
 import { Card } from "@/components/Card/index.tsx";
 import Button from "@/components/Button";
 import { MdFileDownload } from "react-icons/md";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Modal } from "@/components/Modal/index.tsx";
 import { LuTriangleAlert } from "react-icons/lu";
+import { getCiclos } from "@/services/HTTP/ciclos";
+import { useCicloAtual } from "@/hooks/useCicloAtual";
+import theme from "@/styles/theme";
+
+type Ciclo = {
+  id: string;
+  nome: string;
+  cor: string;
+  data: string;
+  status: string;
+};
 
 export function CycleHistory() {
   const [showExportModal, setShowExportModal] = useState(false);
   const [selectedCycle, setSelectedCycle] = useState<string | null>(null);
+  const [ciclos, setCiclos] = useState<Ciclo[]>([]);
+  const { cicloAtual } = useCicloAtual();
 
-  const ciclos = [
-    {
-      id: 1,
-      nome: "2025.1",
-      status: "em andamento",
-      data: "termina em 12 dias",
-      cor: "#F5A623",
-    },
-    {
-      id: 2,
-      nome: "2024.2",
-      status: "concluída",
-      data: "Encerrada em 25/12/2024",
-      cor: "#9B9B9B",
-    },
-  ];
+  useEffect(() => {
+    const fetchCiclos = async () => {
+      try {
+        const fetchedCiclos = await getCiclos();
+        const adaptedCiclos: Ciclo[] = fetchedCiclos.map((ciclo: any) => ({
+          id: ciclo.idCiclo,
+          nome: ciclo.nomeCiclo,
+          cor:
+            ciclo.status === "AGENDADO"
+              ? theme.colors.text.primary
+              : ciclo.status === "FECHADO"
+              ? theme.colors.success.default
+              : theme.colors.secondary.default  ,
+          data:
+            ciclo.status === "AGENDADO"
+              ? `Início em ${new Date(ciclo.dataInicio).toLocaleDateString()}`
+              : `Fim em ${new Date(ciclo.dataFim).toLocaleDateString()}`,
+          status: ciclo.status,
+        }));
+
+        const uniqueCiclos = adaptedCiclos.filter(
+          (ciclo) => !cicloAtual || ciclo.nome !== cicloAtual.nome
+        );
+
+        setCiclos(uniqueCiclos);
+      } catch (error) {
+        console.error("Error fetching ciclos:", error);
+      }
+    };
+
+    fetchCiclos();
+  }, [cicloAtual]);
 
   return (
     <S.Wrapper>
@@ -42,6 +71,31 @@ export function CycleHistory() {
         </S.Header>
 
         <Card>
+          {cicloAtual && (
+            <S.CycleCard key={cicloAtual.id}>
+              <S.CycleInfo>
+                <S.CycleAvatar style={{ backgroundColor: theme.colors.warning }} />
+                <div>
+                  <strong>{cicloAtual.nome}</strong>
+                  <p>{cicloAtual.tempoRestante}</p>
+                </div>
+              </S.CycleInfo>
+
+              <S.CycleActions>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setSelectedCycle(cicloAtual.nome);
+                    setShowExportModal(true);
+                  }}
+                >
+                  <MdFileDownload /> Exportar
+                </Button>
+                <S.StatusTag $status="em andamento">em andamento</S.StatusTag>
+              </S.CycleActions>
+            </S.CycleCard>
+          )}
+
           {ciclos.map((ciclo) => (
             <S.CycleCard key={ciclo.id}>
               <S.CycleInfo>
@@ -56,7 +110,7 @@ export function CycleHistory() {
                 <Button
                   variant="outline"
                   onClick={() => {
-                    if (ciclo.status === "em andamento") {
+                    if (ciclo.status === "AGENDADO") {
                       setSelectedCycle(ciclo.nome);
                       setShowExportModal(true);
                     } else {
@@ -66,7 +120,21 @@ export function CycleHistory() {
                 >
                   <MdFileDownload /> Exportar
                 </Button>
-                <S.StatusTag $status={ciclo.status}>{ciclo.status}</S.StatusTag>
+                <S.StatusTag
+                  $status={ciclo.status}
+                  style={{
+                    color: ciclo.status === "AGENDADO" ? theme.colors.text.iconMuted : "inherit",
+                    borderColor: ciclo.status === "AGENDADO" ? theme.colors.text.iconMuted : "transparent",
+                    backgroundColor:
+                      ciclo.status === "AGENDADO"
+                        ? theme.colors.lightGray
+                        : ciclo.status === "FECHADO"
+                        ? theme.colors.success.default
+                        : theme.colors.warning,
+                  }}
+                >
+                  {ciclo.status}
+                </S.StatusTag>
               </S.CycleActions>
             </S.CycleCard>
           ))}
