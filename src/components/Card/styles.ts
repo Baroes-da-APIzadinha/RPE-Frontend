@@ -5,4 +5,5 @@ export const CardContainer = styled.div`
   border: 1px solid ${({ theme }) => theme.colors.border};
   border-radius: ${({ theme }) => theme.border.radius.medium};
   padding: 2.4rem;
+  margin: 1.4rem 0;
 `;

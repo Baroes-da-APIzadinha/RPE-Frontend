@@ -13,7 +13,7 @@ export const Label = styled.label`
 `;
 
 export const SelectBox = styled.div<{ $open: boolean }>`
-  background: ${({ theme }) => theme.colors.surface.default};
+  background: ${({ theme }) => theme.colors.button.outline.default};
   border: 1px solid ${({ theme }) => theme.colors.border};
   border-radius: ${({ theme }) => theme.border.radius.xsmall};
   padding: 0.8rem 1.2rem;
@@ -35,6 +35,9 @@ export const OptionsList = styled.ul`
   padding: 0;
   margin: 0;
 
+  max-height: 200px;
+  overflow-y: auto;
+
   position: absolute;
   top: 100%;
   left: 0;
@@ -54,5 +57,6 @@ export const Option = styled.li`
 
   &:hover {
     background: ${({ theme }) => theme.colors.button.outline.hover};
+    border-radius: ${({ theme }) => theme.border.radius.xsmall};
   }
 `;
