@@ -5,7 +5,13 @@ import { ToggleBar } from "@/components/ToggleBar";
 import AutoEvaluationForm from "./autoevaluation/AutoEvaluationForm";
 import Table360 from "./360Evaluation/360Table";
 import { ReferencesPage } from "./references";
-import { MdPerson, MdGroups, MdSupervisorAccount, MdOutlineStar } from "react-icons/md";
+import {
+  MdPerson,
+  MdGroups,
+  MdSupervisorAccount,
+  MdOutlineStar,
+} from "react-icons/md";
+import EvaluationDetails from "./360Evaluation/360Form";
 
 const toggleItems = [
   { value: "auto", label: "Autoavaliação", icon: <MdPerson /> },
@@ -16,6 +22,9 @@ const toggleItems = [
 
 export function EvaluationBasePage() {
   const [selected, setSelected] = useState("auto");
+  const [avaliandoColaboradorId, setAvaliandoColaboradorId] = useState<
+    number | null
+  >(null);
 
   return (
     <S.Wrapper>
@@ -25,9 +34,25 @@ export function EvaluationBasePage() {
         userName="João Gomes"
       />
       <S.Main>
-        <ToggleBar items={toggleItems} value={selected} onChange={setSelected} />
+        <ToggleBar
+          items={toggleItems}
+          value={selected}
+          onChange={setSelected}
+        />
         {selected === "auto" && <AutoEvaluationForm />}
-        {selected === "360" && <Table360 />}
+        {selected === "360" && (
+          <>
+            {avaliandoColaboradorId === null ? (
+              <Table360 onSelect={(id) => setAvaliandoColaboradorId(id)} />
+            ) : (
+              <EvaluationDetails
+                id={avaliandoColaboradorId}
+                onBack={() => setAvaliandoColaboradorId(null)}
+              />
+            )}
+          </>
+        )}
+
         {/* Adicione outros formulários para gestor/360 aqui */}
         {selected === "references" && <ReferencesPage />}
       </S.Main>
