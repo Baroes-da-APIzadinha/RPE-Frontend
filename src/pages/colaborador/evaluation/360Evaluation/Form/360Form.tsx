@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import * as S from "./styles";
+import * as S from "./styles.ts";
 import { MdAccountCircle, MdArrowBack, MdOutlineInfo } from "react-icons/md";
 import Button from "@/components/Button";
 import { mockColaboradores } from "@/data/colaboradores360";

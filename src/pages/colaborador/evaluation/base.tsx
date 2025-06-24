@@ -3,15 +3,15 @@ import * as S from "./styles";
 import { Sidebar } from "@/components/Sidebar";
 import { ToggleBar } from "@/components/ToggleBar";
 import AutoEvaluationForm from "./autoevaluation/AutoEvaluationForm";
-import Table360 from "./360Evaluation/360Table";
 import { ReferencesPage } from "./references";
+import Table360 from "./360Evaluation/Table/360Table";
+import EvaluationDetails from "./360Evaluation/Form/360Form";
 import {
   MdPerson,
   MdGroups,
   MdSupervisorAccount,
   MdOutlineStar,
 } from "react-icons/md";
-import EvaluationDetails from "./360Evaluation/360Form";
 
 const toggleItems = [
   { value: "auto", label: "Autoavaliação", icon: <MdPerson /> },
