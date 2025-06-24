@@ -12,11 +12,12 @@ import {
   MdSupervisorAccount,
   MdOutlineStar,
 } from "react-icons/md";
+import { MentoringPage } from "./mentoring";
 
 const toggleItems = [
   { value: "auto", label: "Autoavaliação", icon: <MdPerson /> },
   { value: "360", label: "360°", icon: <MdGroups /> },
-  { value: "gestor", label: "Gestor", icon: <MdSupervisorAccount /> },
+  { value: "mentor", label: "Mentor", icon: <MdSupervisorAccount /> },
   { value: "references", label: "Referencias", icon: <MdOutlineStar /> },
 ];
 
@@ -54,6 +55,7 @@ export function EvaluationBasePage() {
         )}
 
         {/* Adicione outros formulários para gestor/360 aqui */}
+        {selected === "mentor" && <MentoringPage />}
         {selected === "references" && <ReferencesPage />}
       </S.Main>
     </S.Wrapper>
