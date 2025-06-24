@@ -1,6 +1,6 @@
 import { getRequest, postRequest, deleteRequest, patchRequest } from './requests';
 
-const baseEndpoint = '/criterio';
+const baseEndpoint = '/criterios';
 
 export async function getcriterios(params?: Record<string, any>) {
   return await getRequest(baseEndpoint, params);
