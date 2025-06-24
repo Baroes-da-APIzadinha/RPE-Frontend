@@ -19,8 +19,11 @@ import ChartBox from "@/components/ChartBox/index.tsx";
 import ReactApexChart from "react-apexcharts";
 import { AlertList } from "@/components/AlertList/index.tsx";
 import { DetailedProgress } from "@/components/DetailedProgress/index.tsx";
+import { useCicloAtual } from "@/hooks/useCicloAtual";
 
 export function RhDashboard() {
+  const { cicloAtual, treatTimeRemaining } = useCicloAtual();
+
   return (
     <S.Wrapper>
       <Sidebar
@@ -33,7 +36,6 @@ export function RhDashboard() {
           <Title>Dashboard RH</Title>
           <S.HeaderButtons>
             <Button variant="outline">
-              {" "}
               <MdFileDownload /> Exportar Relatório
             </Button>
           </S.HeaderButtons>
@@ -43,9 +45,9 @@ export function RhDashboard() {
           <CardBox
             icon={<MdOutlineInsertInvitation />}
             title="Ciclo atual"
-            bigSpan="2025.1"
-            span="01/01/2025 a 15/06/2025"
-            alertSpan="12 dias restantes"
+            bigSpan={cicloAtual ? cicloAtual.nome : "Carregando..."}
+            span={cicloAtual ? treatTimeRemaining(cicloAtual.tempoRestante) : "Carregando..."}
+            
             alertSpanIcon={<MdErrorOutline />}
           />
 
