@@ -9,8 +9,12 @@ import { Sidebar } from "@/components/Sidebar";
 import RowProgressBox from "@/components/RowProgressBox";
 import StatusRowBox from "@/components/StatusRowBox";
 import {Title} from "@/components/Title";
+import { useCicloAtual } from "@/hooks/useCicloAtual";
+
 export function ColaboradorHome() {
   const theme = useTheme();
+  const { cicloAtual, treatTimeRemaining } = useCicloAtual();
+
   return (
     <>
       <S.Wrapper>
@@ -25,8 +29,8 @@ export function ColaboradorHome() {
             <CardBox
               icon={<MdOutlineInsertInvitation />}
               title="ciclo atual"
-              bigSpan="2025.1"
-              span="12 dias para o fim do ciclo"
+              bigSpan={cicloAtual ? cicloAtual.nome : "Carregando..."}
+              span={cicloAtual ? treatTimeRemaining(cicloAtual.tempoRestante) : "Carregando..."}
             />
             <CardBox
               icon={<MdOutlineTimelapse />}
