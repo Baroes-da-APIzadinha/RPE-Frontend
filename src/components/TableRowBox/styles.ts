@@ -70,4 +70,21 @@ export const Status = styled.span<{$status: 'avaliado' | 'andamento' | 'pendente
         : theme.colors.text.iconMuted};
 `;
 
+export const RightContent = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+`;
 
+export const ArrowButton = styled.button`
+  background: transparent;
+  border: none;
+  padding: 0.4rem;
+  cursor: pointer;
+  color: ${({ theme }) => theme.colors.text.primary};
+  transition: 0.2s;
+
+  &:hover {
+    color: ${({ theme }) => theme.colors.primary.hover};
+  }
+`;

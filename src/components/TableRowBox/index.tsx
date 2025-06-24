@@ -1,11 +1,13 @@
 import React from "react";
 import * as S from "./styles.ts";
-import { MdAccountCircle } from "react-icons/md";
+import { MdAccountCircle, MdArrowForward } from "react-icons/md";
+
 interface TableRowBoxProps {
   name: string;
   role: string;
   workTime: string;
   status: "avaliado" | "andamento" | "pendente";
+  onClick?: () => void;
 }
 
 const TableRowBox: React.FC<TableRowBoxProps> = ({
@@ -13,6 +15,7 @@ const TableRowBox: React.FC<TableRowBoxProps> = ({
   role,
   workTime,
   status,
+  onClick,
 }) => {
   return (
     <S.Container>
@@ -24,9 +27,16 @@ const TableRowBox: React.FC<TableRowBoxProps> = ({
           <S.WorkTime>{workTime}</S.WorkTime>
         </div>
       </S.InfoContainer>
-      <S.StatusContainer $status={status}>
-        <S.Status $status={status}>{status}</S.Status>
-      </S.StatusContainer>
+
+      <S.RightContent>
+        <S.StatusContainer $status={status}>
+          <S.Status $status={status}>{status}</S.Status>
+        </S.StatusContainer>
+
+        <S.ArrowButton onClick={onClick}>
+          <MdArrowForward size={20} />
+        </S.ArrowButton>
+      </S.RightContent>
     </S.Container>
   );
 };
