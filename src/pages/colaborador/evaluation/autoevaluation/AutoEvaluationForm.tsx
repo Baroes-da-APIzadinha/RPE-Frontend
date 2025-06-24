@@ -2,12 +2,12 @@ import EvaluationFrame from "@/components/EvaluationFrame";
 import CriteryBox from "@/components/CriteryBox";
 import { Title } from "@/components/Title";
 import { useForm, Controller } from "react-hook-form";
-import RowProgressBox from '@/components/RowProgressBox';
+import RowProgressBox from "@/components/RowProgressBox";
 import ButtonFrame from "@/components/ButtonFrame/index.tsx";
 import { FaPaperPlane } from "react-icons/fa";
 import Button from "@/components/Button/index.tsx";
 import { useEffect, useState } from "react";
-  
+
 const criteriosComportamento = [
   { id: "sentimento_dono", nome: "Sentimento de Dono", subtitle: "Demonstrou responsabilidade e comprometimento com os resultados" },
   { id: "colaboracao", nome: "Colaboração", subtitle: "Trabalhou bem em equipe e ajudou colegas" },
@@ -22,23 +22,31 @@ const criteriosLogistica = [
 export function AutoEvaluationForm() {
   const { handleSubmit, control, getValues, watch } = useForm();
   const [progress, setProgress] = useState(0);
-  const totalCriterios = criteriosComportamento.length + criteriosLogistica.length;
+  const [comportamentoPreenchido, setCompPreenchido] = useState(0);
+  const [logisticaPreenchido, setLogPreenchido] = useState(0);
+
+  const totalComportamento = criteriosComportamento.length;
+  const totalLogistica = criteriosLogistica.length;
 
   const calculateProgress = () => {
     const values = getValues();
-    let filled1 = criteriosComportamento.filter((c) => {
+
+    const filled1 = criteriosComportamento.filter((c) => {
       const value = values[`comportamento_${c.id}`];
-      return value?.nota > 0 && value?.justificativa.trim() !== '';
+      return value?.nota > 0 && value?.justificativa.trim() !== "";
     }).length;
 
-    let filled2 = criteriosLogistica.filter((c) => {
+    const filled2 = criteriosLogistica.filter((c) => {
       const value = values[`logistica_${c.id}`];
-      return value?.nota > 0 && value?.justificativa.trim() !== '';
+      return value?.nota > 0 && value?.justificativa.trim() !== "";
     }).length;
 
-    let filled = filled1 + filled2;
-    
-    setProgress((Number((filled / totalCriterios).toPrecision(2)) * 100));
+    const filledTotal = filled1 + filled2;
+    const total = totalComportamento + totalLogistica;
+
+    setProgress(Number((filledTotal / total).toPrecision(2)) * 100);
+    setCompPreenchido(filled1);
+    setLogPreenchido(filled2);
   };
 
   useEffect(() => {
@@ -80,7 +88,8 @@ export function AutoEvaluationForm() {
         bars={[{ subtitle: "Preenchimento", value: progress }]}
       />
       <Title>Sua autoavaliação</Title>
-      <EvaluationFrame title="Comportamento">
+
+      <EvaluationFrame title="Comportamento" count={`${comportamentoPreenchido}/${totalComportamento}`}>
         {criteriosComportamento.map((c) => (
           <Controller
             key={c.id}
@@ -98,7 +107,8 @@ export function AutoEvaluationForm() {
           />
         ))}
       </EvaluationFrame>
-      <EvaluationFrame title="Logística">
+
+      <EvaluationFrame title="Logística" count={`${logisticaPreenchido}/${totalLogistica}`}>
         {criteriosLogistica.map((c) => (
           <Controller
             key={c.id}
@@ -118,10 +128,10 @@ export function AutoEvaluationForm() {
       </EvaluationFrame>
 
       <ButtonFrame text="Para submeter sua autoavaliação, preencha todos os critérios.">
-      <Button onClick={handleSubmit(onSubmit)}>
-        <FaPaperPlane />
-        Enviar</Button>
-
+        <Button onClick={handleSubmit(onSubmit)}>
+          <FaPaperPlane />
+          Enviar
+        </Button>
       </ButtonFrame>
     </form>
   );
