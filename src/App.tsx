@@ -7,7 +7,7 @@ import { Toaster } from "sonner";
 function App() {
   return (
     <ThemeProvider theme={theme}>
-      <Toaster position="top-left" richColors />
+      <Toaster position="top-right" richColors />
       <GlobalStyle />
       <AppRoutes />
     </ThemeProvider>

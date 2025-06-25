@@ -86,7 +86,7 @@ export const Label = styled.label`
   color: ${theme.colors.text.primary};
 `;
 
-export const StarsGroup = styled.div`
+export const StarsGroup = styled.div<{ $error?: boolean }>`
   display: flex;
   flex-wrap: wrap;
   gap: 1.2rem;
@@ -103,11 +103,11 @@ export const StarButton = styled.button<{ $active: boolean }>`
   padding: 0;
 `;
 
-export const TextArea = styled.textarea`
+export const TextArea = styled.textarea<{ error?: boolean }>`
   resize: none;
   padding: 1rem;
   font-size: 1rem;
-  border: 1px solid ${theme.colors.border};
+  border: 1px solid ${({ error, theme }) =>  error ? theme.colors.error.default : theme.colors.border};
   border-radius: 8px;
   font-family: inherit;
   min-height: 100px;

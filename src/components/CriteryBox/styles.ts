@@ -1,10 +1,10 @@
 import styled from "styled-components";
 
-export const Container = styled.div`
+export const Container = styled.div<{ error?: boolean }>`
   position: relative;
   background: ${({ theme }) => theme.colors.surface.default};
   border-radius: 1rem;
-  border: 1px solid ${({ theme }) => theme.colors.border};
+  border: 1px solid ${({ error, theme }) =>  error ? theme.colors.error.default : theme.colors.border};
   padding: 1.5rem 2rem;
   margin-bottom: 1.5rem;
   width: 100%;

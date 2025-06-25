@@ -7,8 +7,8 @@ type ButtonProps = {
   variant?: "default" | "outline" | "primary" | "secondary";
 };
 
-function Button({ children, onClick, variant = 'default' }: ButtonProps) {
-  return <S.ButtonContainer onClick={onClick} variant={variant}>{children}</S.ButtonContainer>;
+function Button({ children, onClick, variant = 'default', ...props }: ButtonProps) {
+  return <S.ButtonContainer onClick={onClick} variant={variant} {...props}>{children}</S.ButtonContainer>;
 }
 
 export default Button;
