@@ -8,6 +8,7 @@ import { Select } from "@/components/Select";
 import ButtonFrame from "@/components/ButtonFrame";
 import { FaPaperPlane, FaStar } from "react-icons/fa";
 import { useAvaliacoes360 } from "@/hooks/Avaliacoes360";
+import { toast } from "sonner";
 
 interface Props {
   id: number;
@@ -23,6 +24,13 @@ const EvaluationDetails: React.FC<Props> = ({ id, onBack }) => {
   const [motivacao, setMotivacao] = useState<string | null>(null);
   const { salvarAvaliacao, buscarAvaliacao } = useAvaliacoes360();
 
+  const [errors, setErrors] = useState({
+    nota: false,
+    motivacao: false,
+    forte: false,
+    melhoria: false,
+  });
+
   if (!colaborador) {
     return <p>Colaborador não encontrado.</p>;
   }
@@ -35,11 +43,23 @@ const EvaluationDetails: React.FC<Props> = ({ id, onBack }) => {
     { value: "concordoTot", label: "Concordo Totalmente" },
   ];
 
-  const handleRating = (nota: number) => {
-    setNota(nota);
-  };
-
   const handleSubmit = () => {
+    const newErrors = {
+      nota: nota === 0,
+      motivacao: !motivacao,
+      forte: forte.trim() === "",
+      melhoria: melhoria.trim() === "",
+    };
+
+    setErrors(newErrors);
+
+    const hasErrors = Object.values(newErrors).some(Boolean);
+
+    if (hasErrors) {
+      toast.error("Preencha todos os campos obrigatórios.");
+      return;
+    }
+
     const avaliacaoFinal = {
       id: colaborador.id,
       nota,
@@ -50,8 +70,8 @@ const EvaluationDetails: React.FC<Props> = ({ id, onBack }) => {
     };
 
     salvarAvaliacao(avaliacaoFinal);
+    toast.success("Avaliação enviada com sucesso!");
 
-    // Aqui vai a chamada para a API futuramente
     console.log("ENVIADO AO BACKEND:", avaliacaoFinal);
   };
 
@@ -124,7 +144,7 @@ const EvaluationDetails: React.FC<Props> = ({ id, onBack }) => {
                   {[1, 2, 3, 4, 5].map((star) => (
                     <S.StarButton
                       key={star}
-                      onClick={() => handleRating(star)}
+                      onClick={() => setNota(star)}
                       onMouseEnter={() => setHover(star)}
                       onMouseLeave={() => setHover(null)}
                       $active={star <= (hover ?? nota)}
@@ -145,6 +165,7 @@ const EvaluationDetails: React.FC<Props> = ({ id, onBack }) => {
                   value={motivacao}
                   onChange={setMotivacao}
                   options={motivacoes}
+                  error={errors.motivacao}
                 />
               </S.FormBlock>
             </S.FormRow>
@@ -155,6 +176,7 @@ const EvaluationDetails: React.FC<Props> = ({ id, onBack }) => {
                   placeholder="Justifique sua resposta..."
                   value={forte}
                   onChange={(e) => setForte(e.target.value)}
+                  error={errors.forte}
                 />
               </S.FormBlock>
               <S.FormBlock>
@@ -163,6 +185,7 @@ const EvaluationDetails: React.FC<Props> = ({ id, onBack }) => {
                   placeholder="Justifique sua resposta..."
                   value={melhoria}
                   onChange={(e) => setMelhoria(e.target.value)}
+                  error={errors.melhoria}
                 />
               </S.FormBlock>
             </S.FormRow>

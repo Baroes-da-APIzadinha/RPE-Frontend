@@ -6,7 +6,7 @@ import RowProgressBox from "@/components/RowProgressBox";
 import ButtonFrame from "@/components/ButtonFrame/index.tsx";
 import { FaPaperPlane } from "react-icons/fa";
 import Button from "@/components/Button/index.tsx";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 const criteriosComportamento = [
@@ -44,18 +44,42 @@ const criteriosLogistica = [
   },
 ];
 
+const LOCAL_STORAGE_KEY = "autoavaliacao-cache";
+
 export function AutoEvaluationForm() {
-  const { handleSubmit, control, getValues, watch } = useForm();
+  const { handleSubmit, control, getValues, watch, reset } = useForm();
   const [progress, setProgress] = useState(0);
   const [comportamentoPreenchido, setCompPreenchido] = useState(0);
   const [logisticaPreenchido, setLogPreenchido] = useState(0);
+  const [camposComErro, setCamposComErro] = useState<string[]>([]);
 
   const totalComportamento = criteriosComportamento.length;
   const totalLogistica = criteriosLogistica.length;
 
-  const calculateProgress = () => {
-    const values = getValues();
+  // Carregar dados salvos no localStorage
+  useEffect(() => {
+    const stored = localStorage.getItem(LOCAL_STORAGE_KEY);
+    if (stored) {
+      try {
+        const data = JSON.parse(stored);
+        reset(data);
+        calculateProgress(data);
+      } catch (err) {
+        console.error("Erro ao recuperar cache:", err);
+      }
+    }
+  }, [reset]);
 
+  // Salvar no localStorage sempre que mudar algo
+  useEffect(() => {
+    const subscription = watch((values) => {
+      calculateProgress(values);
+      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(values));
+    });
+    return () => subscription.unsubscribe();
+  }, [watch]);
+
+  const calculateProgress = (values: any) => {
     const filled1 = criteriosComportamento.filter((c) => {
       const value = values[`comportamento_${c.id}`];
       return value?.nota > 0 && value?.justificativa.trim() !== "";
@@ -74,15 +98,42 @@ export function AutoEvaluationForm() {
     setLogPreenchido(filled2);
   };
 
-  useEffect(() => {
-    const subscription = watch(() => {
-      calculateProgress();
-    });
-    return () => subscription.unsubscribe();
-  }, [watch]);
-
+  const submitClickedRef = useRef(false);
   const onSubmit = () => {
+    if (!submitClickedRef.current) return;
+
+    submitClickedRef.current = false; // resetar depois do uso
+
     const values = getValues();
+    const erros: string[] = [];
+
+    const faltandoComportamento = criteriosComportamento.filter((c) => {
+      const val = values[`comportamento_${c.id}`];
+      const isEmpty = !(val?.nota > 0 && val?.justificativa.trim() !== "");
+      if (isEmpty) {
+        erros.push(`comportamento_${c.id}`);
+        return isEmpty;
+      }
+    });
+
+    const faltandoLogistica = criteriosLogistica.filter((c) => {
+      const val = values[`logistica_${c.id}`];
+      const isEmpty = !(val?.nota > 0 && val?.justificativa.trim() !== "");
+      if (isEmpty) {
+        erros.push(`logistica_${c.id}`);
+        return isEmpty;
+      }
+    });
+
+    setCamposComErro(erros);
+
+    if (faltandoComportamento.length > 0 || faltandoLogistica.length > 0) {
+      toast.error(
+        "Preencha todos os critérios da sua autoavaliação antes de enviar."
+      );
+      return;
+    }
+
     const data = {
       Comportamento: {
         nomePilar: "Comportamento",
@@ -103,6 +154,9 @@ export function AutoEvaluationForm() {
         })),
       },
     };
+
+    localStorage.removeItem(LOCAL_STORAGE_KEY);
+    toast.success("Autoavaliação enviada com sucesso!");
     console.log(data);
   };
 
@@ -130,6 +184,7 @@ export function AutoEvaluationForm() {
                 subtitle={c.subtitle}
                 value={field.value}
                 onChange={field.onChange}
+                error={camposComErro.includes(`comportamento_${c.id}`)}
               />
             )}
           />
@@ -152,6 +207,7 @@ export function AutoEvaluationForm() {
                 subtitle={c.subtitle}
                 value={field.value}
                 onChange={field.onChange}
+                error={camposComErro.includes(`logistica_${c.id}`)}
               />
             )}
           />
@@ -159,7 +215,12 @@ export function AutoEvaluationForm() {
       </EvaluationFrame>
 
       <ButtonFrame text="Para submeter sua autoavaliação, preencha todos os critérios.">
-        <Button onClick={handleSubmit(onSubmit)}>
+        <Button
+          type="submit"
+          onClick={() => {
+            submitClickedRef.current = true;
+          }}
+        >
           <FaPaperPlane />
           Enviar
         </Button>
