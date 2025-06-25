@@ -31,3 +31,20 @@ export const CardContainer = styled.div`
   gap: 16px;
   margin-left: 0;
 `
+
+export const DesktopButtons = styled.div`
+  display: flex;
+  gap: 1.2rem;
+
+  @media (max-width: 768px) {
+    display: none;
+  }
+`;
+
+export const MobileActions = styled.div`
+  display: none;
+
+  @media (max-width: 768px) {
+    display: block;
+  }
+`;

@@ -8,6 +8,7 @@ import { CardImportData } from "@/components/CardImportData/index.tsx";
 import { useState } from "react";
 import { Modal } from "@/components/Modal/index.tsx";
 import { ToggleBar } from "@/components/ToggleBar/index.tsx";
+import { DropdownActions } from "@/components/DropdownActions/index.tsx";
 
 type TipoImportacao = "colaboradores" | "avaliacoes" | "criterios";
 
@@ -51,11 +52,33 @@ export function Import() {
         <S.Header>
           <Title>Importação de Dados</Title>
           <S.HeaderButtons>
-            <Button variant="outline">
-              {" "}
-              <MdHistory /> Ver Histórico
-            </Button>
-            <Button onClick={() => setShowModal(true)}>Opções</Button>
+            <S.DesktopButtons>
+              <Button variant="outline">
+                <MdHistory /> Ver Histórico
+              </Button>
+              <Button onClick={() => setShowModal(true)}>
+                Import Específico
+              </Button>
+            </S.DesktopButtons>
+
+            <S.MobileActions>
+              <DropdownActions
+                title="Opções"
+                orientation="vertical"
+                position="bottom"
+                actions={[
+                  {
+                    label: "Ver Histórico",
+                    onClick: () => console.log("Ver histórico"),
+                    icon: <MdHistory />,
+                  },
+                  {
+                    label: "Import Específico",
+                    onClick: () => setShowModal(true),
+                  },
+                ]}
+              />
+            </S.MobileActions>
           </S.HeaderButtons>
         </S.Header>
 

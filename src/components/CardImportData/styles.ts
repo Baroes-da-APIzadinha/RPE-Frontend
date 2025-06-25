@@ -115,3 +115,43 @@ export const FileName = styled.p`
   text-align: center;
 `;
 
+export const FileList = styled.ul`
+  margin-top: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+`;
+
+export const FileItem = styled.li`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: 8px;
+  padding: 0.8rem 1rem;
+  background: ${({ theme }) => theme.colors.surface.default};
+
+  > div {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+`;
+
+export const FileSize = styled.span`
+  font-size: ${({ theme }) => theme.font.sizes.xsmall};
+  color: ${({ theme }) => theme.colors.text.secondary};
+`;
+
+export const RemoveButton = styled.button`
+  background: none;
+  border: none;
+  color: ${({ theme }) => theme.colors.error.default};
+  font-size: 1.4rem;
+  cursor: pointer;
+
+  &:hover {
+    opacity: 0.8;
+  }
+`;
+

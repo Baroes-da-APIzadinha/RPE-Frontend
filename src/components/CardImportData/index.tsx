@@ -1,4 +1,4 @@
-import { MdDownload, MdFileUpload } from "react-icons/md";
+import { MdDownload, MdFileUpload, MdRemove } from "react-icons/md";
 import Button from "../Button";
 import * as S from "./styles";
 import { useRef, useState } from "react";
@@ -19,22 +19,43 @@ export function CardImportData({
   onFileSelect,
 }: Props) {
   const [dragOver, setDragOver] = useState(false);
-  const [selectedFileName, setSelectedFileName] = useState<string | null>(null);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleFile = (file: File) => {
-    setSelectedFileName(file.name);
-    onFileSelect(file);
+  const handleFile = (fileList: FileList) => {
+    const newFiles = Array.from(fileList).filter(
+      (file) => !selectedFiles.some((f) => f.name === file.name)
+    );
+
+    const updatedFiles = [...selectedFiles, ...newFiles];
+    setSelectedFiles(updatedFiles);
+    newFiles.forEach((file) => onFileSelect(file));
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files?.[0]) handleFile(e.target.files[0]);
+    if (e.target.files?.length) {
+      handleFile(e.target.files);
+    }
   };
 
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     setDragOver(false);
-    if (e.dataTransfer.files?.[0]) handleFile(e.dataTransfer.files[0]);
+    if (e.dataTransfer.files?.length) {
+      handleFile(e.dataTransfer.files);
+    }
+  };
+
+  const handleRemoveFile = (name: string) => {
+    const updated = selectedFiles.filter((file) => file.name !== name);
+    setSelectedFiles(updated);
+  };
+
+  const formatFileSize = (size: number): string => {
+    if (size < 1024) return `${size} B`;
+    if (size < 1024 * 1024) return `${(size / 1024).toFixed(1)} KB`;
+    return `${(size / (1024 * 1024)).toFixed(1)} MB`;
   };
 
   return (
@@ -65,30 +86,44 @@ export function CardImportData({
         onDragLeave={() => setDragOver(false)}
         dragover={dragOver}
       >
-        {!selectedFileName ? (
-          <>
-            <S.Icon>
-              <MdFileUpload />
-            </S.Icon>
-            <S.DragText>
-              Arraste o arquivo aqui
-              <br />
-              ou clique para selecionar
-            </S.DragText>
-            <label>
-              <S.FileInput type="file"  ref={fileInputRef} onChange={handleFileChange} />
-              <Button variant="outline" onClick={() => fileInputRef.current?.click()} >Selecionar Arquivo</Button>
-            </label>
-          </>
-        ) : (
-          <S.SelectedFileWrapper>
-            <S.FileName> {selectedFileName}</S.FileName>
-            <Button variant="outline" onClick={() => setSelectedFileName(null)}>
-              Remover Arquivo
-            </Button>
-          </S.SelectedFileWrapper>
-        )}
+        <S.Icon>
+          <MdFileUpload />
+        </S.Icon>
+        <S.DragText>
+          Arraste o arquivo aqui
+          <br />
+          ou clique para selecionar
+        </S.DragText>
+        <label>
+          <S.FileInput
+            type="file"
+            multiple
+            ref={fileInputRef}
+            onChange={handleFileChange}
+          />
+          <Button
+            variant="outline"
+            onClick={() => fileInputRef.current?.click()}
+          >
+            Selecionar Arquivo
+          </Button>
+        </label>
       </S.DropArea>
+      {selectedFiles.length > 0 && (
+        <S.FileList>
+          {selectedFiles.map((file) => (
+            <S.FileItem key={file.name}>
+              <div>
+                <S.FileName>{file.name}</S.FileName>
+                <S.FileSize>{formatFileSize(file.size)}</S.FileSize>
+              </div>
+              <S.RemoveButton onClick={() => handleRemoveFile(file.name)}>
+                <MdRemove />
+              </S.RemoveButton>
+            </S.FileItem>
+          ))}
+        </S.FileList>
+      )}
     </S.Container>
   );
 }
