@@ -123,13 +123,13 @@ export function CycleHistory() {
                 <S.StatusTag
                   $status={ciclo.status}
                   style={{
-                    color: ciclo.status === "AGENDADO" ? theme.colors.text.iconMuted : "inherit",
-                    borderColor: ciclo.status === "AGENDADO" ? theme.colors.text.iconMuted : "transparent",
+                    color: ciclo.status === "AGENDADO" ? theme.colors.text.iconMuted : ciclo.status === "FECHADO" ? theme.colors.success.text : theme.colors.warning,
+                    borderColor: ciclo.status === "AGENDADO" ? theme.colors.text.iconMuted : ciclo.status === "FECHADO" ? theme.colors.success.text : theme.colors.warning,
                     backgroundColor:
                       ciclo.status === "AGENDADO"
                         ? theme.colors.lightGray
                         : ciclo.status === "FECHADO"
-                        ? theme.colors.success.default
+                        ? theme.colors.success.light
                         : theme.colors.warning,
                   }}
                 >
