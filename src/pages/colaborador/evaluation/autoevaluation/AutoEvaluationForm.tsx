@@ -7,16 +7,41 @@ import ButtonFrame from "@/components/ButtonFrame/index.tsx";
 import { FaPaperPlane } from "react-icons/fa";
 import Button from "@/components/Button/index.tsx";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 const criteriosComportamento = [
-  { id: "sentimento_dono", nome: "Sentimento de Dono", subtitle: "Demonstrou responsabilidade e comprometimento com os resultados" },
-  { id: "colaboracao", nome: "Colaboração", subtitle: "Trabalhou bem em equipe e ajudou colegas" },
-  { id: "iniciativa", nome: "Iniciativa", subtitle: "Tomou iniciativa para resolver problemas" },
+  {
+    id: "sentimento_dono",
+    nome: "Sentimento de Dono",
+    subtitle: "Demonstrou responsabilidade e comprometimento com os resultados",
+  },
+  {
+    id: "colaboracao",
+    nome: "Colaboração",
+    subtitle: "Trabalhou bem em equipe e ajudou colegas",
+  },
+  {
+    id: "iniciativa",
+    nome: "Iniciativa",
+    subtitle: "Tomou iniciativa para resolver problemas",
+  },
 ];
 const criteriosLogistica = [
-  { id: "organizacao", nome: "Organização", subtitle: "Manteve processos organizados e eficientes" },
-  { id: "pontualidade", nome: "Pontualidade", subtitle: "Cumpriu prazos e horários" },
-  { id: "gestao_recursos", nome: "Gestão de Recursos", subtitle: "Utilizou recursos de forma responsável" },
+  {
+    id: "organizacao",
+    nome: "Organização",
+    subtitle: "Manteve processos organizados e eficientes",
+  },
+  {
+    id: "pontualidade",
+    nome: "Pontualidade",
+    subtitle: "Cumpriu prazos e horários",
+  },
+  {
+    id: "gestao_recursos",
+    nome: "Gestão de Recursos",
+    subtitle: "Utilizou recursos de forma responsável",
+  },
 ];
 
 export function AutoEvaluationForm() {
@@ -89,7 +114,10 @@ export function AutoEvaluationForm() {
       />
       <Title>Sua autoavaliação</Title>
 
-      <EvaluationFrame title="Comportamento" count={`${comportamentoPreenchido}/${totalComportamento}`}>
+      <EvaluationFrame
+        title="Comportamento"
+        count={`${comportamentoPreenchido}/${totalComportamento}`}
+      >
         {criteriosComportamento.map((c) => (
           <Controller
             key={c.id}
@@ -108,7 +136,10 @@ export function AutoEvaluationForm() {
         ))}
       </EvaluationFrame>
 
-      <EvaluationFrame title="Logística" count={`${logisticaPreenchido}/${totalLogistica}`}>
+      <EvaluationFrame
+        title="Logística"
+        count={`${logisticaPreenchido}/${totalLogistica}`}
+      >
         {criteriosLogistica.map((c) => (
           <Controller
             key={c.id}

@@ -114,6 +114,14 @@ export const ModalText = styled.p`
   color: ${({theme}) => theme.colors.text.primary};
   margin-bottom: 0.4rem;
 `
+
+export const ModalSubText = styled.p`
+  font-size: ${({theme}) => theme.font.sizes.xxsmall};
+  font-weight: ${({theme}) => theme.font.medium};
+  color: ${({theme}) => theme.colors.text.secondary};
+  margin-bottom: 0.4rem;
+`;
+
 export const ModalCheckbox = styled.div`
   display: grid;
   grid-template-columns: repeat(2, 1fr);

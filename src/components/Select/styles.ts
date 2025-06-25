@@ -12,9 +12,11 @@ export const Label = styled.label`
   display: block;
 `;
 
-export const SelectBox = styled.div<{ $open: boolean }>`
+export const SelectBox = styled.div<{ $open: boolean; error?: boolean }>`
+  
   background: ${({ theme }) => theme.colors.button.outline.default};
-  border: 1px solid ${({ theme }) => theme.colors.border};
+  border: 1px solid ${({ error, theme }) =>  error ? theme.colors.error.default : theme.colors.border};
+  
   border-radius: ${({ theme }) => theme.border.radius.xsmall};
   padding: 0.8rem 1.2rem;
   font-size: ${({ theme }) => theme.font.sizes.small};
@@ -22,6 +24,10 @@ export const SelectBox = styled.div<{ $open: boolean }>`
   justify-content: space-between;
   align-items: center;
   cursor: pointer;
+
+  &:focus-within {
+    border-color: ${({ theme }) => theme.colors.primary.default};
+  }
 `;
 
 export const Chevron = styled.span<{ $open: boolean }>`

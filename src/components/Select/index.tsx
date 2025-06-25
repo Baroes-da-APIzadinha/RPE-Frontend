@@ -11,10 +11,11 @@ type Props = {
   placeholder?: string;
   options: Option[];
   value: string | null;
+  error?: boolean;
   onChange: (value: string) => void;
 };
 
-export function Select({ label, placeholder = "Selecione", options, value, onChange }: Props) {
+export function Select({ label, placeholder = "Selecione", options, value, onChange, error }: Props) {
   const [open, setOpen] = useState(false);
   const selected = options.find(opt => opt.value === value);
 
@@ -22,7 +23,7 @@ export function Select({ label, placeholder = "Selecione", options, value, onCha
     <S.Container>
       {label && <S.Label>{label}</S.Label>}
 
-      <S.SelectBox onClick={() => setOpen(!open)} $open={open}>
+      <S.SelectBox onClick={() => setOpen(!open)} $open={open} error={error}>
         {selected?.label || placeholder}
         <S.Chevron $open={open}>▾</S.Chevron>
       </S.SelectBox>

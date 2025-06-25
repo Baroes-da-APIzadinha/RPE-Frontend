@@ -12,9 +12,10 @@ export const Label = styled.label`
   font-size: 1rem;
 `
 
-export const Input = styled.input`
+export const Input = styled.input<{ error?: boolean }>`
   padding: 0.75rem 1rem;
-  border: 1px solid ${({ theme }) => theme.colors.border};
+  border: 1px solid ${({ error, theme }) =>  error ? theme.colors.error.default : theme.colors.border};
+
   border-radius: 6px;
   font-size: 1rem;
   background: ${({ theme }) => theme.colors.surface.alt};

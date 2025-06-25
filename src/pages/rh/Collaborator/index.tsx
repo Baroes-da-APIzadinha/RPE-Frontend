@@ -14,6 +14,7 @@ import {
   MdOutlinePersonAdd,
 } from "react-icons/md";
 import { SearchInput } from "@/components/SearchInput";
+import { toast } from "sonner";
 
 export function RhCollaborator() {
   const [busca, setBusca] = useState("");
@@ -25,6 +26,15 @@ export function RhCollaborator() {
   const [unidade, setUnidade] = useState<string | null>(null);
   const [gestor, setGestor] = useState<string | null>(null);
   const [tiposUsuario, setTiposUsuario] = useState<string[]>([]);
+  const [errors, setErrors] = useState({
+    name: false,
+    cargo: false,
+    email: false,
+    trilha: false,
+    unidade: false,
+    gestor: false,
+    tiposUsuario: false,
+  });
 
   const [colaboradores, setColaboradores] = useState([
     {
@@ -34,6 +44,7 @@ export function RhCollaborator() {
       track: "Tecnologia",
       unit: "São Paulo",
       manager: "Maria Oliveira",
+      userType: "colaborador",
     },
     {
       name: "Gustavo Silva",
@@ -42,6 +53,7 @@ export function RhCollaborator() {
       track: "Produto",
       unit: "Remoto",
       manager: "Lucas Menezes",
+      userType: "rh",
     },
     {
       name: "Aline Barbosa",
@@ -50,6 +62,7 @@ export function RhCollaborator() {
       track: "Dados",
       unit: "Belo Horizonte",
       manager: "João Gomes",
+      userType: "comite",
     },
   ]);
 
@@ -87,16 +100,22 @@ export function RhCollaborator() {
   ];
 
   const handleSubmit = () => {
-    if (
-      !name ||
-      !email ||
-      !cargo ||
-      !trilha ||
-      !unidade ||
-      !gestor ||
-      tiposUsuario.length === 0
-    ) {
-      alert("Preencha todos os campos para adicionar o colaborador.");
+    const newErrors = {
+      name: !name,
+      cargo: !cargo,
+      email: !email,
+      trilha: !trilha,
+      unidade: !unidade,
+      gestor: !gestor,
+      tiposUsuario: tiposUsuario.length === 0,
+    };
+
+    setErrors(newErrors);
+
+    const hasErrors = Object.values(newErrors).some(Boolean);
+
+    if (hasErrors) {
+      toast.error("Preencha todos os campos obrigatórios.");
       return;
     }
 
@@ -107,9 +126,11 @@ export function RhCollaborator() {
       track: trilha,
       unit: unidade,
       manager: gestores.find((g) => g.value === gestor)?.label || gestor,
+      userType: null,
     };
 
     setColaboradores((prev) => [...prev, novoColaborador]);
+    toast.success("Colaborador adicionado com sucesso!");
 
     resetForm();
     setShowModal(false);
@@ -157,12 +178,12 @@ export function RhCollaborator() {
                   onChange={(e) => setBusca(e.target.value)}
                 />
 
-                <Button variant="outline">
+                {/* <Button variant="outline">
                   <MdFileDownload /> Exportar
                 </Button>
                 <Button variant="outline">
                   <MdFileUpload /> Importar
-                </Button>
+                </Button> */}
               </S.Actions>
             </S.FiltersRow>
 
@@ -204,39 +225,43 @@ export function RhCollaborator() {
       >
         <S.ModalContent>
           <div>
-            <S.ModalText>Nome Completo:</S.ModalText>
+            <S.ModalText>Nome Completo:*</S.ModalText>
             <Input
               placeholder="Digite o nome completo"
               value={name}
               onChange={(e) => setName(e.target.value)}
+              error={errors.name}
             />
           </div>
           <S.ModalRow>
             <S.ModalDiv>
-              <S.ModalText>Cargo:</S.ModalText>
+              <S.ModalText>Cargo:*</S.ModalText>
               <Input
                 placeholder="Digite o cargo"
                 value={cargo}
                 onChange={(e) => setCargo(e.target.value)}
+                error={errors.cargo}
               />
             </S.ModalDiv>
             <S.ModalDiv>
-              <S.ModalText>Email:</S.ModalText>
+              <S.ModalText>Email:*</S.ModalText>
               <Input
                 placeholder="email@rocketcorp.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                error={errors.email}
               />
             </S.ModalDiv>
           </S.ModalRow>
           <S.ModalRow>
             <S.ModalDiv>
-              <S.ModalText>Trilha:</S.ModalText>
+              <S.ModalText>Trilha:*</S.ModalText>
               <Select
                 placeholder="Selecione a trilha"
                 value={trilha}
                 onChange={setTrilha}
                 options={trilhas}
+                error={errors.trilha}
               />
             </S.ModalDiv>
             <S.ModalDiv>
@@ -246,22 +271,25 @@ export function RhCollaborator() {
                 value={unidade}
                 onChange={setUnidade}
                 options={unidades}
+                error={errors.unidade}
               />
             </S.ModalDiv>
           </S.ModalRow>
           <S.ModalRow>
             <S.ModalDiv>
-              <S.ModalText>Gestor:</S.ModalText>
+              <S.ModalText>Gestor:*</S.ModalText>
               <Select
                 placeholder="Selecione o gestor"
                 value={gestor}
                 onChange={setGestor}
                 options={gestores}
+                error={errors.gestor}
               />
             </S.ModalDiv>
           </S.ModalRow>
           <div>
-            <S.ModalText>Tipo de Usuário:</S.ModalText>
+            <S.ModalText>Tipo de Usuário:*</S.ModalText>
+            <S.ModalSubText>Selecione pelo menos um tipo de usuário.</S.ModalSubText>
             <S.ModalCheckbox>
               {tiposDeUsuario.map((tipo) => (
                 <Checkbox
