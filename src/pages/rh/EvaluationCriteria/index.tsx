@@ -152,7 +152,6 @@ export function EvaluationCriteria() {
       resetForm();
       setShowModal(false);
       toast.success("Critério atualizado com sucesso!");
-
     }
   };
 
@@ -175,12 +174,26 @@ export function EvaluationCriteria() {
           <S.Header>
             <Title>Gerenciamento de Critérios</Title>
             <S.HeaderButtons>
-              {/* <Button variant="outline">
-                <MdFileDownload /> Exportar
-              </Button> */}
-              <Button onClick={() => setShowModal(true)}>
-                <MdAdd /> Adicionar Critério
-              </Button>
+              <S.DesktopButtons>
+                <Button onClick={() => setShowModal(true)}>
+                  <MdAdd /> Adicionar Critério
+                </Button>
+              </S.DesktopButtons>
+
+              <S.MobileActions>
+                <DropdownActions
+                  title="Opções"
+                  orientation="vertical"
+                  position="bottom"
+                  actions={[
+                    {
+                      label: "Adicionar Critério",
+                      onClick: () => setShowModal(true),
+                      icon: <MdAdd />,
+                    },
+                  ]}
+                />
+              </S.MobileActions>
             </S.HeaderButtons>
           </S.Header>
 
@@ -216,66 +229,68 @@ export function EvaluationCriteria() {
               ]}
             />
 
-            <S.Table>
-              <thead>
-                <tr>
-                  <th>Nome</th>
-                  <th>Descrição</th>
-                  <th>Trilhas</th>
-                  <th>Peso</th>
-                  <th>Ações</th>
-                </tr>
-              </thead>
-              <tbody>
-                {criteriosFiltrados.map((criterio, index) => (
-                  <tr key={index}>
-                    <td>{criterio.nome}</td>
-                    <td>{criterio.descricao}</td>
-                    <td>
-                      <S.Badge>
-                        {criterio.trilhas.length === 6
-                          ? "Todas"
-                          : criterio.trilhas.join(", ")}
-                      </S.Badge>
-                    </td>
-                    <td>
-                      {pesoEditandoIndex === index ? (
-                        <Select
-                          options={pesos}
-                          value={criterio.peso}
-                          onChange={(novoPeso) =>
-                            handlePesoChange(index, novoPeso)
-                          }
-                        />
-                      ) : (
-                        <span>{criterio.peso}</span>
-                      )}
-                    </td>
-                    <td>
-                      <DropdownActions
-                        actions={[
-                          {
-                            label: "Editar",
-                            onClick: () => handleEdit(criterio, index),
-                          },
-                          {
-                            label: "Ajustar peso",
-                            onClick: () => setPesoEditandoIndex(index),
-                          },
-                          {
-                            label: "Desativar",
-                            onClick: () => {
-                              /* ação de desativar */
-                            },
-                            danger: true,
-                          },
-                        ]}
-                      />
-                    </td>
+            <div>
+              <S.Table>
+                <thead>
+                  <tr>
+                    <th>Nome</th>
+                    <th>Descrição</th>
+                    <th>Trilhas</th>
+                    <th>Peso</th>
+                    <th>Ações</th>
                   </tr>
-                ))}
-              </tbody>
-            </S.Table>
+                </thead>
+                <tbody>
+                  {criteriosFiltrados.map((criterio, index) => (
+                    <tr key={index}>
+                      <td data-label="Nome">{criterio.nome}</td>
+                      <td data-label="Descrição">{criterio.descricao}</td>
+                      <td data-label="Trilhas">
+                        <S.Badge>
+                          {criterio.trilhas.length === 6
+                            ? "Todas"
+                            : criterio.trilhas.join(", ")}
+                        </S.Badge>
+                      </td>
+                      <td data-label="Peso">
+                        {pesoEditandoIndex === index ? (
+                          <Select
+                            options={pesos}
+                            value={criterio.peso}
+                            onChange={(novoPeso) =>
+                              handlePesoChange(index, novoPeso)
+                            }
+                          />
+                        ) : (
+                          <span>{criterio.peso}</span>
+                        )}
+                      </td>
+                      <td data-label="Ações">
+                        <DropdownActions
+                          actions={[
+                            {
+                              label: "Editar",
+                              onClick: () => handleEdit(criterio, index),
+                            },
+                            {
+                              label: "Ajustar peso",
+                              onClick: () => setPesoEditandoIndex(index),
+                            },
+                            {
+                              label: "Desativar",
+                              onClick: () => {
+                                /* ação de desativar */
+                              },
+                              danger: true,
+                            },
+                          ]}
+                        />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </S.Table>
+            </div>
           </Card>
         </S.Main>
 

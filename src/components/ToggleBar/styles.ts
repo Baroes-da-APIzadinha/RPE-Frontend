@@ -8,6 +8,10 @@ export const ToggleGroup = styled.div`
   background: ${({ theme }) => theme.colors.lightGray};
   padding: 0.4rem;
   border-radius: ${({ theme }) => theme.border.radius.xsmall};
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
 `;
 
 export const ToggleItem = styled.button<{ active: boolean }>`
@@ -28,4 +32,9 @@ export const ToggleItem = styled.button<{ active: boolean }>`
   border-radius: ${({ theme }) => theme.border.radius.xsmall};
   cursor: pointer;
   transition: background 0.2s ease;
+
+  @media (max-width: 768px) {
+    width: 100%;
+  }
 `;
+
