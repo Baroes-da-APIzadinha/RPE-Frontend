@@ -9,7 +9,10 @@ export const Container = styled.div`
   border: 1px solid ${({ theme }) => theme.colors.border};
   border-radius: ${({ theme }) => theme.border.radius.medium};
   padding: 2rem;
+
   width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 `;
 
 export const Header = styled.div`
