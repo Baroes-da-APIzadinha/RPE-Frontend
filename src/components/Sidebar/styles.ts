@@ -1,7 +1,41 @@
 import styled, { css } from 'styled-components'
 import theme from '../../styles/theme'
 
-export const Container = styled.aside`
+export const MenuButtonOutside = styled.button`
+  display: none;
+  position: fixed;
+  top: 1.5rem;
+  left: 1.5rem;
+  z-index: 1001;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: ${theme.colors.primary.default};
+
+  @media (max-width: 768px) {
+    display: flex;
+  }
+`;
+
+export const MenuButtonInside = styled.button`
+  display: none;
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: ${theme.colors.primary.default};
+
+  @media (max-width: 768px) {
+    display: flex;
+  }
+`;
+
+
+
+
+export const Container = styled.aside<{ $open?: boolean }>`
   width: 260px;
   height: 100vh;
   background-color: ${theme.colors.surface.default};
@@ -9,6 +43,16 @@ export const Container = styled.aside`
   display: flex;
   flex-direction: column;
   border-right: 1px solid ${theme.colors.border};
+
+  @media (max-width: 768px) {
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100vh;
+    z-index: 1000;
+    transform: ${({ $open }) => ($open ? 'translateX(0)' : 'translateX(-100%)')};
+    transition: transform 0.3s;
+  }
 `
 
 export const ScrollArea = styled.div`
