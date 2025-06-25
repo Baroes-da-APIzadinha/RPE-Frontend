@@ -2,14 +2,43 @@ import Button from "@/components/Button/index.tsx";
 import * as S from "./styles.ts";
 import { Sidebar } from "@/components/Sidebar/index.tsx";
 import { Title } from "@/components/Title/index.tsx";
-import { MdHistory } from "react-icons/md";
+import { MdAssignment, MdChecklist, MdGroup, MdHistory } from "react-icons/md";
 import { CardImportHistory } from "@/components/CardImportHistory/index.tsx";
 import { CardImportData } from "@/components/CardImportData/index.tsx";
 import { useState } from "react";
-import { ModalSpecifyImport } from "@/components/ModalSpecifyImport/index.tsx";
+import { Modal } from "@/components/Modal/index.tsx";
+import { ToggleBar } from "@/components/ToggleBar/index.tsx";
+
+type TipoImportacao = "colaboradores" | "avaliacoes" | "criterios";
 
 export function Import() {
   const [showModal, setShowModal] = useState(false);
+  const [tipo, setTipo] = useState<TipoImportacao>("colaboradores");
+
+  const labels = {
+    colaboradores: "Importar Colaboradores",
+    avaliacoes: "Importar Avaliações",
+    criterios: "Importar Critérios",
+  };
+
+  const descricoes = {
+    colaboradores:
+      "Importe dados de colaboradores em massa através de planilha Excel",
+    avaliacoes:
+      "Importe dados de avaliações de ciclos anteriores para análise de tendências",
+    criterios:
+      "Importe critérios de avaliação específicos por trilha ou unidade",
+  };
+
+  const formatos = {
+    colaboradores: "Nome, Email, Cargo, Trilha, Unidade, Gestor",
+    avaliacoes: "Colaborador, Ciclo, Critério, Nota, Justificativa, Avaliador",
+    criterios: "Nome, Descrição, Categoria, Peso, Trilhas Aplicáveis",
+  };
+
+  const handleSelect = (file: File) => {
+    console.log(`Importando ${tipo}:`, file);
+  };
 
   return (
     <S.Wrapper>
@@ -68,10 +97,44 @@ export function Import() {
           />
         </S.CardContainer>
       </S.Main>
-      <ModalSpecifyImport
+      <Modal
         open={showModal}
         onClose={() => setShowModal(false)}
-      />
+        title="Importar dados"
+        description="Escolha o tipo de importação que deseja realizar"
+        icon={<MdChecklist />}
+        iconColor="info"
+      >
+        <ToggleBar
+          value={tipo}
+          onChange={(value) => setTipo(value as TipoImportacao)}
+          items={[
+            {
+              value: "colaboradores",
+              label: "Colaboradores",
+              icon: <MdGroup />,
+            },
+            {
+              value: "avaliacoes",
+              label: "Avaliações",
+              icon: <MdAssignment />,
+            },
+            {
+              value: "criterios",
+              label: "Critérios",
+              icon: <MdChecklist />,
+            },
+          ]}
+        />
+
+        <CardImportData
+          title={labels[tipo]}
+          subtitle={descricoes[tipo]}
+          formatoEsperado={formatos[tipo]}
+          onDownloadTemplate={() => console.log("Baixar template")}
+          onFileSelect={handleSelect}
+        />
+      </Modal>
     </S.Wrapper>
   );
 }
