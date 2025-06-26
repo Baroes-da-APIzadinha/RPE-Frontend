@@ -1,4 +1,4 @@
-import * as S from "./styles.ts";
+import * as S from './styles.ts'
 import CardBox from "@/components/CardBox";
 import { MdOutlineInsertInvitation } from "react-icons/md";
 import { MdOutlineTimelapse } from "react-icons/md";
