@@ -4,7 +4,7 @@ import React from "react";
 type ButtonProps = {
   children: React.ReactNode;
   onClick?: React.MouseEventHandler<HTMLButtonElement>;
-  variant?: "default" | "outline" | "primary" | "secondary";
+  variant?: "default" | "outline" | "primary" | "secondary" | "danger";
 };
 
 function Button({ children, onClick, variant = 'default', ...props }: ButtonProps) {

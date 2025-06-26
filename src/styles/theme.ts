@@ -78,8 +78,10 @@ export default {
 
     error: {
       default: "#E5484D",
+      hover: "#C63C40",
       light: "#FFE9EA",
-      text: "#8C1F24"
+      text: "#8C1F24",
+      onError: "#FDF2F2",
     },
 
     info: {
