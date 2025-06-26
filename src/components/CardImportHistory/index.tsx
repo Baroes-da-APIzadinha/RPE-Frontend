@@ -9,7 +9,6 @@ type ImportItem = {
   erros: number;
 };
 
-
 type Props = {
   data: ImportItem[];
 };
@@ -36,14 +35,14 @@ export function CardImportHistory({ data }: Props) {
         <tbody>
           {data.map((item, idx) => (
             <tr key={idx}>
-              <td>{item.arquivo}</td>
-              <td>{item.tipo}</td>
-              <td>{item.data}</td>
-              <td>
+              <td data-label="Arquivo">{item.arquivo}</td>
+              <td data-label="Tipo">{item.tipo}</td>
+              <td data-label="Data">{item.data}</td>
+              <td data-label="Status">
                 <S.Status status={item.status}>{item.status}</S.Status>
               </td>
-              <td>{item.registros}</td>
-              <td>
+              <td data-label="Registros">{item.registros}</td>
+              <td data-label="Erros">
                 <S.Erros valor={item.erros}>{item.erros}</S.Erros>
               </td>
             </tr>

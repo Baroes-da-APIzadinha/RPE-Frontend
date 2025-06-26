@@ -1,5 +1,9 @@
 import styled from "styled-components";
 
+interface DropdownProps {
+  $position?: "top" | "bottom";
+}
+
 export const Container = styled.div`
   position: relative;
 `;
@@ -13,19 +17,30 @@ export const IconButton = styled.button`
   border-radius: 4px;
 `;
 
-export const Dropdown = styled.div`
+export const Dropdown = styled.div<DropdownProps>`
   position: absolute;
   right: 0;
-  bottom: 100%;
+
+  ${({ $position = "top" }) =>
+    $position === "top"
+      ? `
+        bottom: 100%;
+        margin-bottom: 0.4rem;
+      `
+      : `
+        top: 100%;
+        margin-top: 0.4rem;
+      `}
+
   background: ${({ theme }) => theme.colors.surface.default};
   border: 1px solid ${({ theme }) => theme.colors.border};
   border-radius: 8px;
-  margin-bottom: 0.4rem;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   min-width: 160px;
   z-index: 10;
   padding: 0.4rem 0;
 `;
+
 
 export const Title = styled.div`
   font-weight: ${({ theme }) => theme.font.semibold};

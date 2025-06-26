@@ -27,20 +27,58 @@ export const Table = styled.table`
   width: 100%;
   border-collapse: collapse;
 
+  th,
+  td {
+    padding: 0.8rem;
+    font-size: ${({ theme }) => theme.font.sizes.small};
+  }
+
   th {
     text-align: left;
-    padding: 0.8rem;
     font-weight: ${({ theme }) => theme.font.medium};
-    font-size: ${({ theme }) => theme.font.sizes.small};
     color: ${({ theme }) => theme.colors.text.secondary};
   }
 
   td {
-    padding: 0.8rem;
-    font-size: ${({ theme }) => theme.font.sizes.small};
     border-top: 1px solid ${({ theme }) => theme.colors.border};
   }
+
+  @media (max-width: 768px) {
+    thead {
+      display: none;
+    }
+
+    tr {
+      display: block;
+      margin-bottom: 1.6rem;
+      border: 1px solid ${({ theme }) => theme.colors.border};
+      border-radius: ${({ theme }) => theme.border.radius.xsmall};
+      padding: 1rem;
+      background: ${({ theme }) => theme.colors.surface.default};
+    }
+
+    td {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border: none;
+      padding: 0.4rem 0;
+    }
+
+    td::before {
+      content: attr(data-label);
+      font-weight: ${({ theme }) => theme.font.bold};
+      color: ${({ theme }) => theme.colors.text.secondary};
+    }
+
+    td:nth-child(2),
+    td:nth-child(5),
+    td:nth-child(6) {
+      display: none;
+    }
+  }
 `;
+
 
 export const Status = styled.span<{ status: "Sucesso" | "Erro" | "Em Andamento" }>`
   padding: 0.3rem 0.8rem;

@@ -28,11 +28,11 @@ export function Modal({
     <S.Overlay>
       <S.Container>
         <S.Header>
-            {icon && (
-              <S.Icon color={iconColor} size={iconSize}>
-                {icon}
-              </S.Icon>
-            )}
+          {icon && (
+            <S.Icon color={iconColor} size={iconSize}>
+              {icon}
+            </S.Icon>
+          )}
           <S.TitleContainer>
             {title && <S.Title>{title}</S.Title>}
             {description && <S.Subtitle>{description}</S.Subtitle>}
