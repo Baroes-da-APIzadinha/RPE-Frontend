@@ -14,6 +14,7 @@ import { CycleHistory } from "@/pages/comite/CycleHistory";
 import { MananegerDashboard } from "@/pages/manager/Dashboard";
 import { ManagerTeam } from "@/pages/manager/Team";
 import  ProtectedRoute  from "./protectedRoute";
+import PublicRoute from "./publicRoute";
 
 
 function AppRoutes() {
@@ -21,7 +22,11 @@ function AppRoutes() {
     <BrowserRouter>
       <Routes>
         {/* Rota pública */}
-        <Route path="/" element={<Login />} />
+          <Route
+            path="/"
+            element={<PublicRoute element={<Login />} />}
+          />
+
 
 
         <Route element={<ProtectedRoute />}>
@@ -45,7 +50,7 @@ function AppRoutes() {
 
         {/* Comitê */}
         <Route path="/comite/history" element={<CycleHistory />} />
-        
+
         </Route>
       </Routes>
     </BrowserRouter>
