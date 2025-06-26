@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import * as S from "./styles.ts";
 import Input from "@/components/Input";
 import Button from "@/components/Button";
@@ -6,17 +6,15 @@ import { Select } from "@/components/Select";
 import { Modal } from "@/components/Modal";
 import { Sidebar } from "@/components/Sidebar";
 import { Title } from "@/components/Title";
-import { MdAdd, MdAssignment, MdFileDownload } from "react-icons/md";
+import { MdAdd, MdAssignment } from "react-icons/md";
 import { Checkbox } from "@/components/CheckBox/index.tsx";
 import { Card } from "@/components/Card/index.tsx";
 import { ToggleBar } from "@/components/ToggleBar/index.tsx";
 import { DropdownActions } from "@/components/DropdownActions/index.tsx";
-import { criteriosIniciais } from "@/data/crietrios.ts";
-import type { Criterio } from "@/types/Criterio";
 import { toast } from "sonner";
 import theme from "@/styles/theme.ts";
-
-type TipoCriterio = "comportamento" | "execucao" | "gestao";
+import { useCriterios } from "@/hooks/useCriterios";
+import type { Criterio } from "@/services/HTTP/criterio.ts";
 
 export function EvaluationCriteria() {
   const [showModal, setShowModal] = useState(false);
@@ -25,24 +23,40 @@ export function EvaluationCriteria() {
   const [categoria, setCategoria] = useState<string | null>(null);
   const [peso, setPeso] = useState<string | null>(null);
   const [trilhas, setTrilhas] = useState<string[]>([]);
-  const [tipo, setTipo] = useState<TipoCriterio>("comportamento");
-  const [criterios, setCriterios] = useState<Criterio[]>(criteriosIniciais);
-  const [criterioEditando, setCriterioEditando] = useState<Criterio | null>(
-    null
-  );
-  const [editIndex, setEditIndex] = useState<number | null>(null);
-  const [pesoEditandoIndex, setPesoEditandoIndex] = useState<number | null>(
-    null
-  );
+  const [editId, setEditId] = useState<string | null>(null);
+  const [tipo, setTipo] = useState("comportamento");
   const [camposErro, setCamposErro] = useState({
     nome: false,
     descricao: false,
     categoria: false,
     peso: false,
-    trilhas: false,
   });
+  const [criterioParaRemover, setCriterioParaRemover] = useState<{
+    id: string;
+    nome: string;
+    pilar: string;
+  } | null>(null);
 
-  // Configurações para o formulário de adição de critério
+  const {
+    criterios,
+    fetchAllPilares,
+    adicionarCriterio,
+    editarCriterio,
+    removerCriterio,
+  } = useCriterios();
+
+  useEffect(() => {
+    fetchAllPilares();
+  }, [fetchAllPilares]);
+
+  const pilaresMap: Record<string, keyof typeof criterios> = {
+    comportamento: "Comportamento",
+    execucao: "Execucao",
+    gestao: "Gestao_e_Lideranca",
+  };
+
+  const criteriosFiltrados = criterios[pilaresMap[tipo]] || [];
+
   const categorias = [
     { label: "Comportamento", value: "comportamento" },
     { label: "Execução", value: "execucao" },
@@ -65,6 +79,21 @@ export function EvaluationCriteria() {
     "Liderança",
   ];
 
+  const resetForm = () => {
+    setNome("");
+    setDescricao("");
+    setCategoria(null);
+    setPeso(null);
+    setTrilhas([]);
+    setEditId(null);
+    setCamposErro({
+      nome: false,
+      descricao: false,
+      categoria: false,
+      peso: false,
+    });
+  };
+
   const toggleTrilha = (trilha: string) => {
     setTrilhas((prev) =>
       prev.includes(trilha)
@@ -73,13 +102,12 @@ export function EvaluationCriteria() {
     );
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const camposInvalidos = {
       nome: !nome.trim(),
       descricao: !descricao.trim(),
       categoria: !categoria,
       peso: !peso,
-      trilhas: trilhas.length === 0,
     };
 
     if (Object.values(camposInvalidos).some((v) => v)) {
@@ -90,76 +118,66 @@ export function EvaluationCriteria() {
       return;
     }
 
-    const novoCriterio: Criterio = {
-      nome,
-      descricao,
-      categoria: categoria as TipoCriterio,
-      peso: peso as string,
-      trilhas,
-    };
-
-    setCriterios((prev) => [...prev, novoCriterio]);
-    resetForm();
-    setShowModal(false);
-    toast.success("Critério criado com sucesso!");
-  };
-
-  const resetForm = () => {
-    setNome("");
-    setDescricao("");
-    setCategoria(null);
-    setPeso(null);
-    setTrilhas([]);
-    setCamposErro({
-      nome: false,
-      descricao: false,
-      categoria: false,
-      peso: false,
-      trilhas: false,
-    });
-  };
-
-  const criteriosFiltrados = criterios.filter(
-    (criterio) => criterio.categoria === tipo
-  );
-
-  // Lógica da página de gerenciamento de critérios
-
-  const handleEdit = (criterio: Criterio, index: number) => {
-    setCriterioEditando(criterio);
-    setEditIndex(index);
-    setNome(criterio.nome);
-    setDescricao(criterio.descricao);
-    setCategoria(criterio.categoria);
-    setPeso(criterio.peso);
-    setTrilhas(criterio.trilhas);
-    setShowModal(true);
-  };
-
-  const handleSaveEdit = () => {
-    if (editIndex !== null) {
-      const novos = [...criterios];
-      novos[editIndex] = {
-        nome,
+    try {
+      await adicionarCriterio({
+        nomeCriterio: nome,
         descricao,
-        categoria: categoria as TipoCriterio,
-        peso: peso as string,
-        trilhas,
-      };
-      setCriterios(novos);
-      setEditIndex(null);
-      setCriterioEditando(null);
+        pilar: pilaresMap[categoria!],
+        peso: peso!,
+        obrigatorio: true,
+      });
+      toast.success("Critério criado com sucesso!");
       resetForm();
       setShowModal(false);
-      toast.success("Critério atualizado com sucesso!");
+    } catch {
+      toast.error("Erro ao criar critério");
     }
   };
 
-  const handlePesoChange = (index: number, novoPeso: string) => {
-    const novos = [...criterios];
-    novos[index] = { ...novos[index], peso: novoPeso };
-    setCriterios(novos);
-    setPesoEditandoIndex(null);
+  const handleEdit = (criterio: Criterio) => {
+    setEditId(criterio.idCriterio);
+    setNome(criterio.nomeCriterio);
+    setDescricao(criterio.descricao);
+    setCategoria(
+      criterio.pilar === "Gestao_e_Lideranca"
+        ? "gestao"
+        : criterio.pilar.toLowerCase()
+    );
+    setPeso(Number(criterio.peso).toFixed(1));
+    setShowModal(true);
+  };
+
+  const handleSaveEdit = async () => {
+    if (!editId) return;
+
+    const camposInvalidos = {
+      nome: !nome.trim(),
+      descricao: !descricao.trim(),
+      categoria: !categoria,
+      peso: !peso,
+    };
+
+    if (Object.values(camposInvalidos).some((v) => v)) {
+      toast.error("Preencha todos os campos obrigatórios para salvar.");
+      setCamposErro(camposInvalidos);
+      return;
+    }
+
+    try {
+      await editarCriterio(editId, {
+        nomeCriterio: nome,
+        descricao,
+        pilar: pilaresMap[categoria!],
+        peso: peso!,
+        obrigatorio: true,
+      });
+
+      toast.success("Critério editado com sucesso!");
+      resetForm();
+      setShowModal(false);
+    } catch {
+      toast.error("Erro ao editar critério");
+    }
   };
 
   return (
@@ -179,7 +197,6 @@ export function EvaluationCriteria() {
                   <MdAdd /> Adicionar Critério
                 </Button>
               </S.DesktopButtons>
-
               <S.MobileActions>
                 <DropdownActions
                   title="Opções"
@@ -209,24 +226,12 @@ export function EvaluationCriteria() {
 
             <ToggleBar
               value={tipo}
-              onChange={(value) => setTipo(value as TipoCriterio)}
-              items={[
-                {
-                  value: "comportamento",
-                  label: "Comportamento",
-                  icon: <MdAssignment />,
-                },
-                {
-                  value: "execucao",
-                  label: "Execução",
-                  icon: <MdAssignment />,
-                },
-                {
-                  value: "gestao",
-                  label: "Gestão e Liderança",
-                  icon: <MdAssignment />,
-                },
-              ]}
+              onChange={(value) => setTipo(value as any)}
+              items={categorias.map(({ value, label }) => ({
+                value,
+                label,
+                icon: <MdAssignment />,
+              }))}
             />
 
             <div>
@@ -235,52 +240,31 @@ export function EvaluationCriteria() {
                   <tr>
                     <th>Nome</th>
                     <th>Descrição</th>
-                    <th>Trilhas</th>
                     <th>Peso</th>
                     <th>Ações</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {criteriosFiltrados.map((criterio, index) => (
-                    <tr key={index}>
-                      <td data-label="Nome">{criterio.nome}</td>
-                      <td data-label="Descrição">{criterio.descricao}</td>
-                      <td data-label="Trilhas">
-                        <S.Badge>
-                          {criterio.trilhas.length === 6
-                            ? "Todas"
-                            : criterio.trilhas.join(", ")}
-                        </S.Badge>
-                      </td>
-                      <td data-label="Peso">
-                        {pesoEditandoIndex === index ? (
-                          <Select
-                            options={pesos}
-                            value={criterio.peso}
-                            onChange={(novoPeso) =>
-                              handlePesoChange(index, novoPeso)
-                            }
-                          />
-                        ) : (
-                          <span>{criterio.peso}</span>
-                        )}
-                      </td>
-                      <td data-label="Ações">
+                  {criteriosFiltrados.map((criterio) => (
+                    <tr key={criterio.idCriterio}>
+                      <td>{criterio.nomeCriterio}</td>
+                      <td>{criterio.descricao}</td>
+                      <td>{Number(criterio.peso).toFixed(1)}</td>
+                      <td>
                         <DropdownActions
                           actions={[
                             {
                               label: "Editar",
-                              onClick: () => handleEdit(criterio, index),
+                              onClick: () => handleEdit(criterio),
                             },
                             {
-                              label: "Ajustar peso",
-                              onClick: () => setPesoEditandoIndex(index),
-                            },
-                            {
-                              label: "Desativar",
-                              onClick: () => {
-                                /* ação de desativar */
-                              },
+                              label: "Remover",
+                              onClick: () =>
+                                setCriterioParaRemover({
+                                  id: criterio.idCriterio,
+                                  nome: criterio.nomeCriterio,
+                                  pilar: criterio.pilar,
+                                }),
                               danger: true,
                             },
                           ]}
@@ -299,14 +283,10 @@ export function EvaluationCriteria() {
           onClose={() => {
             resetForm();
             setShowModal(false);
-            setEditIndex(null);
-            setCriterioEditando(null);
           }}
-          title={
-            editIndex !== null ? "Editar Critério" : "Adicionar Novo Critério"
-          }
+          title={editId ? "Editar Critério" : "Adicionar Novo Critério"}
           description={
-            editIndex !== null
+            editId
               ? "Modifique as informações do critério"
               : "Defina um novo critério de avaliação"
           }
@@ -318,11 +298,7 @@ export function EvaluationCriteria() {
                 placeholder="Ex: Comunicação Efetiva"
                 value={nome}
                 onChange={(e) => setNome(e.target.value)}
-                style={
-                  camposErro.nome
-                    ? { borderColor: theme.colors.error.default }
-                    : {}
-                }
+                error={camposErro.nome}
               />
             </div>
 
@@ -364,7 +340,7 @@ export function EvaluationCriteria() {
               </S.ModalSelect>
             </S.ModalSelectsRow>
 
-            <div>
+            {/* <div>
               <S.ModalText>Aplicável às Trilhas</S.ModalText>
               <S.ModalSubText>Selecione no mínimo 1 opção.</S.ModalSubText>
               <S.ModalCheckbox>
@@ -388,7 +364,7 @@ export function EvaluationCriteria() {
                   }
                 />
               </S.ModalCheckbox>
-            </div>
+            </div> */}
 
             <S.ModalButtons>
               <Button
@@ -396,19 +372,49 @@ export function EvaluationCriteria() {
                 onClick={() => {
                   resetForm();
                   setShowModal(false);
-                  setEditIndex(null);
-                  setCriterioEditando(null);
                 }}
               >
                 Cancelar
               </Button>
-              <Button
-                onClick={editIndex !== null ? handleSaveEdit : handleSubmit}
-              >
-                {editIndex !== null ? "Salvar" : "Adicionar"}
+              <Button onClick={editId ? handleSaveEdit : handleSubmit}>
+                {editId ? "Salvar" : "Adicionar"}
               </Button>
             </S.ModalButtons>
           </S.ModalContent>
+        </Modal>
+
+        <Modal
+          open={!!criterioParaRemover}
+          onClose={() => setCriterioParaRemover(null)}
+          title="Remover critério?"
+          description={`Tem certeza que deseja remover "${criterioParaRemover?.nome}"?\nEssa ação não poderá ser desfeita.`}
+        >
+          <S.ModalButtons>
+            <Button
+              variant="outline"
+              onClick={() => setCriterioParaRemover(null)}
+            >
+              Cancelar
+            </Button>
+            <Button
+              variant="danger"
+              onClick={() => {
+                if (criterioParaRemover) {
+                  removerCriterio(
+                    criterioParaRemover.id,
+                    pilaresMap[
+                      criterioParaRemover.pilar === "Gestao_e_Lideranca"
+                        ? "gestao"
+                        : criterioParaRemover.pilar.toLowerCase()
+                    ]
+                  );
+                  setCriterioParaRemover(null);
+                }
+              }}
+            >
+              Confirmar
+            </Button>
+          </S.ModalButtons>
         </Modal>
       </S.Wrapper>
     </>
