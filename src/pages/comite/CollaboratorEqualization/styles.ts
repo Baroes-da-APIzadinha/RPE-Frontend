@@ -232,7 +232,6 @@ export const InfoGrid = styled.div`
   gap: 1rem;
 
   @media (min-width: 768px) {
-    flex-direction: row;
     flex-wrap: wrap;
     gap: 2rem;
   }

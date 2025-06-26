@@ -3,6 +3,7 @@ import theme from "../../styles/theme"
 
 type ButtonProps = {
   variant?: "default" | "outline" | "primary" | "secondary" | "danger";
+  disabled?: boolean;
 }
 
 export const ButtonContainer = styled.button<ButtonProps>`
@@ -18,6 +19,11 @@ export const ButtonContainer = styled.button<ButtonProps>`
   transition: all 0.2s ease-in-out;
   border: none;
   cursor: pointer;
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
 
   ${(props) =>
     props.variant === "outline"
