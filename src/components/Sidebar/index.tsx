@@ -22,6 +22,7 @@ import {
 } from "react-icons/md";
 import * as S from "./styles";
 import { useState } from "react";
+import logout from "@/services/Auth/logout";
 
 type Role = "colaborador" | "rh" | "gestor" | "comite";
 
@@ -102,8 +103,7 @@ export function Sidebar({ roles, mainRole, userName }: SidebarProps) {
   };
 
   const handleLogout = () => {
-    localStorage.clear();
-    navigate("/");
+    logout();
   };
 
   return (
