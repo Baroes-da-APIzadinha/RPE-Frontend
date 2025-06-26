@@ -13,28 +13,45 @@ import { RhCollaborator } from "@/pages/rh/Collaborator";
 import { CycleHistory } from "@/pages/comite/CycleHistory";
 import { MananegerDashboard } from "@/pages/manager/Dashboard";
 import { ManagerTeam } from "@/pages/manager/Team";
+import  ProtectedRoute  from "./protectedRoute";
+import PublicRoute from "./publicRoute";
 
 
 function AppRoutes() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Login />} />
+        {/* Rota pública */}
+          <Route
+            path="/"
+            element={<PublicRoute element={<Login />} />}
+          />
+
+
+
+        <Route element={<ProtectedRoute />}>
+          {/* Rotas protegidas */}
         <Route path="/home" element={<Home />} />
+
         {/* colaboradores */}
         <Route path="/colaborador/home" element={<ColaboradorHome />} />
         <Route path="/colaborador/evolution" element={<ColaboradorEvolution />} />
         <Route path="/colaborador/evaluation" element={<EvaluationBasePage />} />
+
         {/* Gestor */}
         <Route path="/gestor/dashboard" element={<MananegerDashboard />} />
         <Route path="/gestor/team" element={<ManagerTeam />} />
+
         {/* RH */}
         <Route path="/rh/dashboard" element={<RhDashboard />} />
         <Route path="/rh/collaborators" element={<RhCollaborator />} />
         <Route path="/rh/criteria" element={<EvaluationCriteria />} />
         <Route path="/rh/import" element={<Import />} />
+
         {/* Comitê */}
         <Route path="/comite/history" element={<CycleHistory />} />
+
+        </Route>
       </Routes>
     </BrowserRouter>
   );

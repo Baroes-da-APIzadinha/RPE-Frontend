@@ -22,6 +22,7 @@ import {
 } from "react-icons/md";
 import * as S from "./styles";
 import { useState } from "react";
+import { useLogout } from "@/services/Auth/logout";
 
 type Role = "colaborador" | "rh" | "gestor" | "comite";
 
@@ -101,10 +102,7 @@ export function Sidebar({ roles, mainRole, userName }: SidebarProps) {
     comite: "Painel do Comitê",
   };
 
-  const handleLogout = () => {
-    localStorage.clear();
-    navigate("/");
-  };
+
 
   return (
     <>
@@ -148,7 +146,7 @@ export function Sidebar({ roles, mainRole, userName }: SidebarProps) {
             <MdAccountBox />
             {userName}
           </S.User>
-          <S.Logout onClick={handleLogout}>
+          <S.Logout onClick={useLogout()}>
             <MdLogout />
             Logout
           </S.Logout>

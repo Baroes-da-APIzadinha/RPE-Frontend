@@ -4,7 +4,7 @@ import { MdRocketLaunch } from "react-icons/md";
 import Input from "@/components/Input";
 import Button from "@/components/Button/index.tsx";
 import { useNavigate } from "react-router-dom";
-
+import { handleLogin } from "@/services/Auth/login.ts";
 export function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -12,8 +12,15 @@ export function Login() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Lógica de autenticação aqui
-    alert(`Email: ${email}\nSenha: ${password}`);
+    handleLogin(email, password)
+      .then(() => {
+        // Redireciona para a página inicial após o login bem-sucedido
+        navigate("/home");
+      })
+      .catch((error) => {
+        // Aqui você pode lidar com erros de autenticação, como exibir uma mensagem de erro
+        console.error("Erro ao fazer login:", error);
+      });
   };
 
   return (
@@ -46,7 +53,7 @@ export function Login() {
           placeholder="Digite sua senha"
           label="Senha"
         />
-        <Button variant="default" onClick={() => navigate("/home")}>
+        <Button variant="default" >
           Entrar
         </Button>
       </S.Form>
