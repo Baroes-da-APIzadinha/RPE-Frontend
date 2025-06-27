@@ -25,9 +25,9 @@ export const HeaderButtons = styled.div`
   gap: 1.2rem;
 `
 export const CardContainer = styled.div`
-  background-color: ${({ theme }) => theme.colors.surface.default};
-  border-radius: ${({ theme }) => theme.border.radius.medium};
-  border: 1px solid ${({ theme }) => theme.colors.border};
+  background-color: ${theme.colors.surface.default};
+  border-radius: ${theme.border.radius.medium};
+  border: 1px solid ${theme.colors.border};
   margin-bottom: 1rem;
   padding: 2rem;
 `;
@@ -39,6 +39,13 @@ export const UserHeader = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.2rem;
+  }
 `;
 
 export const DropButton = styled.button`
@@ -48,6 +55,10 @@ export const DropButton = styled.button`
   padding: 0.4rem;
   display: flex;
   align-items: center;
+
+  @media (max-width: 768px) {
+    margin-left: 0;
+  }
 `;
 
 export const UserInfo = styled.div`
@@ -83,6 +94,19 @@ export const Since = styled.p`
 export const UserActions = styled.div`
   display: flex;
   gap: 1.2rem;
+  flex-wrap: wrap;
+
+  @media (max-width: 768px) {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  @media (max-width: 480px) {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.8rem;
+  }
+
 `; 
 export const ScoreContainer = styled.div`
   display: flex;

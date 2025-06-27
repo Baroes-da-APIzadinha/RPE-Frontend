@@ -10,6 +10,8 @@ import { LuTriangleAlert } from "react-icons/lu";
 import { getCiclos } from "@/services/HTTP/ciclos";
 import { useCicloAtual } from "@/hooks/useCicloAtual";
 import theme from "@/styles/theme";
+import { SearchInput } from "@/components/SearchInput/index.tsx";
+import { Select } from "@/components/Select/index.tsx";
 
 type Ciclo = {
   id: string;
@@ -24,6 +26,8 @@ export function CycleHistory() {
   const [selectedCycle, setSelectedCycle] = useState<string | null>(null);
   const [ciclos, setCiclos] = useState<Ciclo[]>([]);
   const { cicloAtual } = useCicloAtual();
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("todos");
 
   useEffect(() => {
     const fetchCiclos = async () => {
@@ -37,7 +41,7 @@ export function CycleHistory() {
               ? theme.colors.text.primary
               : ciclo.status === "FECHADO"
               ? theme.colors.info.default
-              : theme.colors.secondary.default  ,
+              : theme.colors.secondary.default,
           data:
             ciclo.status === "AGENDADO"
               ? `Início em ${new Date(ciclo.dataInicio).toLocaleDateString()}`
@@ -58,6 +62,17 @@ export function CycleHistory() {
     fetchCiclos();
   }, [cicloAtual]);
 
+  const cicloPassaFiltro = (ciclo: Ciclo) => {
+    const nomeMatch = ciclo.nome
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase());
+    const statusMatch =
+      statusFilter === "todos" || ciclo.status === statusFilter;
+    return nomeMatch && statusMatch;
+  };
+
+  const filteredCiclos = ciclos.filter(cicloPassaFiltro);
+
   return (
     <S.Wrapper>
       <Sidebar
@@ -71,32 +86,70 @@ export function CycleHistory() {
         </S.Header>
 
         <Card>
-          {cicloAtual && (
-            <S.CycleCard key={cicloAtual.id}>
-              <S.CycleInfo>
-                <S.CycleAvatar style={{ backgroundColor: theme.colors.warning }} />
-                <div>
-                  <strong>{cicloAtual.nome}</strong>
-                  <p>{cicloAtual.tempoRestante}</p>
-                </div>
-              </S.CycleInfo>
+          <S.Title>Filtros</S.Title>
+          <S.FiltersWrapper>
+            <S.FilterItem>
+              <label>Buscar por ciclo</label>
+              <SearchInput
+                placeholder="Buscar ciclo..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </S.FilterItem>
 
-              <S.CycleActions>
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    setSelectedCycle(cicloAtual.nome);
-                    setShowExportModal(true);
-                  }}
-                >
-                  <MdFileDownload /> Exportar
-                </Button>
-                <S.StatusTag $status="em andamento">em andamento</S.StatusTag>
-              </S.CycleActions>
-            </S.CycleCard>
-          )}
+            <S.FilterItem>
+              <label>Status da equalização</label>
+              <Select
+                placeholder="Todos os status"
+                value={statusFilter}
+                onChange={(val) => setStatusFilter(val)}
+                options={[
+                  { label: "Todos", value: "todos" },
+                  { label: "Agendado", value: "AGENDADO" },
+                  { label: "Andamento", value: "EM_ANDAMENTO" },
+                  { label: "Fechado", value: "FECHADO" },
+                ]}
+              />
+            </S.FilterItem>
+          </S.FiltersWrapper>
+        </Card>
 
-          {ciclos.map((ciclo) => (
+        <Card>
+          {cicloAtual &&
+            cicloPassaFiltro({
+              id: cicloAtual.id,
+              nome: cicloAtual.nome,
+              cor: theme.colors.secondary.default,
+              data: cicloAtual.tempoRestante,
+              status: "EM_ANDAMENTO",
+            }) && (
+              <S.CycleCard key={cicloAtual.id}>
+                <S.CycleInfo>
+                  <S.CycleAvatar
+                    style={{ backgroundColor: theme.colors.warning }}
+                  />
+                  <div>
+                    <strong>{cicloAtual.nome}</strong>
+                    <p>{cicloAtual.tempoRestante}</p>
+                  </div>
+                </S.CycleInfo>
+
+                <S.CycleActions>
+                  <Button
+                    variant="secondary"
+                    onClick={() => {
+                      setSelectedCycle(cicloAtual.nome);
+                      setShowExportModal(true);
+                    }}
+                  >
+                    <MdFileDownload /> Exportar
+                  </Button>
+                  <S.StatusTag $status="em andamento">em andamento</S.StatusTag>
+                </S.CycleActions>
+              </S.CycleCard>
+            )}
+
+          {filteredCiclos.map((ciclo) => (
             <S.CycleCard key={ciclo.id}>
               <S.CycleInfo>
                 <S.CycleAvatar style={{ backgroundColor: ciclo.cor }} />
@@ -110,21 +163,28 @@ export function CycleHistory() {
                 <Button
                   variant="outline"
                   onClick={() => {
-                    if (ciclo.status === "AGENDADO") {
-                      setSelectedCycle(ciclo.nome);
-                      setShowExportModal(true);
-                    } else {
-                      console.log(`Exportando ciclo ${ciclo.nome}...`);
-                    }
+                    console.log(`Exportando ciclo ${ciclo.nome}...`);
                   }}
+                  disabled={ciclo.status === "AGENDADO"}
                 >
                   <MdFileDownload /> Exportar
                 </Button>
+
                 <S.StatusTag
                   $status={ciclo.status}
                   style={{
-                    color: ciclo.status === "AGENDADO" ? theme.colors.text.iconMuted : ciclo.status === "FECHADO" ? theme.colors.info.text : theme.colors.warning,
-                    borderColor: ciclo.status === "AGENDADO" ? theme.colors.text.iconMuted : ciclo.status === "FECHADO" ? theme.colors.info.text : theme.colors.warning  ,
+                    color:
+                      ciclo.status === "AGENDADO"
+                        ? theme.colors.text.iconMuted
+                        : ciclo.status === "FECHADO"
+                        ? theme.colors.info.text
+                        : theme.colors.warning,
+                    borderColor:
+                      ciclo.status === "AGENDADO"
+                        ? theme.colors.text.iconMuted
+                        : ciclo.status === "FECHADO"
+                        ? theme.colors.info.text
+                        : theme.colors.warning,
                     backgroundColor:
                       ciclo.status === "AGENDADO"
                         ? theme.colors.lightGray

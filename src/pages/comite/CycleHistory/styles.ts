@@ -21,11 +21,43 @@ export const Header = styled.div`
   align-items: center;
   margin-bottom: 4vh;
   gap: 1.2rem;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 `
 export const HeaderButtons = styled.div`
   display: flex;
   gap: 1.2rem;
 `
+
+// Filter Styles
+
+export const FiltersWrapper = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.2rem;
+  margin-top: 1.2rem;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
+`;
+
+export const FilterItem = styled.div`
+  display: flex;
+  flex-direction: column;
+  min-width: 200px;
+  gap: 0.4rem;
+
+  label {
+    font-size: ${theme.font.sizes.xsmall};
+    color: ${theme.colors.text.secondary};
+    font-weight: ${theme.font.medium};
+  }
+`;
+
 // Card Styles
 export const Title = styled.h1`
   font-size: ${theme.font.sizes.xlarge};
@@ -46,6 +78,12 @@ export const CycleCard = styled.div`
   border-radius: ${({ theme }) => theme.border.radius.medium};
   padding: 1.2rem;
   margin-bottom: 1.2rem;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
 `;
 
 export const CycleInfo = styled.div`
@@ -61,6 +99,19 @@ export const CycleInfo = styled.div`
     font-size: 0.85rem;
     color: ${({ theme }) => theme.colors.text.secondary};
   }
+
+  @media (max-width: 768px) {
+    flex-direction: row;
+    gap: 0.8rem;
+
+    strong {
+      font-size: ${({ theme }) => theme.font.sizes.small};
+    }
+
+    p {
+      font-size: 0.75rem;
+    }
+  }
 `;
 
 export const CycleAvatar = styled.div`
@@ -74,6 +125,13 @@ export const CycleActions = styled.div`
   display: flex;
   gap: 1rem;
   align-items: center;
+
+  @media (max-width: 768px) {
+    width: 100%;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+  }
 `;
 
 export const StatusTag = styled.span<{ $status: string }>`

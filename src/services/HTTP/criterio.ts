@@ -1,5 +1,16 @@
 import { getRequest, postRequest, deleteRequest, patchRequest } from './requests';
 
+export type Criterio = {
+  idCriterio: string;
+  nomeCriterio: string;
+  pilar: "Comportamento" | "Execucao" | "Gestao_e_Lideranca";
+  descricao: string;
+  peso: number;
+  obrigatorio?: string;
+  dataCriacao?: Date;
+  dataUltimaModificacao?: null;
+}
+
 const baseEndpoint = '/criterios';
 
 export async function getcriterios(params?: Record<string, any>) {

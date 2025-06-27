@@ -19,6 +19,7 @@ import {
   MdSupervisorAccount,
   MdClose,
   MdMenu,
+  MdOutlineBalance,
 } from "react-icons/md";
 import * as S from "./styles";
 import { useState } from "react";
@@ -41,50 +42,63 @@ export function Sidebar({ roles, mainRole, userName }: SidebarProps) {
       {
         to: "/colaborador/home",
         label: "Página Inicial",
-        icon: <MdSpaceDashboard />,
+        icon: <MdSpaceDashboard size={24} />,
       },
       {
         to: "/colaborador/evaluation",
         label: "Avaliação do ciclo",
-        icon: <MdAssignmentTurnedIn />,
+        icon: <MdAssignmentTurnedIn size={24} />,
       },
       {
         to: "/colaborador/evolution",
         label: "Evolução",
-        icon: <MdShowChart />,
+        icon: <MdShowChart size={24} />,
       },
     ],
     rh: [
-      { to: "/rh/dashboard", label: "Dashboard (RH)", icon: <MdGridView /> },
+      {
+        to: "/rh/dashboard",
+        label: "Dashboard (RH)",
+        icon: <MdGridView size={24} />,
+      },
       {
         to: "/rh/collaborators",
         label: "Colaboradores (RH)",
-        icon: <MdGroup />,
+        icon: <MdGroup size={24} />,
       },
-      { to: "/rh/criteria", label: "Critérios", icon: <MdChecklist /> },
+      {
+        to: "/rh/criteria",
+        label: "Critérios",
+        icon: <MdChecklist size={24} />,
+      },
       {
         to: "/rh/import",
         label: "Importação de dados",
-        icon: <MdFileUpload />,
+        icon: <MdFileUpload size={24} />,
       },
     ],
     gestor: [
       {
         to: "/gestor/dashboard",
         label: "Dashboard (Gestor)",
-        icon: <MdHome />,
+        icon: <MdHome size={24} />,
       },
       {
         to: "/gestor/team",
         label: "Minha equipe",
-        icon: <MdSupervisorAccount />,
+        icon: <MdSupervisorAccount size={24} />,
       },
     ],
     comite: [
       {
+        to: "/comite/equalization",
+        label: "Equalização do Ciclo",
+        icon: <MdOutlineBalance size={24} />,
+      },
+      {
         to: "/comite/history",
         label: "Histórico de ciclos",
-        icon: <MdHistoryToggleOff />,
+        icon: <MdHistoryToggleOff size={24} />,
       },
     ],
   };
@@ -101,8 +115,6 @@ export function Sidebar({ roles, mainRole, userName }: SidebarProps) {
     gestor: "Painel do Gestor",
     comite: "Painel do Comitê",
   };
-
-
 
   return (
     <>
