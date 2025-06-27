@@ -60,14 +60,30 @@ export default {
       hover: "#2E4DE3",
       pressed: "#213BB7",
       light: "#EAF0FF",
-      onPrimary: "#FFFFFF"
+      onPrimary: "#FFFFFF",
+      opacity: {
+        100: "rgba(63, 99, 247, 1)",
+        80: "rgba(63, 99, 247, 0.8)",
+        60: "rgba(63, 99, 247, 0.6)",
+        40: "rgba(63, 99, 247, 0.4)",
+        20: "rgba(63, 99, 247, 0.2)",
+        10: "rgba(63, 99, 247, 0.1)",
+      },
     },
 
     secondary: {
       default: "#FFB200",
       hover: "#E59E00",
       light: "#FFF4DA",
-      onSecondary: "#2B1D00"
+      onSecondary: "#2B1D00",
+      opacity: {
+        100: "rgba(255, 178, 0, 1)",
+        80: "rgba(255, 178, 0, 0.8)",
+        60: "rgba(255, 178, 0, 0.6)",
+        40: "rgba(255, 178, 0, 0.4)",
+        20: "rgba(255, 178, 0, 0.2)",
+        10: "rgba(255, 178, 0, 0.1)",
+      },
     },
 
     success: {
