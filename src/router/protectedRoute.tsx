@@ -1,10 +1,21 @@
-import { Navigate, Outlet } from 'react-router-dom';
-import Cookies from 'js-cookie';
+import { Navigate, Outlet } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { checkAuth } from "@/hooks/checkAuth";
 
 const ProtectedRoute = () => {
-  const token = Cookies.get('authToken');
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
 
-  return token ? <Outlet /> : <Navigate to="/" replace />;
+  useEffect(() => {
+    checkAuth().then((user) => {
+      setIsAuthenticated(!!user);
+    });
+  }, []);
+
+  if (isAuthenticated === null) {
+    return <div>Carregando...</div>;
+  }
+
+  return isAuthenticated ? <Outlet /> : <Navigate to="/" replace />;
 };
 
 export default ProtectedRoute;

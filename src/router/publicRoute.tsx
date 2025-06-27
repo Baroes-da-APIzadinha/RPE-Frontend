@@ -1,14 +1,19 @@
-import { Navigate } from 'react-router-dom';
-import Cookies from 'js-cookie';
-import type { JSX } from 'react';
+import { Navigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { checkAuth } from "@/hooks/checkAuth";
+import type { ReactNode } from "react";
+const PublicRoute = ({ children }: { children: ReactNode }) => {
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
 
-interface PublicRouteProps {
-  element: JSX.Element;
-}
+  useEffect(() => {
+    checkAuth().then((user) => {
+      setIsAuthenticated(!!user);
+    });
+  }, []);
 
-const PublicRoute = ({ element }: PublicRouteProps) => {
-  const token = Cookies.get('authToken');
-  return token ? <Navigate to="/home" replace /> : element;
+  if (isAuthenticated === null) return <div>Carregando...</div>;
+
+  return isAuthenticated ? <Navigate to="/home" replace /> : children;
 };
 
 export default PublicRoute;

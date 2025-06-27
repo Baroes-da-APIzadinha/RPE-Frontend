@@ -21,15 +21,19 @@ function AppRoutes() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Rota pública */}
-          <Route
-            path="/"
-            element={<PublicRoute element={<Login />} />}
-          />
+        {/* Rota pública de login */}
+    <Route
+      path="/"
+      element={
+        <PublicRoute>
+          <Login />
+        </PublicRoute>
+      }
+    />
 
 
 
-        <Route element={<ProtectedRoute />}>
+        <Route element={<ProtectedRoute />}>    
           {/* Rotas protegidas */}
         <Route path="/home" element={<Home />} />
 
