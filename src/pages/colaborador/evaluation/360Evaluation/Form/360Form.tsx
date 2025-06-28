@@ -6,7 +6,7 @@ import { mockColaboradores } from "@/data/colaboradores360";
 import { Card } from "@/components/Card";
 import { Select } from "@/components/Select";
 import ButtonFrame from "@/components/ButtonFrame";
-import { FaPaperPlane, FaStar } from "react-icons/fa";
+import { FaPaperPlane } from "react-icons/fa";
 import { useAvaliacoes360 } from "@/hooks/Avaliacoes360";
 import { toast } from "sonner";
 import { StarRating } from "@/components/StarRating";
@@ -18,7 +18,6 @@ interface Props {
 
 const EvaluationDetails: React.FC<Props> = ({ id, onBack }) => {
   const colaborador = mockColaboradores.find((c) => c.id === id);
-  const [hover, setHover] = useState<number | null>(null);
   const [nota, setNota] = useState(0);
   const [melhoria, setMelhoria] = useState("");
   const [forte, setForte] = useState("");
