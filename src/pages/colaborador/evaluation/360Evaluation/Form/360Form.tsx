@@ -9,6 +9,7 @@ import ButtonFrame from "@/components/ButtonFrame";
 import { FaPaperPlane, FaStar } from "react-icons/fa";
 import { useAvaliacoes360 } from "@/hooks/Avaliacoes360";
 import { toast } from "sonner";
+import { StarRating } from "@/components/StarRating";
 
 interface Props {
   id: number;
@@ -66,7 +67,7 @@ const EvaluationDetails: React.FC<Props> = ({ id, onBack }) => {
       motivacao,
       forte,
       melhoria,
-      status: "avaliado",
+      status: "avaliado" as "avaliado",
     };
 
     salvarAvaliacao(avaliacaoFinal);
@@ -93,7 +94,7 @@ const EvaluationDetails: React.FC<Props> = ({ id, onBack }) => {
         motivacao,
         forte,
         melhoria,
-        status: nota && motivacao ? "avaliado" : "andamento",
+        status: (nota && motivacao ? "avaliado" : "andamento") as "avaliado" | "andamento" | "pendente",
       };
       salvarAvaliacao(parcial);
     };
@@ -141,18 +142,10 @@ const EvaluationDetails: React.FC<Props> = ({ id, onBack }) => {
               <S.FormBlock>
                 <S.Label>Dê uma avaliação de 1 a 5 ao colaborador</S.Label>
                 <S.StarsGroup>
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <S.StarButton
-                      key={star}
-                      onClick={() => setNota(star)}
-                      onMouseEnter={() => setHover(star)}
-                      onMouseLeave={() => setHover(null)}
-                      $active={star <= (hover ?? nota)}
-                      aria-label={`Dar nota ${star}`}
-                    >
-                      <FaStar />
-                    </S.StarButton>
-                  ))}
+                  <StarRating
+                    value={nota}
+                    onChange={(star) => setNota(star)}
+                  />
                 </S.StarsGroup>
               </S.FormBlock>
               <S.FormBlock>
@@ -192,7 +185,7 @@ const EvaluationDetails: React.FC<Props> = ({ id, onBack }) => {
           </S.FormWrapper>
         </Card>
         <ButtonFrame text="Para submeter sua avaliação do colaborador, preencha todos os campos.">
-          <Button type="submit">
+          <Button>
             <FaPaperPlane />
             Enviar
           </Button>

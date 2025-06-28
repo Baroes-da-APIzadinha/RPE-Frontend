@@ -39,16 +39,6 @@ export const Label = styled.span`
   margin-right: 0.5rem;
 `;
 
-export const StarButton = styled.button<{ $active: boolean }>`
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: ${({ $active, theme }) =>
-    $active ? theme.colors.secondary.default : theme.colors.lightGray};
-  font-size: 1.7rem;
-  transition: color 0.2s;
-  padding: 0;
-`;
 
 export const Score = styled.span`
   color: ${({ theme }) => theme.colors.text.primary};

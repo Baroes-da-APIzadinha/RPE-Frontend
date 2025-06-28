@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import * as S from "./styles";
-import { FaStar } from "react-icons/fa";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
-
+import { StarRating } from "../StarRating";
 interface CriteryBoxProps {
   title: string;
   subtitle?: string;
@@ -18,9 +17,7 @@ const CriteryBox: React.FC<CriteryBoxProps> = ({
   onChange,
   error
 }) => {
-  const [collapsed, setCollapsed] = useState(true);
-  const [hover, setHover] = useState<number | null>(null);
-
+  const [collapsed, setCollapsed] = useState(true); 
   const handleRating = (nota: number) => {
     if (onChange) onChange({ ...value, nota });
   };
@@ -49,18 +46,10 @@ const CriteryBox: React.FC<CriteryBoxProps> = ({
           <>
             <S.RatingRow>
               <S.Label>Nota:</S.Label>
-              {[1, 2, 3, 4, 5].map((star) => (
-                <S.StarButton
-                  key={star}
-                  onClick={() => handleRating(star)}
-                  onMouseEnter={() => setHover(star)}
-                  onMouseLeave={() => setHover(null)}
-                  $active={star <= (hover ?? value.nota)}
-                  aria-label={`Dar nota ${star}`}
-                >
-                  <FaStar />
-                </S.StarButton>
-              ))}
+              <StarRating
+                value={value.nota}
+                onChange={(nota) => handleRating(nota)}
+              />
               <S.Score>{value.nota}</S.Score>
             </S.RatingRow>
 

@@ -4,11 +4,11 @@ import { Card } from "@/components/Card";
 import Button from "@/components/Button";
 import ButtonFrame from "@/components/ButtonFrame";
 import { MdAccountCircle } from "react-icons/md";
-import { FaPaperPlane, FaStar } from "react-icons/fa";
+import { FaPaperPlane } from "react-icons/fa";
+import { StarRating } from "@/components/StarRating";
 
 export function MentoringPage() {
   const [nota, setNota] = useState(0);
-  const [hover, setHover] = useState<number | null>(null);
   const [justificativa, setJustificativa] = useState("");
 
   const handleSubmit = () => {
@@ -41,17 +41,10 @@ export function MentoringPage() {
           <S.FormBlock>
             <S.Label>Nota para o Mentor</S.Label>
             <S.StarsGroup>
-              {[1, 2, 3, 4, 5].map((star) => (
-                <S.StarButton
-                  key={star}
-                  onClick={() => setNota(star)}
-                  onMouseEnter={() => setHover(star)}
-                  onMouseLeave={() => setHover(null)}
-                  $active={star <= (hover ?? nota)}
-                >
-                  <FaStar />
-                </S.StarButton>
-              ))}
+              <StarRating
+                value={nota}
+                onChange={(star) => setNota(star)}
+              />
             </S.StarsGroup>
           </S.FormBlock>
           <S.FormBlock>
@@ -65,7 +58,7 @@ export function MentoringPage() {
         </Card>
 
         <ButtonFrame text="Para submeter sua avaliação, preencha os campos obrigatórios.">
-          <Button type="submit">
+          <Button>
             <FaPaperPlane /> Enviar
           </Button>
         </ButtonFrame>

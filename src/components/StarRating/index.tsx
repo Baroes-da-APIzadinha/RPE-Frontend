@@ -63,7 +63,7 @@ export const StarRating: React.FC<StarRatingProps> = ({
             {/* Ícone visual */}
             <S.StarButton
               type="button"
-              $readOnly={readOnly}
+              $readOnly={!!readOnly}
               $active={filled || halfFilled}
               $half={halfFilled}
               $color={color}
