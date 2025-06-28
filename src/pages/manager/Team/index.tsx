@@ -10,6 +10,7 @@ import {
   MdOutlineModeEdit,
 } from "react-icons/md";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 type Status = "concluida" | "andamento" | "pendente";
 
@@ -95,6 +96,7 @@ const equipeMock: Colaborador[] = [
 
 export function ManagerTeam() {
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
+  const navigate = useNavigate();
 
   const toggleExpand = (index: number) => {
     setExpandedIndex((prev) => (prev === index ? null : index));
@@ -194,7 +196,7 @@ export function ManagerTeam() {
                     </Button>
                     <Button
                       variant="outline"
-                      onClick={() => console.log("Editar Avaliação")}
+                      onClick={() => navigate("/gestor/collaborator/review")}
                     >
                       <MdOutlineModeEdit />
                       Editar Avaliação

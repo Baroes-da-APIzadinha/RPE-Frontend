@@ -16,6 +16,7 @@ import { ManagerTeam } from "@/pages/manager/Team";
 import ProtectedRoute from "./protectedRoute";
 import PublicRoute from "./publicRoute";
 import { CollaboratorEqualization } from "@/pages/comite/CollaboratorEqualization";
+import {CollaboratorReview} from "@/pages/manager/CollaboratorReview";
 
 function AppRoutes() {
   return (
@@ -51,12 +52,15 @@ function AppRoutes() {
           {/* Gestor */}
           <Route path="/gestor/dashboard" element={<MananegerDashboard />} />
           <Route path="/gestor/team" element={<ManagerTeam />} />
+          <Route path="/gestor/collaborator/review" element={<CollaboratorReview />} />
 
           {/* RH */}
           <Route path="/rh/dashboard" element={<RhDashboard />} />
           <Route path="/rh/collaborators" element={<RhCollaborator />} />
           <Route path="/rh/criteria" element={<EvaluationCriteria />} />
           <Route path="/rh/import" element={<Import />} />
+          
+
 
           {/* Comitê */}
           <Route path="/comite/equalization" element={<CollaboratorEqualization />} />

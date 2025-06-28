@@ -16,7 +16,7 @@ export const StyledTextarea = styled.textarea`
   font-size: ${theme.font.sizes.small};
   color: ${theme.colors.text.primary};
   background-color: ${theme.colors.surface.default};
-  resize: vertical;
+  resize: none;
   transition: border-color 0.2s ease;
 
   &:focus {
