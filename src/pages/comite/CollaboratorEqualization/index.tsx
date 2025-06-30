@@ -10,6 +10,7 @@ import Textarea from "@/components/Textarea";
 import { IoSparklesOutline } from "react-icons/io5";
 import { FaStar } from "react-icons/fa";
 import { Select } from "@/components/Select";
+import { usePerfil } from "@/hooks/usePerfil";
 
 type Status = "concluida" | "andamento" | "pendente";
 
@@ -68,6 +69,9 @@ const collaboratorsMock: Colaborador[] = [
 ];
 
 export function CollaboratorEqualization() {
+  const { perfil, loading } = usePerfil();
+
+
   const [notas, setNotas] = useState<Record<number, number>>({});
   const [hover, setHover] = useState<number | null>(null);
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
@@ -92,12 +96,15 @@ export function CollaboratorEqualization() {
     setExpandedIndex((prev) => (prev === index ? null : index));
   };
 
+  if (loading || !perfil) return null;
+
+
   return (
     <S.Wrapper>
       <Sidebar
-        roles={["colaborador", "gestor", "rh", "comite"]}
-        mainRole="comite"
-        userName="João Gomes"
+        roles={perfil.roles}
+        mainRole={perfil.mainRole}
+        userName={perfil.userName}
       />
 
       <S.Main>

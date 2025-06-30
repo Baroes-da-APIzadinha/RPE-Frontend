@@ -15,8 +15,11 @@ import {
 } from "react-icons/md";
 import { SearchInput } from "@/components/SearchInput";
 import { toast } from "sonner";
+import { usePerfil } from "@/hooks/usePerfil.ts";
 
 export function RhCollaborator() {
+  const { perfil, loading } = usePerfil();
+
   const [busca, setBusca] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [name, setName] = useState("");
@@ -146,12 +149,14 @@ export function RhCollaborator() {
     setTiposUsuario([]);
   };
 
+  if (loading || !perfil) return null;
+
   return (
     <S.Wrapper>
       <Sidebar
-        roles={["colaborador", "gestor", "rh", "comite"]}
-        mainRole="comite"
-        userName="João Gomes"
+        roles={perfil.roles}
+        mainRole={perfil.mainRole}
+        userName={perfil.userName}
       />
       <S.Main>
         <S.Header>
@@ -289,7 +294,9 @@ export function RhCollaborator() {
           </S.ModalRow>
           <div>
             <S.ModalText>Tipo de Usuário:*</S.ModalText>
-            <S.ModalSubText>Selecione pelo menos um tipo de usuário.</S.ModalSubText>
+            <S.ModalSubText>
+              Selecione pelo menos um tipo de usuário.
+            </S.ModalSubText>
             <S.ModalCheckbox>
               {tiposDeUsuario.map((tipo) => (
                 <Checkbox

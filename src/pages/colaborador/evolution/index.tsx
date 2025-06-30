@@ -9,17 +9,21 @@ import { IoMdTrophy } from "react-icons/io";
 import ReactApexChart from "react-apexcharts";
 import ChartBox from "@/components/ChartBox/index.tsx";
 import { useTheme } from "styled-components";
+import { usePerfil } from "@/hooks/usePerfil.ts";
 
 export function ColaboradorEvolution() {
+  const { perfil, loading } = usePerfil();
+
   const theme = useTheme();
+  if (loading || !perfil) return null;
 
   return (
     <>
       <S.Wrapper>
         <Sidebar
-          roles={["colaborador"]}
-          mainRole="comite"
-          userName="João Gomes"
+          roles={perfil.roles}
+          mainRole={perfil.mainRole}
+          userName={perfil.userName}
         />
 
         <S.Main>
@@ -52,7 +56,6 @@ export function ColaboradorEvolution() {
                 type="line"
                 height={"100%"}
                 width={400}
-                
                 series={[
                   {
                     name: "Performance",
@@ -63,7 +66,6 @@ export function ColaboradorEvolution() {
                   chart: {
                     toolbar: { show: false },
                     zoom: { enabled: false },
-                     
                   },
                   xaxis: {
                     categories: [
@@ -81,7 +83,6 @@ export function ColaboradorEvolution() {
                   },
                   colors: [theme.colors.primary.default],
                   dataLabels: { enabled: true },
-                
                 }}
               />
             </ChartBox>
@@ -113,7 +114,6 @@ export function ColaboradorEvolution() {
                     min: 0,
                     max: 5,
                     tickAmount: 5,
-
                   },
                   stroke: {
                     show: true,

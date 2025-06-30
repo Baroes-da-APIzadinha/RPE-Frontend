@@ -13,6 +13,7 @@ import {
   MdOutlineStar,
 } from "react-icons/md";
 import { MentoringPage } from "./mentoring";
+import { usePerfil } from "@/hooks/usePerfil";
 
 const toggleItems = [
   { value: "auto", label: "Autoavaliação", icon: <MdPerson /> },
@@ -22,17 +23,21 @@ const toggleItems = [
 ];
 
 export function EvaluationBasePage() {
+  const { perfil, loading } = usePerfil();
+
   const [selected, setSelected] = useState("auto");
   const [avaliandoColaboradorId, setAvaliandoColaboradorId] = useState<
     number | null
   >(null);
 
+  if (loading || !perfil) return null;
+
   return (
     <S.Wrapper>
       <Sidebar
-        roles={["colaborador", "gestor", "rh", "comite"]}
-        mainRole="colaborador"
-        userName="João Gomes"
+        roles={perfil.roles}
+        mainRole={perfil.mainRole}
+        userName={perfil.userName}
       />
       <S.Main>
         <ToggleBar

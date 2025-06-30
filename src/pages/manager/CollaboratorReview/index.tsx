@@ -31,6 +31,8 @@ const criteriosPorPilar = [
 ];
 
 export function CollaboratorReview() {
+  const { perfil, loading } = usePerfil();
+
   const [open, setOpen] = useState<string[]>([criteriosMock[0].id]);
 
   // Estado para avaliações do gestor, inicializando vazio para cada critério
@@ -75,12 +77,15 @@ export function CollaboratorReview() {
     }));
   };
 
+  if (loading || !perfil) return null;
+
+
   return (
     <S.Wrapper>
       <Sidebar
-        roles={["colaborador", "gestor", "rh", "comite"]}
-        mainRole="colaborador"
-        userName="João Gomes"
+        roles={perfil.roles}
+        mainRole={perfil.mainRole}
+        userName={perfil.userName}
       />
       <S.Main>
         <Title>Revisão de notas: Aryelly serafim</Title>
@@ -94,7 +99,6 @@ export function CollaboratorReview() {
           ]}
         />
 
-        
         {criteriosPorPilar.map((pilar) => (
           <EvaluationFrame key={pilar.titulo} title={pilar.titulo}>
             {pilar.criterios.map((criterio) => {
@@ -103,9 +107,12 @@ export function CollaboratorReview() {
                 <Card key={criterio.id}>
                   <S.CriterioHeader>
                     <S.SectionTitle>{criterio.nome}</S.SectionTitle>
-                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <div style={{ display: "flex", alignItems: "center" }}>
                       <S.NotaBadge $visible={!isOpen}>
-                        {(pilar.autoavaliacao.find((a) => a.id === criterio.id)?.nota ?? 0).toFixed(1)}
+                        {(
+                          pilar.autoavaliacao.find((a) => a.id === criterio.id)
+                            ?.nota ?? 0
+                        ).toFixed(1)}
                       </S.NotaBadge>
                       <S.NotaBadge $visible={!isOpen}>
                         {(avaliacaoGestor[criterio.id]?.nota ?? 0).toFixed(1)}
@@ -115,7 +122,9 @@ export function CollaboratorReview() {
                         onClick={() => handleAccordion(criterio.id)}
                         tabIndex={0}
                         role="button"
-                        aria-label={isOpen ? "Fechar critério" : "Abrir critério"}
+                        aria-label={
+                          isOpen ? "Fechar critério" : "Abrir critério"
+                        }
                       >
                         {isOpen ? (
                           <MdKeyboardArrowUp size={36} />
@@ -129,18 +138,36 @@ export function CollaboratorReview() {
                     <S.CriteriaContent>
                       {/* Colaborador */}
                       <S.CriteriaSection>
-                        <div style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            width: "100%",
+                          }}
+                        >
                           <S.Subtitle>Avaliação do colaborador</S.Subtitle>
-                          <S.NotaBadge style={{ marginLeft: 'auto' }}>
-                            {(pilar.autoavaliacao.find((a) => a.id === criterio.id)?.nota ?? 0).toFixed(1)}
+                          <S.NotaBadge style={{ marginLeft: "auto" }}>
+                            {(
+                              pilar.autoavaliacao.find(
+                                (a) => a.id === criterio.id
+                              )?.nota ?? 0
+                            ).toFixed(1)}
                           </S.NotaBadge>
                         </div>
                         <StarRating
-                          value={pilar.autoavaliacao.find((a) => a.id === criterio.id)?.nota ?? 0}
+                          value={
+                            pilar.autoavaliacao.find(
+                              (a) => a.id === criterio.id
+                            )?.nota ?? 0
+                          }
                           readOnly
                         />
                         <TextArea
-                          value={pilar.autoavaliacao.find((a) => a.id === criterio.id)?.justificativa || ""}
+                          value={
+                            pilar.autoavaliacao.find(
+                              (a) => a.id === criterio.id
+                            )?.justificativa || ""
+                          }
                           readOnly
                           placeholder="Justificativa do colaborador"
                           rows={4}
@@ -148,20 +175,37 @@ export function CollaboratorReview() {
                       </S.CriteriaSection>
                       {/* Gestor */}
                       <S.CriteriaSection>
-                        <div style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            width: "100%",
+                          }}
+                        >
                           <S.Subtitle>Sua avaliação</S.Subtitle>
-                          <S.NotaBadge style={{ marginLeft: 'auto' }}>
-                            {(avaliacaoGestor[criterio.id]?.nota ?? 0).toFixed(1)}
+                          <S.NotaBadge style={{ marginLeft: "auto" }}>
+                            {(avaliacaoGestor[criterio.id]?.nota ?? 0).toFixed(
+                              1
+                            )}
                           </S.NotaBadge>
                         </div>
                         <StarRating
                           value={avaliacaoGestor[criterio.id]?.nota ?? 0}
-                          onChange={(nota: number) => handleGestorNotaChange(criterio.id, nota)}
+                          onChange={(nota: number) =>
+                            handleGestorNotaChange(criterio.id, nota)
+                          }
                         />
                         <TextArea
-                          value={avaliacaoGestor[criterio.id]?.justificativa || ""}
-                          onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
-                            handleGestorJustificativaChange(criterio.id, e.target.value)
+                          value={
+                            avaliacaoGestor[criterio.id]?.justificativa || ""
+                          }
+                          onChange={(
+                            e: React.ChangeEvent<HTMLTextAreaElement>
+                          ) =>
+                            handleGestorJustificativaChange(
+                              criterio.id,
+                              e.target.value
+                            )
                           }
                           placeholder="Justifique sua nota"
                           rows={4}
@@ -179,4 +223,3 @@ export function CollaboratorReview() {
     </S.Wrapper>
   );
 }
-

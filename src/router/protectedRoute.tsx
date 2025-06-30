@@ -1,6 +1,7 @@
 import { Navigate, Outlet } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { checkAuth } from "@/hooks/checkAuth";
+import { LoadingScreen } from "@/pages/LoadinScreen";
 
 const ProtectedRoute = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
@@ -12,7 +13,7 @@ const ProtectedRoute = () => {
   }, []);
 
   if (isAuthenticated === null) {
-    return <div>Carregando...</div>;
+    return <LoadingScreen />;
   }
 
   return isAuthenticated ? <Outlet /> : <Navigate to="/" replace />;

@@ -20,16 +20,21 @@ import ReactApexChart from "react-apexcharts";
 import { AlertList } from "@/components/AlertList/index.tsx";
 import { DetailedProgress } from "@/components/DetailedProgress/index.tsx";
 import { useCicloAtual } from "@/hooks/useCicloAtual";
+import { usePerfil } from "@/hooks/usePerfil.ts";
 
 export function RhDashboard() {
+  const { perfil, loading } = usePerfil();
+
   const { cicloAtual, treatTimeRemaining } = useCicloAtual();
+
+  if (loading || !perfil) return null;
 
   return (
     <S.Wrapper>
       <Sidebar
-        roles={["colaborador", "gestor", "rh", "comite"]}
-        mainRole="comite"
-        userName="João Gomes"
+        roles={perfil.roles}
+        mainRole={perfil.mainRole}
+        userName={perfil.userName}
       />
       <S.Main>
         <S.Header>
@@ -46,8 +51,11 @@ export function RhDashboard() {
             icon={<MdOutlineInsertInvitation />}
             title="Ciclo atual"
             bigSpan={cicloAtual ? cicloAtual.nome : "Carregando..."}
-            span={cicloAtual ? treatTimeRemaining(cicloAtual.tempoRestante) : "Carregando..."}
-            
+            span={
+              cicloAtual
+                ? treatTimeRemaining(cicloAtual.tempoRestante)
+                : "Carregando..."
+            }
             alertSpanIcon={<MdErrorOutline />}
           />
 
