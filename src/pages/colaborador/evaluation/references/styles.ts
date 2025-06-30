@@ -130,7 +130,7 @@ export const ReferenceTypeButton = styled.button<{ selected?: boolean }>`
   align-items: center;
   justify-content: center;
   gap: 0.4rem;
-  font-size: 1.3rem;
+  font-size: 1rem;
   padding: 0.6rem 1.2rem;
   border: 1px solid ${theme.colors.border};
   border-radius: ${theme.border.radius.xsmall};
@@ -194,7 +194,7 @@ export const TypeBadge = styled.div<{ $tipo: "tecnica" | "cultural" }>`
   gap: 0.4rem;
   padding: 0.4rem 1rem;
   border-radius: 1rem;
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   font-weight: 500;
   border: 1px solid ${({ theme, $tipo }) =>
     $tipo === "tecnica" ? theme.colors.primary.default : theme.colors.success.default};
