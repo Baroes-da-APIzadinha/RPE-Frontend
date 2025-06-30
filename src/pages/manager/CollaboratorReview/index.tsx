@@ -1,6 +1,5 @@
 import { useState } from "react";
 import * as S from "./styles";
-import { Sidebar } from "@/components/Sidebar";
 import { Title } from "@/components/Title";
 import { Card } from "@/components/Card";
 import TextArea from "@/components/Textarea";
@@ -96,8 +95,6 @@ const criteriosPorPilar = [
 ];
 
 export function CollaboratorReview() {
-  const { perfil, loading } = usePerfil();
-
   const [open, setOpen] = useState<string[]>([criteriosMock[0].id]);
 
   // Estado para avaliações do gestor, inicializando vazio para cada critério
@@ -135,24 +132,19 @@ export function CollaboratorReview() {
     }));
   };
 
-  const handleGestorJustificativaChange = (id: string, justificativa: string) => {
+  const handleGestorJustificativaChange = (
+    id: string,
+    justificativa: string
+  ) => {
     setAvaliacaoGestor((prev) => ({
       ...prev,
       [id]: { ...prev[id], justificativa },
     }));
   };
 
-  if (loading || !perfil) return null;
-
-
   return (
-    <S.Wrapper>
-      <Sidebar
-        roles={perfil.roles}
-        mainRole={perfil.mainRole}
-        userName={perfil.userName}
-      />
-      <S.Main>
+    <>
+      <>
         <Title>Revisão de notas: Aryelly serafim</Title>
         <RowProgressBox
           title="Progresso da revisão"
@@ -284,7 +276,7 @@ export function CollaboratorReview() {
           </EvaluationFrame>
         ))}
         <S.Button onClick={handleSubmit}>Concluir e enviar</S.Button>
-      </S.Main>
-    </S.Wrapper>
+      </>
+    </>
   );
 }

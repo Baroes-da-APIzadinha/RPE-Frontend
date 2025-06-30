@@ -1,6 +1,5 @@
-import { useState } from "react";
 import * as S from "./styles";
-import { Sidebar } from "@/components/Sidebar";
+import { useState } from "react";
 import { ToggleBar } from "@/components/ToggleBar";
 import AutoEvaluationForm from "./autoevaluation/AutoEvaluationForm";
 import { ReferencesPage } from "./references";
@@ -23,23 +22,14 @@ const toggleItems = [
 ];
 
 export function EvaluationBasePage() {
-  const { perfil, loading } = usePerfil();
-
   const [selected, setSelected] = useState("auto");
   const [avaliandoColaboradorId, setAvaliandoColaboradorId] = useState<
     number | null
   >(null);
 
-  if (loading || !perfil) return null;
 
   return (
-    <S.Wrapper>
-      <Sidebar
-        roles={perfil.roles}
-        mainRole={perfil.mainRole}
-        userName={perfil.userName}
-      />
-      <S.Main>
+    <div>
         <ToggleBar
           items={toggleItems}
           value={selected}
@@ -62,8 +52,7 @@ export function EvaluationBasePage() {
         {/* Adicione outros formulários para gestor/360 aqui */}
         {selected === "mentor" && <MentoringPage />}
         {selected === "references" && <ReferencesPage />}
-      </S.Main>
-    </S.Wrapper>
+    </div>
   );
 }
 

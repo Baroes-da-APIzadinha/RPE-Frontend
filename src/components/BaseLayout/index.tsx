@@ -1,20 +1,24 @@
 import * as S from "./styles";
-import type { ReactNode } from "react";
 import { Sidebar } from "../Sidebar";
+import { usePerfil } from "@/hooks/usePerfil";
+import { LoadingScreen } from "@/pages/LoadinScreen";
+import { Outlet } from "react-router-dom";
 
-type Props = {
-  children: ReactNode;
-};
+export function BaseLayout() {
+  const { perfil, loading } = usePerfil();
 
-export function BaseLayout({ children }: Props) {
+  if (loading || !perfil) return <LoadingScreen />;
+
   return (
     <S.Wrapper>
       <Sidebar
-        roles={["colaborador", "gestor", "rh", "comite"]}
-        mainRole="comite"
-        userName="João Gomes"
+        roles={perfil.roles}
+        mainRole={perfil.mainRole}
+        userName={perfil.userName}
       />
-      <S.Main>{children}</S.Main>
+      <S.Main>
+        <Outlet />
+      </S.Main>
     </S.Wrapper>
   );
 }

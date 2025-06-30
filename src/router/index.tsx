@@ -1,6 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Login } from "@/pages/Login";
-import { Home } from "@/pages/home";
 
 import { ColaboradorHome } from "@/pages/colaborador/home";
 import { ColaboradorEvolution } from "@/pages/colaborador/evolution";
@@ -16,55 +15,56 @@ import { ManagerTeam } from "@/pages/manager/Team";
 import ProtectedRoute from "./protectedRoute";
 import PublicRoute from "./publicRoute";
 import { CollaboratorEqualization } from "@/pages/comite/CollaboratorEqualization";
-import {CollaboratorReview} from "@/pages/manager/CollaboratorReview";
+import { CollaboratorReview } from "@/pages/manager/CollaboratorReview";
+import { BaseLayout } from "@/components/BaseLayout";
 
 function AppRoutes() {
   return (
     <BrowserRouter>
       <Routes>
         {/* Rota pública de login */}
-    <Route
-      path="/"
-      element={
-        <PublicRoute>
-          <Login />
-        </PublicRoute>
-      }
-    />
+        <Route
+          path="/"
+          element={
+            <PublicRoute>
+              <Login />
+            </PublicRoute>
+          }
+        />
 
-
-
-        <Route element={<ProtectedRoute />}>    
-          {/* Rotas protegidas */}
-          <Route path="/home" element={<Home />} />
-
+        {/* Rotas protegidas */}
+        <Route element={<ProtectedRoute />}>
+        
           {/* colaboradores */}
-          <Route path="/colaborador/home" element={<ColaboradorHome />} />
-          <Route
-            path="/colaborador/evolution"
-            element={<ColaboradorEvolution />}
-          />
-          <Route
-            path="/colaborador/evaluation"
-            element={<EvaluationBasePage />}
-          />
+          <Route path="/colaborador" element={<BaseLayout />}>
+            <Route path="home" element={<ColaboradorHome />} />
+            <Route path="evolution" element={<ColaboradorEvolution />} />
+            <Route path="evaluation" element={<EvaluationBasePage />} />
+          </Route>
 
           {/* Gestor */}
-          <Route path="/gestor/dashboard" element={<MananegerDashboard />} />
-          <Route path="/gestor/team" element={<ManagerTeam />} />
-          <Route path="/gestor/collaborator/review" element={<CollaboratorReview />} />
+          <Route path="/gestor" element={<BaseLayout />}>
+            <Route path="dashboard" element={<MananegerDashboard />} />
+            <Route path="team" element={<ManagerTeam />} />
+            <Route
+              path="collaborator/review"
+              element={<CollaboratorReview />}
+            />
+          </Route>
 
           {/* RH */}
-          <Route path="/rh/dashboard" element={<RhDashboard />} />
-          <Route path="/rh/collaborators" element={<RhCollaborator />} />
-          <Route path="/rh/criteria" element={<EvaluationCriteria />} />
-          <Route path="/rh/import" element={<Import />} />
-          
-
+          <Route path="/rh" element={<BaseLayout />}>
+            <Route path="dashboard" element={<RhDashboard />} />
+            <Route path="collaborators" element={<RhCollaborator />} />
+            <Route path="criteria" element={<EvaluationCriteria />} />
+            <Route path="import" element={<Import />} />
+          </Route>
 
           {/* Comitê */}
-          <Route path="/comite/equalization" element={<CollaboratorEqualization />} />
-          <Route path="/comite/history" element={<CycleHistory />} />
+          <Route path="/comite" element={<BaseLayout />}>
+            <Route path="equalization" element={<CollaboratorEqualization />} />
+            <Route path="history" element={<CycleHistory />} />
+          </Route>
         </Route>
       </Routes>
     </BrowserRouter>

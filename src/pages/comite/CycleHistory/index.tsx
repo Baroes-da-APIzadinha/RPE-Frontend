@@ -1,5 +1,4 @@
 import * as S from "./styles.ts";
-import { Sidebar } from "@/components/Sidebar/index.tsx";
 import { Title } from "./styles.ts";
 import { Card } from "@/components/Card/index.tsx";
 import Button from "@/components/Button";
@@ -12,7 +11,6 @@ import { useCicloAtual } from "@/hooks/useCicloAtual";
 import theme from "@/styles/theme";
 import { SearchInput } from "@/components/SearchInput/index.tsx";
 import { Select } from "@/components/Select/index.tsx";
-import { usePerfil } from "@/hooks/usePerfil.ts";
 
 type Ciclo = {
   id: string;
@@ -23,9 +21,6 @@ type Ciclo = {
 };
 
 export function CycleHistory() {
-  const { perfil, loading } = usePerfil();
-
-
   const [showExportModal, setShowExportModal] = useState(false);
   const [selectedCycle, setSelectedCycle] = useState<string | null>(null);
   const [ciclos, setCiclos] = useState<Ciclo[]>([]);
@@ -77,17 +72,9 @@ export function CycleHistory() {
 
   const filteredCiclos = ciclos.filter(cicloPassaFiltro);
 
-  if (loading || !perfil) return null;
-
-
   return (
-    <S.Wrapper>
-      <Sidebar
-        roles={perfil.roles}
-        mainRole={perfil.mainRole}
-        userName={perfil.userName}
-      />
-      <S.Main>
+    <>
+      <div>
         <S.Header>
           <Title>Histórico de Avaliações</Title>
         </S.Header>
@@ -206,7 +193,7 @@ export function CycleHistory() {
             </S.CycleCard>
           ))}
         </Card>
-      </S.Main>
+      </div>
       <Modal
         open={showExportModal}
         onClose={() => setShowExportModal(false)}
@@ -241,6 +228,6 @@ export function CycleHistory() {
           </S.ModalButtons>
         </S.ModalContent>
       </Modal>
-    </S.Wrapper>
+    </>
   );
 }
