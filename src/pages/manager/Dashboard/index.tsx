@@ -1,6 +1,5 @@
-import { Title } from "@/components/Title/index.tsx";
 import * as S from "./styles.ts";
-import { Sidebar } from "@/components/Sidebar/index.tsx";
+import { Title } from "@/components/Title/index.tsx";
 import CardContainer from "@/components/CardContainer/index.tsx";
 import CardBox from "@/components/CardBox/index.tsx";
 import { BsGraphUpArrow } from "react-icons/bs";
@@ -20,10 +19,8 @@ import type ApexCharts from "apexcharts";
 import { useTheme } from "styled-components";
 import Button from "@/components/Button/index.tsx";
 import { AlertList } from "@/components/AlertList/index.tsx";
-import { usePerfil } from "@/hooks/usePerfil.ts";
 
 export function MananegerDashboard() {
-  const { perfil, loading } = usePerfil();
 
   const theme = useTheme();
   const chartOptions: ApexCharts.ApexOptions = {
@@ -85,16 +82,10 @@ export function MananegerDashboard() {
     },
   ];
 
-  if (loading || !perfil) return null;
 
   return (
-    <S.Wrapper>
-      <Sidebar
-        roles={perfil.roles}
-        mainRole={perfil.mainRole}
-        userName={perfil.userName}
-      />
-      <S.Main>
+    <>
+      <>
         <Title>Página Inicial</Title>
 
         <CardContainer>
@@ -245,7 +236,7 @@ export function MananegerDashboard() {
                       onClick: () => console.log("Parabenizar"),
                     },
                   ]}/>
-      </S.Main>
-    </S.Wrapper>
+      </>
+    </>
   );
 }

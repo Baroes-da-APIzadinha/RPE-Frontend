@@ -1,4 +1,3 @@
-import { Sidebar } from "@/components/Sidebar/index.tsx";
 import * as S from "./styles.ts";
 import { Title } from "@/components/Title/index.tsx";
 import Button from "@/components/Button/index.tsx";
@@ -8,18 +7,11 @@ import { useState } from "react";
 import Input from "@/components/Input";
 import { Select } from "@/components/Select";
 import { Checkbox } from "@/components/CheckBox/index.tsx";
-import {
-  MdFileDownload,
-  MdFileUpload,
-  MdOutlinePersonAdd,
-} from "react-icons/md";
+import { MdOutlinePersonAdd } from "react-icons/md";
 import { SearchInput } from "@/components/SearchInput";
 import { toast } from "sonner";
-import { usePerfil } from "@/hooks/usePerfil.ts";
 
 export function RhCollaborator() {
-  const { perfil, loading } = usePerfil();
-
   const [busca, setBusca] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [name, setName] = useState("");
@@ -149,16 +141,9 @@ export function RhCollaborator() {
     setTiposUsuario([]);
   };
 
-  if (loading || !perfil) return null;
-
   return (
-    <S.Wrapper>
-      <Sidebar
-        roles={perfil.roles}
-        mainRole={perfil.mainRole}
-        userName={perfil.userName}
-      />
-      <S.Main>
+    <>
+      <>
         <S.Header>
           <Title>Gerenciar Colaboradores</Title>
           <S.HeaderButtons>
@@ -221,7 +206,7 @@ export function RhCollaborator() {
             </S.Table>
           </S.TableContainer>
         </S.CardContainer>
-      </S.Main>
+      </>
       <Modal
         open={showModal}
         onClose={() => setShowModal(false)}
@@ -330,6 +315,6 @@ export function RhCollaborator() {
           </S.ModalButtons>
         </S.ModalContent>
       </Modal>
-    </S.Wrapper>
+    </>
   );
 }

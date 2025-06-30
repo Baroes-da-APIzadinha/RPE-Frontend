@@ -4,7 +4,6 @@ import Input from "@/components/Input";
 import Button from "@/components/Button";
 import { Select } from "@/components/Select";
 import { Modal } from "@/components/Modal";
-import { Sidebar } from "@/components/Sidebar";
 import { Title } from "@/components/Title";
 import { MdAdd, MdAssignment } from "react-icons/md";
 import { Checkbox } from "@/components/CheckBox/index.tsx";
@@ -15,11 +14,8 @@ import { toast } from "sonner";
 import theme from "@/styles/theme.ts";
 import { useCriterios } from "@/hooks/useCriterios";
 import type { Criterio } from "@/services/HTTP/criterio.ts";
-import { usePerfil } from "@/hooks/usePerfil.ts";
 
 export function EvaluationCriteria() {
-  const { perfil, loading } = usePerfil();
-
   const [showModal, setShowModal] = useState(false);
   const [nome, setNome] = useState("");
   const [descricao, setDescricao] = useState("");
@@ -183,170 +179,161 @@ export function EvaluationCriteria() {
     }
   };
 
-  if (loading || !perfil) return null;
-
-
   return (
     <>
-      <S.Wrapper>
-        <Sidebar
-        roles={perfil.roles}
-        mainRole={perfil.mainRole}
-        userName={perfil.userName}
-      />
-        <S.Main>
+      <>
+        <S.Header>
+          <Title>Gerenciamento de Critérios</Title>
+          <S.HeaderButtons>
+            <S.DesktopButtons>
+              <Button onClick={() => setShowModal(true)}>
+                <MdAdd /> Adicionar Critério
+              </Button>
+            </S.DesktopButtons>
+            <S.MobileActions>
+              <DropdownActions
+                title="Opções"
+                orientation="vertical"
+                position="bottom"
+                actions={[
+                  {
+                    label: "Adicionar Critério",
+                    onClick: () => setShowModal(true),
+                    icon: <MdAdd />,
+                  },
+                ]}
+              />
+            </S.MobileActions>
+          </S.HeaderButtons>
+        </S.Header>
+
+        <Card>
           <S.Header>
-            <Title>Gerenciamento de Critérios</Title>
-            <S.HeaderButtons>
-              <S.DesktopButtons>
-                <Button onClick={() => setShowModal(true)}>
-                  <MdAdd /> Adicionar Critério
-                </Button>
-              </S.DesktopButtons>
-              <S.MobileActions>
-                <DropdownActions
-                  title="Opções"
-                  orientation="vertical"
-                  position="bottom"
-                  actions={[
-                    {
-                      label: "Adicionar Critério",
-                      onClick: () => setShowModal(true),
-                      icon: <MdAdd />,
-                    },
-                  ]}
-                />
-              </S.MobileActions>
-            </S.HeaderButtons>
+            <div>
+              <S.Title>Critérios de Avaliação</S.Title>
+              <S.Subtitle>
+                Gerencie os critérios utilizados nas avaliações
+              </S.Subtitle>
+            </div>
           </S.Header>
 
-          <Card>
-            <S.Header>
-              <div>
-                <S.Title>Critérios de Avaliação</S.Title>
-                <S.Subtitle>
-                  Gerencie os critérios utilizados nas avaliações
-                </S.Subtitle>
-              </div>
-            </S.Header>
+          <ToggleBar
+            value={tipo}
+            onChange={(value) => setTipo(value as any)}
+            items={categorias.map(({ value, label }) => ({
+              value,
+              label,
+              icon: <MdAssignment />,
+            }))}
+          />
 
-            <ToggleBar
-              value={tipo}
-              onChange={(value) => setTipo(value as any)}
-              items={categorias.map(({ value, label }) => ({
-                value,
-                label,
-                icon: <MdAssignment />,
-              }))}
-            />
-
-            <div>
-              <S.Table>
-                <thead>
-                  <tr>
-                    <th>Nome</th>
-                    <th>Descrição</th>
-                    <th>Peso</th>
-                    <th>Ações</th>
+          <div>
+            <S.Table>
+              <thead>
+                <tr>
+                  <th>Nome</th>
+                  <th>Descrição</th>
+                  <th>Peso</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody>
+                {criteriosFiltrados.map((criterio) => (
+                  <tr key={criterio.idCriterio}>
+                    <td>{criterio.nomeCriterio}</td>
+                    <td>{criterio.descricao}</td>
+                    <td>{Number(criterio.peso).toFixed(1)}</td>
+                    <td>
+                      <DropdownActions
+                        actions={[
+                          {
+                            label: "Editar",
+                            onClick: () => handleEdit(criterio),
+                          },
+                          {
+                            label: "Remover",
+                            onClick: () =>
+                              setCriterioParaRemover({
+                                id: criterio.idCriterio,
+                                nome: criterio.nomeCriterio,
+                                pilar: criterio.pilar,
+                              }),
+                            danger: true,
+                          },
+                        ]}
+                      />
+                    </td>
                   </tr>
-                </thead>
-                <tbody>
-                  {criteriosFiltrados.map((criterio) => (
-                    <tr key={criterio.idCriterio}>
-                      <td>{criterio.nomeCriterio}</td>
-                      <td>{criterio.descricao}</td>
-                      <td>{Number(criterio.peso).toFixed(1)}</td>
-                      <td>
-                        <DropdownActions
-                          actions={[
-                            {
-                              label: "Editar",
-                              onClick: () => handleEdit(criterio),
-                            },
-                            {
-                              label: "Remover",
-                              onClick: () =>
-                                setCriterioParaRemover({
-                                  id: criterio.idCriterio,
-                                  nome: criterio.nomeCriterio,
-                                  pilar: criterio.pilar,
-                                }),
-                              danger: true,
-                            },
-                          ]}
-                        />
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </S.Table>
-            </div>
-          </Card>
-        </S.Main>
+                ))}
+              </tbody>
+            </S.Table>
+          </div>
+        </Card>
+      </>
 
-        <Modal
-          open={showModal}
-          onClose={() => {
-            resetForm();
-            setShowModal(false);
-          }}
-          title={editId ? "Editar Critério" : "Adicionar Novo Critério"}
-          description={
-            editId
-              ? "Modifique as informações do critério"
-              : "Defina um novo critério de avaliação"
-          }
-        >
-          <S.ModalContent>
-            <div>
-              <S.ModalText>Nome do critério:*</S.ModalText>
-              <Input
-                placeholder="Ex: Comunicação Efetiva"
-                value={nome}
-                onChange={(e) => setNome(e.target.value)}
-                error={camposErro.nome}
+      <Modal
+        open={showModal}
+        onClose={() => {
+          resetForm();
+          setShowModal(false);
+        }}
+        title={editId ? "Editar Critério" : "Adicionar Novo Critério"}
+        description={
+          editId
+            ? "Modifique as informações do critério"
+            : "Defina um novo critério de avaliação"
+        }
+      >
+        <S.ModalContent>
+          <div>
+            <S.ModalText>Nome do critério:*</S.ModalText>
+            <Input
+              placeholder="Ex: Comunicação Efetiva"
+              value={nome}
+              onChange={(e) => setNome(e.target.value)}
+              error={camposErro.nome}
+            />
+          </div>
+
+          <div>
+            <S.ModalText>Descrição:*</S.ModalText>
+            <S.ModalTextArea
+              placeholder="Descreva o que será avaliado neste critério..."
+              value={descricao}
+              onChange={(e) => setDescricao(e.target.value)}
+              rows={4}
+              style={
+                camposErro.descricao
+                  ? { borderColor: theme.colors.error.default }
+                  : {}
+              }
+            />
+          </div>
+
+          <S.ModalSelectsRow>
+            <S.ModalSelect>
+              <S.ModalText>Categoria:*</S.ModalText>
+              <Select
+                placeholder="Selecione a categoria"
+                value={categoria}
+                onChange={setCategoria}
+                options={categorias}
+                error={camposErro.categoria}
               />
-            </div>
-
-            <div>
-              <S.ModalText>Descrição:*</S.ModalText>
-              <S.ModalTextArea
-                placeholder="Descreva o que será avaliado neste critério..."
-                value={descricao}
-                onChange={(e) => setDescricao(e.target.value)}
-                rows={4}
-                style={
-                  camposErro.descricao
-                    ? { borderColor: theme.colors.error.default }
-                    : {}
-                }
+            </S.ModalSelect>
+            <S.ModalSelect>
+              <S.ModalText>Peso:*</S.ModalText>
+              <Select
+                placeholder="Selecione o peso"
+                value={peso}
+                onChange={setPeso}
+                options={pesos}
+                error={camposErro.peso}
               />
-            </div>
+            </S.ModalSelect>
+          </S.ModalSelectsRow>
 
-            <S.ModalSelectsRow>
-              <S.ModalSelect>
-                <S.ModalText>Categoria:*</S.ModalText>
-                <Select
-                  placeholder="Selecione a categoria"
-                  value={categoria}
-                  onChange={setCategoria}
-                  options={categorias}
-                  error={camposErro.categoria}
-                />
-              </S.ModalSelect>
-              <S.ModalSelect>
-                <S.ModalText>Peso:*</S.ModalText>
-                <Select
-                  placeholder="Selecione o peso"
-                  value={peso}
-                  onChange={setPeso}
-                  options={pesos}
-                  error={camposErro.peso}
-                />
-              </S.ModalSelect>
-            </S.ModalSelectsRow>
-
-            {/* <div>
+          {/* <div>
               <S.ModalText>Aplicável às Trilhas</S.ModalText>
               <S.ModalSubText>Selecione no mínimo 1 opção.</S.ModalSubText>
               <S.ModalCheckbox>
@@ -372,57 +359,56 @@ export function EvaluationCriteria() {
               </S.ModalCheckbox>
             </div> */}
 
-            <S.ModalButtons>
-              <Button
-                variant="outline"
-                onClick={() => {
-                  resetForm();
-                  setShowModal(false);
-                }}
-              >
-                Cancelar
-              </Button>
-              <Button onClick={editId ? handleSaveEdit : handleSubmit}>
-                {editId ? "Salvar" : "Adicionar"}
-              </Button>
-            </S.ModalButtons>
-          </S.ModalContent>
-        </Modal>
-
-        <Modal
-          open={!!criterioParaRemover}
-          onClose={() => setCriterioParaRemover(null)}
-          title="Remover critério?"
-          description={`Tem certeza que deseja remover "${criterioParaRemover?.nome}"?\nEssa ação não poderá ser desfeita.`}
-        >
           <S.ModalButtons>
             <Button
               variant="outline"
-              onClick={() => setCriterioParaRemover(null)}
+              onClick={() => {
+                resetForm();
+                setShowModal(false);
+              }}
             >
               Cancelar
             </Button>
-            <Button
-              variant="danger"
-              onClick={() => {
-                if (criterioParaRemover) {
-                  removerCriterio(
-                    criterioParaRemover.id,
-                    pilaresMap[
-                      criterioParaRemover.pilar === "Gestao_e_Lideranca"
-                        ? "gestao"
-                        : criterioParaRemover.pilar.toLowerCase()
-                    ]
-                  );
-                  setCriterioParaRemover(null);
-                }
-              }}
-            >
-              Confirmar
+            <Button onClick={editId ? handleSaveEdit : handleSubmit}>
+              {editId ? "Salvar" : "Adicionar"}
             </Button>
           </S.ModalButtons>
-        </Modal>
-      </S.Wrapper>
+        </S.ModalContent>
+      </Modal>
+
+      <Modal
+        open={!!criterioParaRemover}
+        onClose={() => setCriterioParaRemover(null)}
+        title="Remover critério?"
+        description={`Tem certeza que deseja remover "${criterioParaRemover?.nome}"?\nEssa ação não poderá ser desfeita.`}
+      >
+        <S.ModalButtons>
+          <Button
+            variant="outline"
+            onClick={() => setCriterioParaRemover(null)}
+          >
+            Cancelar
+          </Button>
+          <Button
+            variant="danger"
+            onClick={() => {
+              if (criterioParaRemover) {
+                removerCriterio(
+                  criterioParaRemover.id,
+                  pilaresMap[
+                    criterioParaRemover.pilar === "Gestao_e_Lideranca"
+                      ? "gestao"
+                      : criterioParaRemover.pilar.toLowerCase()
+                  ]
+                );
+                setCriterioParaRemover(null);
+              }
+            }}
+          >
+            Confirmar
+          </Button>
+        </S.ModalButtons>
+      </Modal>
     </>
   );
 }

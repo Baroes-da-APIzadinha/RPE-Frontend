@@ -5,93 +5,78 @@ import { MdOutlineTimelapse } from "react-icons/md";
 import { MdGrade } from "react-icons/md";
 import CardContainer from "@/components/CardContainer/index.tsx";
 import { useTheme } from "styled-components";
-import { Sidebar } from "@/components/Sidebar";
 import RowProgressBox from "@/components/RowProgressBox";
 import StatusRowBox from "@/components/StatusRowBox";
 import { Title } from "@/components/Title";
 import { useCicloAtual } from "@/hooks/useCicloAtual";
-import { usePerfil } from "@/hooks/usePerfil.ts";
 
 export function ColaboradorHome() {
-  const { perfil, loading } = usePerfil();
-
   const theme = useTheme();
   const { cicloAtual, treatTimeRemaining } = useCicloAtual();
 
-  if (loading || !perfil) return null;
-
   return (
     <>
-      <S.Wrapper>
-        <Sidebar
-          roles={perfil.roles}
-          mainRole={perfil.mainRole}
-          userName={perfil.userName}
+      <Title>Olá, João Gomes</Title>
+      <CardContainer>
+        <CardBox
+          icon={<MdOutlineInsertInvitation />}
+          title="ciclo atual"
+          bigSpan={cicloAtual ? cicloAtual.nome : "Carregando..."}
+          span={
+            cicloAtual
+              ? treatTimeRemaining(cicloAtual.tempoRestante)
+              : "Carregando..."
+          }
         />
-        <S.Main>
-          <Title>Olá, João Gomes</Title>
-          <CardContainer>
-            <CardBox
-              icon={<MdOutlineInsertInvitation />}
-              title="ciclo atual"
-              bigSpan={cicloAtual ? cicloAtual.nome : "Carregando..."}
-              span={
-                cicloAtual
-                  ? treatTimeRemaining(cicloAtual.tempoRestante)
-                  : "Carregando..."
-              }
-            />
-            <CardBox
-              icon={<MdOutlineTimelapse />}
-              title="progresso do ciclo"
-              bigSpan="40%"
-              progress={40}
-            />
-            <CardBox
-              icon={<MdGrade />}
-              title="ultima Avaliação"
-              bigSpan="4.3"
-              miniSpan="-0.3"
-            />
-          </CardContainer>
+        <CardBox
+          icon={<MdOutlineTimelapse />}
+          title="progresso do ciclo"
+          bigSpan="40%"
+          progress={40}
+        />
+        <CardBox
+          icon={<MdGrade />}
+          title="ultima Avaliação"
+          bigSpan="4.3"
+          miniSpan="-0.3"
+        />
+      </CardContainer>
 
-          <RowProgressBox
-            title="Status do Ciclo Atual"
-            bars={[
-              {
-                subtitle: "Autoavaliação",
-                value: 100,
-                color: theme.colors.success.default,
-              },
-              {
-                subtitle: "Avaliação 360°",
-                value: 10,
-                color: theme.colors.error.default,
-              },
-              {
-                subtitle: "Avaliação do Gestor",
-                value: 0,
-                color: theme.colors.secondary.default,
-              },
-            ]}
-          />
+      <RowProgressBox
+        title="Status do Ciclo Atual"
+        bars={[
+          {
+            subtitle: "Autoavaliação",
+            value: 100,
+            color: theme.colors.success.default,
+          },
+          {
+            subtitle: "Avaliação 360°",
+            value: 10,
+            color: theme.colors.error.default,
+          },
+          {
+            subtitle: "Avaliação do Gestor",
+            value: 0,
+            color: theme.colors.secondary.default,
+          },
+        ]}
+      />
 
-          <StatusRowBox
-            title="Situação das Metas"
-            subtitle="Resumo do status de cada meta"
-            items={[
-              { value: "Concluida", label: "Autoavaliação" },
-              {
-                value: "Em andamento",
-                label: "Avaliação 360",
-                concluidas: 1,
-                total: 5,
-              },
-              { value: "Pendente", label: "Avaliação do gestor" },
-            ]}
-          />
-        </S.Main>
-      </S.Wrapper>
+      <StatusRowBox
+        title="Situação das Metas"
+        subtitle="Resumo do status de cada meta"
+        items={[
+          { value: "Concluida", label: "Autoavaliação" },
+          {
+            value: "Em andamento",
+            label: "Avaliação 360",
+            concluidas: 1,
+            total: 5,
+          },
+          { value: "Pendente", label: "Avaliação do gestor" },
+        ]}
+      />
     </>
   );
 }

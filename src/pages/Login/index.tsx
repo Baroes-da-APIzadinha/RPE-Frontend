@@ -5,22 +5,37 @@ import Input from "@/components/Input";
 import Button from "@/components/Button/index.tsx";
 import { useNavigate } from "react-router-dom";
 import { handleLogin } from "@/services/Auth/login.ts";
+import { getPerfil } from "@/services/HTTP/perfil";
+
 export function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    handleLogin(email, password)
-      .then(() => {
-        // Redireciona para a página inicial após o login bem-sucedido
-        navigate("/home");
-      })
-      .catch((error) => {
-        // Aqui você pode lidar com erros de autenticação, como exibir uma mensagem de erro
-        console.error("Erro ao fazer login:", error);
-      });
+
+    try {
+      await handleLogin(email, password);
+
+      const res = await getPerfil();
+      const roles: string[] = res.roles || [];
+
+      let destination = "/colaborador/home";
+
+      if (roles.includes("ADMIN") || roles.includes("RH")) {
+        destination = "/rh/dashboard";
+      } else if (roles.includes("GESTOR")) {
+        destination = "/gestor/dashboard";
+      } else if (roles.includes("COMITE")) {
+        destination = "/comite/historico";
+      }
+
+      navigate(destination);
+    } catch (error) {
+      console.error("Erro ao fazer login:", error);
+      // TODO: mostrar mensagem de erro pro usuário
+    }
   };
 
   return (
@@ -53,9 +68,7 @@ export function Login() {
           placeholder="Digite sua senha"
           label="Senha"
         />
-        <Button variant="default" >
-          Entrar
-        </Button>
+        <Button variant="default">Entrar</Button>
       </S.Form>
     </S.Container>
   );

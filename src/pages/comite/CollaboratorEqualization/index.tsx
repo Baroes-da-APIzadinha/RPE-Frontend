@@ -1,4 +1,3 @@
-import { Sidebar } from "@/components/Sidebar";
 import * as S from "./styles";
 import { Title } from "@/components/Title";
 import { Card } from "@/components/Card";
@@ -10,7 +9,6 @@ import Textarea from "@/components/Textarea";
 import { IoSparklesOutline } from "react-icons/io5";
 import { FaStar } from "react-icons/fa";
 import { Select } from "@/components/Select";
-import { usePerfil } from "@/hooks/usePerfil";
 
 type Status = "concluida" | "andamento" | "pendente";
 
@@ -69,9 +67,6 @@ const collaboratorsMock: Colaborador[] = [
 ];
 
 export function CollaboratorEqualization() {
-  const { perfil, loading } = usePerfil();
-
-
   const [notas, setNotas] = useState<Record<number, number>>({});
   const [hover, setHover] = useState<number | null>(null);
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
@@ -96,174 +91,161 @@ export function CollaboratorEqualization() {
     setExpandedIndex((prev) => (prev === index ? null : index));
   };
 
-  if (loading || !perfil) return null;
-
-
   return (
-    <S.Wrapper>
-      <Sidebar
-        roles={perfil.roles}
-        mainRole={perfil.mainRole}
-        userName={perfil.userName}
-      />
+    <>
+      <S.Header>
+        <Title>Equalização de Avaliações</Title>
+      </S.Header>
 
-      <S.Main>
-        <S.Header>
-          <Title>Equalização de Avaliações</Title>
-        </S.Header>
+      <Card>
+        <S.Title>Filtros</S.Title>
+        <S.FiltersWrapper>
+          <S.FilterItem>
+            <label>Buscar por nome ou cargo</label>
+            <SearchInput
+              placeholder="Buscar colaborador..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </S.FilterItem>
 
-        <Card>
-          <S.Title>Filtros</S.Title>
-          <S.FiltersWrapper>
-            <S.FilterItem>
-              <label>Buscar por nome ou cargo</label>
-              <SearchInput
-                placeholder="Buscar colaborador..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </S.FilterItem>
+          <S.FilterItem>
+            <label>Status da equalização</label>
+            <Select
+              placeholder="Todos os status"
+              value={statusFilter}
+              onChange={(val) => setStatusFilter(val)}
+              options={[
+                { label: "Todos", value: "todos" },
+                { label: "Pendente", value: "pendente" },
+                { label: "Andamento", value: "andamento" },
+                { label: "Concluída", value: "concluida" },
+              ]}
+            />
+          </S.FilterItem>
+        </S.FiltersWrapper>
+      </Card>
 
-            <S.FilterItem>
-              <label>Status da equalização</label>
-              <Select
-                placeholder="Todos os status"
-                value={statusFilter}
-                onChange={(val) => setStatusFilter(val)}
-                options={[
-                  { label: "Todos", value: "todos" },
-                  { label: "Pendente", value: "pendente" },
-                  { label: "Andamento", value: "andamento" },
-                  { label: "Concluída", value: "concluida" },
-                ]}
-              />
-            </S.FilterItem>
-          </S.FiltersWrapper>
-        </Card>
+      <Card>
+        {filteredCollaborators.map((colab, index) => {
+          const isExpanded = expandedIndex === index;
 
-        <Card>
-          {filteredCollaborators.map((colab, index) => {
-            const isExpanded = expandedIndex === index;
+          return (
+            <S.CardContainer key={index}>
+              <S.UserHeader>
+                <S.UserInfo>
+                  <S.Avatar />
+                  <div>
+                    <S.Name>
+                      {colab.nome}
+                      <S.EqualizationBadge $status={colab.equalization}>
+                        {colab.equalization}
+                      </S.EqualizationBadge>
+                    </S.Name>
+                    <S.Role>{colab.cargo}</S.Role>
+                  </div>
+                </S.UserInfo>
+                <S.UserActions>
+                  <S.ScoreContainer>
+                    <S.ScoreLabel>Autoavaliação</S.ScoreLabel>
+                    <S.ScoreValue>{colab.autoavaliacao ?? "-"}</S.ScoreValue>
+                  </S.ScoreContainer>
+                  <S.ScoreContainer>
+                    <S.ScoreLabel>Avaliação 360</S.ScoreLabel>
+                    <S.ScoreValue>{colab.avaliacao360 ?? "-"}</S.ScoreValue>
+                  </S.ScoreContainer>
+                  <S.ScoreContainer>
+                    <S.ScoreLabel>Nota gestor</S.ScoreLabel>
+                    <S.ScoreValue>{colab.notaGestor ?? "-"}</S.ScoreValue>
+                  </S.ScoreContainer>
+                  <S.ScoreContainer>
+                    <S.ScoreLabel>Discrepância</S.ScoreLabel>
+                    <S.DiscrepancyValue $value={colab.discrepancy}>
+                      {colab.discrepancy ?? "-"}
+                    </S.DiscrepancyValue>
+                  </S.ScoreContainer>
 
-            return (
-              <S.CardContainer key={index}>
-                <S.UserHeader>
-                  <S.UserInfo>
-                    <S.Avatar />
+                  <S.DropButton onClick={() => toggleExpand(index)}>
+                    <MdArrowDropDown
+                      size={36}
+                      style={{
+                        transform: isExpanded
+                          ? "rotate(180deg)"
+                          : "rotate(0deg)",
+                        transition: "transform 0.2s ease",
+                      }}
+                    />
+                  </S.DropButton>
+                </S.UserActions>
+              </S.UserHeader>
+
+              {isExpanded && (
+                <S.InfoWrapper>
+                  <S.InfoGrid>
                     <div>
-                      <S.Name>
-                        {colab.nome}
-                        <S.EqualizationBadge $status={colab.equalization}>
-                          {colab.equalization}
-                        </S.EqualizationBadge>
-                      </S.Name>
-                      <S.Role>{colab.cargo}</S.Role>
+                      <S.Label>Resumo IA</S.Label>
+                      <S.SummaryBox>
+                        <S.IconSpan>
+                          <IoSparklesOutline size={24} />
+                        </S.IconSpan>
+                        <S.SummaryContent>
+                          <strong>Resumo</strong>
+                          <span>Aguarde o resumo gerado pela IA...</span>
+                        </S.SummaryContent>
+                      </S.SummaryBox>
                     </div>
-                  </S.UserInfo>
-                  <S.UserActions>
-                    <S.ScoreContainer>
-                      <S.ScoreLabel>Autoavaliação</S.ScoreLabel>
-                      <S.ScoreValue>{colab.autoavaliacao ?? "-"}</S.ScoreValue>
-                    </S.ScoreContainer>
-                    <S.ScoreContainer>
-                      <S.ScoreLabel>Avaliação 360</S.ScoreLabel>
-                      <S.ScoreValue>{colab.avaliacao360 ?? "-"}</S.ScoreValue>
-                    </S.ScoreContainer>
-                    <S.ScoreContainer>
-                      <S.ScoreLabel>Nota gestor</S.ScoreLabel>
-                      <S.ScoreValue>{colab.notaGestor ?? "-"}</S.ScoreValue>
-                    </S.ScoreContainer>
-                    <S.ScoreContainer>
-                      <S.ScoreLabel>Discrepância</S.ScoreLabel>
-                      <S.DiscrepancyValue $value={colab.discrepancy}>
-                        {colab.discrepancy ?? "-"}
-                      </S.DiscrepancyValue>
-                    </S.ScoreContainer>
+                  </S.InfoGrid>
 
-                    <S.DropButton onClick={() => toggleExpand(index)}>
-                      <MdArrowDropDown
-                        size={36}
-                        style={{
-                          transform: isExpanded
-                            ? "rotate(180deg)"
-                            : "rotate(0deg)",
-                          transition: "transform 0.2s ease",
-                        }}
-                      />
-                    </S.DropButton>
-                  </S.UserActions>
-                </S.UserHeader>
+                  <S.Label>Avaliação Final do Comitê</S.Label>
+                  <S.InfoGrid>
+                    <S.RatingRow>
+                      <S.Label>Nota:</S.Label>
+                      {[1.0, 2.0, 3.0, 4.0, 5.0].map((star) => (
+                        <S.StarButton
+                          key={star}
+                          onClick={() => setNotas({ ...notas, [index]: star })}
+                          onMouseEnter={() => setHover(star)}
+                          onMouseLeave={() => setHover(null)}
+                          $active={star <= (hover ?? notas[index] ?? 0)}
+                          aria-label={`Dar nota ${star}`}
+                        >
+                          <FaStar />
+                        </S.StarButton>
+                      ))}
+                      <S.Score>{notas[index] ?? 0}</S.Score>
+                    </S.RatingRow>
+                    <Textarea
+                      placeholder="Descreva os motivos para a decisão do comitê…"
+                      value={justifications[index] ?? ""}
+                      onChange={(e) =>
+                        setJustifications({
+                          ...justifications,
+                          [index]: e.target.value,
+                        })
+                      }
+                    />
+                  </S.InfoGrid>
 
-                {isExpanded && (
-                  <S.InfoWrapper>
-                    <S.InfoGrid>
-                      <div>
-                        <S.Label>Resumo IA</S.Label>
-                        <S.SummaryBox>
-                          <S.IconSpan>
-                            <IoSparklesOutline size={24} />
-                          </S.IconSpan>
-                          <S.SummaryContent>
-                            <strong>Resumo</strong>
-                            <span>Aguarde o resumo gerado pela IA...</span>
-                          </S.SummaryContent>
-                        </S.SummaryBox>
-                      </div>
-                    </S.InfoGrid>
-
-                    <S.Label>Avaliação Final do Comitê</S.Label>
-                    <S.InfoGrid>
-                      <S.RatingRow>
-                        <S.Label>Nota:</S.Label>
-                        {[1.0, 2.0, 3.0, 4.0, 5.0].map((star) => (
-                          <S.StarButton
-                            key={star}
-                            onClick={() =>
-                              setNotas({ ...notas, [index]: star })
-                            }
-                            onMouseEnter={() => setHover(star)}
-                            onMouseLeave={() => setHover(null)}
-                            $active={star <= (hover ?? notas[index] ?? 0)}
-                            aria-label={`Dar nota ${star}`}
-                          >
-                            <FaStar />
-                          </S.StarButton>
-                        ))}
-                        <S.Score>{notas[index] ?? 0}</S.Score>
-                      </S.RatingRow>
-                      <Textarea
-                        placeholder="Descreva os motivos para a decisão do comitê…"
-                        value={justifications[index] ?? ""}
-                        onChange={(e) =>
-                          setJustifications({
-                            ...justifications,
-                            [index]: e.target.value,
-                          })
-                        }
-                      />
-                    </S.InfoGrid>
-
-                    <S.FooterButtons>
-                      <Button
-                        variant="outline"
-                        onClick={() => console.log("Revisando")}
-                      >
-                        Revisar
-                      </Button>
-                      <Button
-                        variant="primary"
-                        onClick={() => console.log("Aprovado")}
-                      >
-                        <MdOutlineCheckCircleOutline /> Aprovar
-                      </Button>
-                    </S.FooterButtons>
-                  </S.InfoWrapper>
-                )}
-              </S.CardContainer>
-            );
-          })}
-        </Card>
-      </S.Main>
-    </S.Wrapper>
+                  <S.FooterButtons>
+                    <Button
+                      variant="outline"
+                      onClick={() => console.log("Revisando")}
+                    >
+                      Revisar
+                    </Button>
+                    <Button
+                      variant="primary"
+                      onClick={() => console.log("Aprovado")}
+                    >
+                      <MdOutlineCheckCircleOutline /> Aprovar
+                    </Button>
+                  </S.FooterButtons>
+                </S.InfoWrapper>
+              )}
+            </S.CardContainer>
+          );
+        })}
+      </Card>
+    </>
   );
 }

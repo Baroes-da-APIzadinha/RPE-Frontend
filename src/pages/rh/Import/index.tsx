@@ -1,6 +1,5 @@
-import Button from "@/components/Button/index.tsx";
 import * as S from "./styles.ts";
-import { Sidebar } from "@/components/Sidebar/index.tsx";
+import Button from "@/components/Button/index.tsx";
 import { Title } from "@/components/Title/index.tsx";
 import { MdAssignment, MdChecklist, MdGroup, MdHistory } from "react-icons/md";
 import { CardImportHistory } from "@/components/CardImportHistory/index.tsx";
@@ -9,12 +8,10 @@ import { useState } from "react";
 import { Modal } from "@/components/Modal/index.tsx";
 import { ToggleBar } from "@/components/ToggleBar/index.tsx";
 import { DropdownActions } from "@/components/DropdownActions/index.tsx";
-import { usePerfil } from "@/hooks/usePerfil.ts";
 
 type TipoImportacao = "colaboradores" | "avaliacoes" | "criterios";
 
 export function Import() {
-  const { perfil, loading } = usePerfil();
 
   const [showModal, setShowModal] = useState(false);
   const [tipo, setTipo] = useState<TipoImportacao>("colaboradores");
@@ -44,16 +41,10 @@ export function Import() {
     console.log(`Importando ${tipo}:`, file);
   };
 
-  if (loading || !perfil) return null;
 
   return (
-    <S.Wrapper>
-      <Sidebar
-        roles={perfil.roles}
-        mainRole={perfil.mainRole}
-        userName={perfil.userName}
-      />
-      <S.Main>
+    <>
+      <>
         <S.Header>
           <Title>Importação de Dados</Title>
           <S.HeaderButtons>
@@ -124,7 +115,7 @@ export function Import() {
             ]}
           />
         </S.CardContainer>
-      </S.Main>
+      </>
       <Modal
         open={showModal}
         onClose={() => setShowModal(false)}
@@ -163,6 +154,6 @@ export function Import() {
           onFileSelect={handleSelect}
         />
       </Modal>
-    </S.Wrapper>
+    </>
   );
 }

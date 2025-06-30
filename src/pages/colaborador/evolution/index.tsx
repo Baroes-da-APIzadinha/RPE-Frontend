@@ -1,5 +1,4 @@
 import * as S from "./styles.ts";
-import { Sidebar } from "@/components/Sidebar/index.tsx";
 import CardConteiner from "@/components/CardContainer/index.tsx";
 import CardBox from "@/components/CardBox/index.tsx";
 import { Title } from "@/components/Title/index.tsx";
@@ -28,8 +27,6 @@ function getHigherPilar() {
 }
 
 export function ColaboradorEvolution() {
-  const { perfil, loading } = usePerfil();
-
   const theme = useTheme();
   if (loading || !perfil) return null;
 
@@ -39,15 +36,7 @@ export function ColaboradorEvolution() {
 
   return (
     <>
-      <S.Wrapper>
-        <Sidebar
-          roles={perfil.roles}
-          mainRole={perfil.mainRole}
-          userName={perfil.userName}
-        />
-
-        <S.Main>
-          <Title>Sua evolução na RocketCorp</Title>
+      <Title>Sua evolução na RocketCorp</Title>
 
           <CardConteiner>
             <CardBox

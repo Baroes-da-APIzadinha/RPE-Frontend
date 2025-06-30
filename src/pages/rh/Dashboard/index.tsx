@@ -1,4 +1,3 @@
-import { Sidebar } from "@/components/Sidebar";
 import * as S from "./styles.ts";
 import { Title } from "@/components/Title";
 import Button from "@/components/Button";
@@ -20,23 +19,15 @@ import ReactApexChart from "react-apexcharts";
 import { AlertList } from "@/components/AlertList/index.tsx";
 import { DetailedProgress } from "@/components/DetailedProgress/index.tsx";
 import { useCicloAtual } from "@/hooks/useCicloAtual";
-import { usePerfil } from "@/hooks/usePerfil.ts";
 
 export function RhDashboard() {
-  const { perfil, loading } = usePerfil();
 
   const { cicloAtual, treatTimeRemaining } = useCicloAtual();
 
-  if (loading || !perfil) return null;
 
   return (
-    <S.Wrapper>
-      <Sidebar
-        roles={perfil.roles}
-        mainRole={perfil.mainRole}
-        userName={perfil.userName}
-      />
-      <S.Main>
+    <>
+      <>
         <S.Header>
           <Title>Dashboard RH</Title>
           <S.HeaderButtons>
@@ -186,7 +177,7 @@ export function RhDashboard() {
             },
           ]}
         />
-      </S.Main>
-    </S.Wrapper>
+      </>
+    </>
   );
 }
