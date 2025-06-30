@@ -8,6 +8,7 @@ import { StarRating } from "@/components/StarRating";
 import { MdKeyboardArrowDown, MdKeyboardArrowUp } from "react-icons/md";
 import EvaluationFrame from "@/components/EvaluationFrame";
 import RowProgressBox from "@/components/RowProgressBox";
+import { toast } from "sonner";
 
 const criteriosMock = [
   {
@@ -117,7 +118,12 @@ export function CollaboratorReview() {
   };
 
   const handleSubmit = () => {
-    console.log("Avaliação enviada:");
+    if (criteriosPreenchidos < totalCriterios) {
+      toast.error("Preencha todos os critérios antes de enviar.");
+      return;
+    }
+    toast.success("Avaliação enviada com sucesso!");
+    console.log("Avaliação enviada:", avaliacaoGestor);
   };
 
   const handleGestorNotaChange = (id: string, nota: number) => {
