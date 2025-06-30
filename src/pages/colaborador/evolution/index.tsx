@@ -1,4 +1,3 @@
-import * as S from "./styles.ts";
 import CardConteiner from "@/components/CardContainer/index.tsx";
 import CardBox from "@/components/CardBox/index.tsx";
 import { Title } from "@/components/Title/index.tsx";
@@ -8,7 +7,6 @@ import { IoMdTrophy } from "react-icons/io";
 import ReactApexChart from "react-apexcharts";
 import ChartBox from "@/components/ChartBox/index.tsx";
 import { useTheme } from "styled-components";
-import { usePerfil } from "@/hooks/usePerfil.ts";
 import { notasPorPilarData, ciclosParticipados, historicoNotas } from "@/data/collaboratorEvolution.ts";
 
 function getHigherPilar() {
@@ -167,8 +165,6 @@ export function ColaboradorEvolution() {
               />
             </ChartBox>
           </CardConteiner>
-        </S.Main>
-      </S.Wrapper>
     </>
   );
 }
