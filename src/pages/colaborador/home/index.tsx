@@ -8,20 +8,25 @@ import { useTheme } from "styled-components";
 import { Sidebar } from "@/components/Sidebar";
 import RowProgressBox from "@/components/RowProgressBox";
 import StatusRowBox from "@/components/StatusRowBox";
-import {Title} from "@/components/Title";
+import { Title } from "@/components/Title";
 import { useCicloAtual } from "@/hooks/useCicloAtual";
+import { usePerfil } from "@/hooks/usePerfil.ts";
 
 export function ColaboradorHome() {
+  const { perfil, loading } = usePerfil();
+
   const theme = useTheme();
   const { cicloAtual, treatTimeRemaining } = useCicloAtual();
+
+  if (loading || !perfil) return null;
 
   return (
     <>
       <S.Wrapper>
         <Sidebar
-          roles={["colaborador", "gestor", "rh", "comite"]}
-          mainRole="comite"
-          userName="João Gomes"
+          roles={perfil.roles}
+          mainRole={perfil.mainRole}
+          userName={perfil.userName}
         />
         <S.Main>
           <Title>Olá, João Gomes</Title>
@@ -30,7 +35,11 @@ export function ColaboradorHome() {
               icon={<MdOutlineInsertInvitation />}
               title="ciclo atual"
               bigSpan={cicloAtual ? cicloAtual.nome : "Carregando..."}
-              span={cicloAtual ? treatTimeRemaining(cicloAtual.tempoRestante) : "Carregando..."}
+              span={
+                cicloAtual
+                  ? treatTimeRemaining(cicloAtual.tempoRestante)
+                  : "Carregando..."
+              }
             />
             <CardBox
               icon={<MdOutlineTimelapse />}
@@ -71,8 +80,13 @@ export function ColaboradorHome() {
             title="Situação das Metas"
             subtitle="Resumo do status de cada meta"
             items={[
-              { value: "Concluida" , label: "Autoavaliação" },
-              { value: "Em andamento", label: "Avaliação 360", concluidas: 1, total: 5 },
+              { value: "Concluida", label: "Autoavaliação" },
+              {
+                value: "Em andamento",
+                label: "Avaliação 360",
+                concluidas: 1,
+                total: 5,
+              },
               { value: "Pendente", label: "Avaliação do gestor" },
             ]}
           />

@@ -11,6 +11,7 @@ import {
 } from "react-icons/md";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { usePerfil } from "@/hooks/usePerfil.ts";
 
 type Status = "concluida" | "andamento" | "pendente";
 
@@ -95,18 +96,25 @@ const equipeMock: Colaborador[] = [
 ];
 
 export function ManagerTeam() {
+  const { perfil, loading } = usePerfil();
+
+
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
   const navigate = useNavigate();
 
   const toggleExpand = (index: number) => {
     setExpandedIndex((prev) => (prev === index ? null : index));
   };
+
+  if (loading || !perfil) return null;
+
+
   return (
     <S.Wrapper>
       <Sidebar
-        roles={["colaborador", "gestor", "rh", "comite"]}
-        mainRole="gestor"
-        userName="João Gomes"
+        roles={perfil.roles}
+        mainRole={perfil.mainRole}
+        userName={perfil.userName}
       />
       <S.Main>
         <S.Header>

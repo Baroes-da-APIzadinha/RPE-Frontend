@@ -12,6 +12,7 @@ import { useCicloAtual } from "@/hooks/useCicloAtual";
 import theme from "@/styles/theme";
 import { SearchInput } from "@/components/SearchInput/index.tsx";
 import { Select } from "@/components/Select/index.tsx";
+import { usePerfil } from "@/hooks/usePerfil.ts";
 
 type Ciclo = {
   id: string;
@@ -22,6 +23,9 @@ type Ciclo = {
 };
 
 export function CycleHistory() {
+  const { perfil, loading } = usePerfil();
+
+
   const [showExportModal, setShowExportModal] = useState(false);
   const [selectedCycle, setSelectedCycle] = useState<string | null>(null);
   const [ciclos, setCiclos] = useState<Ciclo[]>([]);
@@ -73,12 +77,15 @@ export function CycleHistory() {
 
   const filteredCiclos = ciclos.filter(cicloPassaFiltro);
 
+  if (loading || !perfil) return null;
+
+
   return (
     <S.Wrapper>
       <Sidebar
-        roles={["colaborador", "gestor", "rh", "comite"]}
-        mainRole="comite"
-        userName="João Gomes"
+        roles={perfil.roles}
+        mainRole={perfil.mainRole}
+        userName={perfil.userName}
       />
       <S.Main>
         <S.Header>

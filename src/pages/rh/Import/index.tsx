@@ -9,10 +9,13 @@ import { useState } from "react";
 import { Modal } from "@/components/Modal/index.tsx";
 import { ToggleBar } from "@/components/ToggleBar/index.tsx";
 import { DropdownActions } from "@/components/DropdownActions/index.tsx";
+import { usePerfil } from "@/hooks/usePerfil.ts";
 
 type TipoImportacao = "colaboradores" | "avaliacoes" | "criterios";
 
 export function Import() {
+  const { perfil, loading } = usePerfil();
+
   const [showModal, setShowModal] = useState(false);
   const [tipo, setTipo] = useState<TipoImportacao>("colaboradores");
 
@@ -41,12 +44,14 @@ export function Import() {
     console.log(`Importando ${tipo}:`, file);
   };
 
+  if (loading || !perfil) return null;
+
   return (
     <S.Wrapper>
       <Sidebar
-        roles={["colaborador", "gestor", "rh", "comite"]}
-        mainRole="comite"
-        userName="João Gomes"
+        roles={perfil.roles}
+        mainRole={perfil.mainRole}
+        userName={perfil.userName}
       />
       <S.Main>
         <S.Header>

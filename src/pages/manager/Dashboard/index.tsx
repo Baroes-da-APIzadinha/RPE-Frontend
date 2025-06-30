@@ -20,8 +20,11 @@ import type ApexCharts from "apexcharts";
 import { useTheme } from "styled-components";
 import Button from "@/components/Button/index.tsx";
 import { AlertList } from "@/components/AlertList/index.tsx";
+import { usePerfil } from "@/hooks/usePerfil.ts";
 
 export function MananegerDashboard() {
+  const { perfil, loading } = usePerfil();
+
   const theme = useTheme();
   const chartOptions: ApexCharts.ApexOptions = {
     chart: {
@@ -82,12 +85,14 @@ export function MananegerDashboard() {
     },
   ];
 
+  if (loading || !perfil) return null;
+
   return (
     <S.Wrapper>
       <Sidebar
-        roles={["colaborador", "gestor", "rh", "comite"]}
-        mainRole="gestor"
-        userName="João Gomes"
+        roles={perfil.roles}
+        mainRole={perfil.mainRole}
+        userName={perfil.userName}
       />
       <S.Main>
         <Title>Página Inicial</Title>

@@ -15,8 +15,11 @@ import { toast } from "sonner";
 import theme from "@/styles/theme.ts";
 import { useCriterios } from "@/hooks/useCriterios";
 import type { Criterio } from "@/services/HTTP/criterio.ts";
+import { usePerfil } from "@/hooks/usePerfil.ts";
 
 export function EvaluationCriteria() {
+  const { perfil, loading } = usePerfil();
+
   const [showModal, setShowModal] = useState(false);
   const [nome, setNome] = useState("");
   const [descricao, setDescricao] = useState("");
@@ -180,14 +183,17 @@ export function EvaluationCriteria() {
     }
   };
 
+  if (loading || !perfil) return null;
+
+
   return (
     <>
       <S.Wrapper>
         <Sidebar
-          roles={["colaborador", "gestor", "rh", "comite"]}
-          mainRole="comite"
-          userName="João Gomes"
-        />
+        roles={perfil.roles}
+        mainRole={perfil.mainRole}
+        userName={perfil.userName}
+      />
         <S.Main>
           <S.Header>
             <Title>Gerenciamento de Critérios</Title>
