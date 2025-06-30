@@ -10,12 +10,32 @@ import ReactApexChart from "react-apexcharts";
 import ChartBox from "@/components/ChartBox/index.tsx";
 import { useTheme } from "styled-components";
 import { usePerfil } from "@/hooks/usePerfil.ts";
+import { notasPorPilarData, ciclosParticipados, historicoNotas } from "@/data/collaboratorEvolution.ts";
+
+function getHigherPilar() {
+  // Pega o último valor de cada pilar
+  const pilarNotas = notasPorPilarData.map((item) => ({
+    name: item.name,
+    nota: item.data[item.data.length - 1],
+  }));
+  // Ordena por nota decrescente, depois por nome crescente
+  pilarNotas.sort((a, b) => {
+    if (b.nota !== a.nota) return b.nota - a.nota;
+    return a.name.localeCompare(b.name);
+  });
+  // Retorna o pilar com maior nota
+  return { name: pilarNotas[0].name, nota: pilarNotas[0].nota };
+}
 
 export function ColaboradorEvolution() {
   const { perfil, loading } = usePerfil();
 
   const theme = useTheme();
   if (loading || !perfil) return null;
+
+  const higherPilar = getHigherPilar();
+  const currentNote = historicoNotas[historicoNotas.length - 1];
+  const differNote = (currentNote - historicoNotas[historicoNotas.length - 2]).toFixed(1);
 
   return (
     <>
@@ -32,8 +52,8 @@ export function ColaboradorEvolution() {
           <CardConteiner>
             <CardBox
               title="Nota atual"
-              bigSpan="4.3"
-              miniSpan="-0.3"
+              bigSpan= {currentNote.toString()}
+              miniSpan={differNote.toString()}
               icon={<MdGrade />}
             />
             <CardBox
@@ -44,8 +64,8 @@ export function ColaboradorEvolution() {
             />
             <CardBox
               title="Pilar em destaque"
-              bigSpan="Execução"
-              span="media de 4.5"
+              bigSpan={higherPilar.name}
+              span={`média de ${higherPilar.nota}`}
               icon={<IoMdTrophy />}
             />
           </CardConteiner>
@@ -59,7 +79,7 @@ export function ColaboradorEvolution() {
                 series={[
                   {
                     name: "Performance",
-                    data: [3.5, 4.0, 4.2, 4.1, 4.3, 4.5, 4.4],
+                    data: historicoNotas,
                   },
                 ]}
                 options={{
@@ -68,15 +88,8 @@ export function ColaboradorEvolution() {
                     zoom: { enabled: false },
                   },
                   xaxis: {
-                    categories: [
-                      "2023.1",
-                      "2023.2",
-                      "2023.3",
-                      "2023.4",
-                      "2024.1",
-                      "2024.2",
-                      "2024.3",
-                    ],
+                    categories: ciclosParticipados
+                    ,
                   },
                   yaxis: {
                     title: { text: "Nota" },
@@ -86,15 +99,15 @@ export function ColaboradorEvolution() {
                 }}
               />
             </ChartBox>
-            <ChartBox title="Avaliação por pilar">
+            <ChartBox title="Última avaliação por pilar avaliativo">
               <ReactApexChart
                 type="radar"
-                height={320}
+                height={320}  
                 width={500}
                 series={[
                   {
                     name: "Nota",
-                    data: [4.5, 4.2, 4.0, 3.8, 4.3],
+                    data: notasPorPilarData.map((item) => item.data[item.data.length - 1]),
                   },
                 ]}
                 options={{
@@ -102,13 +115,8 @@ export function ColaboradorEvolution() {
                     toolbar: { show: false },
                   },
                   xaxis: {
-                    categories: [
-                      "Execução",
-                      "Colaboração",
-                      "Inovação",
-                      "Liderança",
-                      "Entrega",
-                    ],
+                    categories: notasPorPilarData.map((item) => item.name)                      
+                    ,
                   },
                   yaxis: {
                     min: 0,
@@ -137,48 +145,19 @@ export function ColaboradorEvolution() {
             </ChartBox>
           </CardConteiner>
           <CardConteiner>
-            <ChartBox title="Evolução por critério avaliativo">
+            <ChartBox title="Evolução por pilar avaliativo">
               <ReactApexChart
                 type="line"
                 height={280}
                 width={900}
-                series={[
-                  {
-                    name: "Execução",
-                    data: [4.2, 4.3, 4.1, 4.4, 4.5, 4.3, 4.4],
-                  },
-                  {
-                    name: "Colaboração",
-                    data: [3.8, 4.0, 4.1, 4.0, 4.2, 4.1, 4.3],
-                  },
-                  {
-                    name: "Inovação",
-                    data: [4.0, 4.1, 4.0, 4.2, 4.1, 4.0, 4.2],
-                  },
-                  {
-                    name: "Liderança",
-                    data: [3.7, 3.9, 4.0, 4.1, 4.0, 4.2, 4.1],
-                  },
-                  {
-                    name: "Entrega",
-                    data: [4.1, 4.2, 4.3, 4.2, 4.4, 4.3, 4.5],
-                  },
-                ]}
+                series={notasPorPilarData}
                 options={{
                   chart: {
                     toolbar: { show: false },
                     zoom: { enabled: false },
                   },
                   xaxis: {
-                    categories: [
-                      "2023.1",
-                      "2023.2",
-                      "2023.3",
-                      "2023.4",
-                      "2024.1",
-                      "2024.2",
-                      "2024.3",
-                    ],
+                    categories: ciclosParticipados,
                   },
                   yaxis: {
                     min: 0,
