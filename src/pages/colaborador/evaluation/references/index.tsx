@@ -11,10 +11,14 @@ import {
 import { FaPaperPlane } from "react-icons/fa";
 import { Modal } from "@/components/Modal/index.tsx";
 import { useState } from "react";
-import Input from "@/components/Input/index.tsx";
 import ButtonFrame from "@/components/ButtonFrame/index.tsx";
 import { useForm } from "react-hook-form";
 import theme from "@/styles/theme.ts";
+import {
+  colaboradoresDisponiveis,
+  referenciaTemplate,
+} from "@/data/referencesData";
+import { Select } from "@/components/Select";
 
 type TipoReferencia = "tecnica" | "cultural";
 
@@ -28,16 +32,29 @@ export function ReferencesPage() {
   const { handleSubmit } = useForm();
 
   const [showModal, setShowModal] = useState(false);
-  const [nome, setNome] = useState("");
   const [tipo, setTipo] = useState<TipoReferencia | null>(null);
   const [justificativa, setJustificativa] = useState("");
   const [referencias, setReferencias] = useState<Referencia[]>([]);
   const [editIndex, setEditIndex] = useState<number | null>(null);
+  const [idColaboradorSelecionado, setIdColaboradorSelecionado] = useState<
+    number | null
+  >(null);
 
   const handleIndicar = () => {
-    if (!nome || !tipo || !justificativa) return;
-
-    const novaReferencia = { nome, tipo, justificativa };
+    if (!idColaboradorSelecionado || !tipo || !justificativa) return;
+    const colaborador = colaboradoresDisponiveis.find(
+      (c) => c.id === idColaboradorSelecionado
+    );
+    if (!colaborador) return;
+    const novaReferencia = {
+      ...referenciaTemplate,
+      idIndicado: idColaboradorSelecionado,
+      idIndicador: 999, // Exemplo: id do usuário logado
+      idCiclo: "2025-01", // Exemplo: ciclo atual
+      tipo,
+      justificativa,
+      nome: colaborador.nome, // para exibição local
+    };
 
     if (editIndex !== null) {
       setReferencias((prev) =>
@@ -55,20 +72,20 @@ export function ReferencesPage() {
   };
 
   const resetForm = () => {
-    setNome("");
     setTipo(null);
     setJustificativa("");
     setShowModal(false);
     setEditIndex(null);
+    setIdColaboradorSelecionado(null);
   };
 
   const handleEdit = (index: number) => {
     const ref = referencias[index];
-    setNome(ref.nome);
     setTipo(ref.tipo);
     setJustificativa(ref.justificativa);
     setEditIndex(index);
     setShowModal(true);
+    // setIdColaboradorSelecionado(ref.idIndicado);
   };
 
   const referenciasTecnicas = referencias.filter(
@@ -79,11 +96,15 @@ export function ReferencesPage() {
   ).length;
 
   const onSubmit = () => {
-    const tecnicas = referencias.filter((r) => r.tipo === "tecnica");
-    const culturais = referencias.filter((r) => r.tipo === "cultural");
-
-    console.log("Referências Técnicas:", tecnicas);
-    console.log("Referências Culturais:", culturais);
+    const referenciasParaEnvio = referencias.map((r) => ({
+      // idIndicado: r.idIndicado,
+      // idIndicador: r.idIndicador,
+      // idCiclo: r.idCiclo,
+      tipo: r.tipo,
+      justificativa: r.justificativa,
+    }));
+    // Envie referenciasParaEnvio para o backend
+    console.log("Referências para envio:", referenciasParaEnvio);
   };
 
   return (
@@ -198,10 +219,16 @@ export function ReferencesPage() {
           <S.ModalRow>
             <S.ModalInputGroup>
               <S.ModalText>Nome do Colaborador *</S.ModalText>
-              <Input
-                placeholder="Digite o nome completo..."
-                value={nome}
-                onChange={(e) => setNome(e.target.value)}
+              <Select
+                options={colaboradoresDisponiveis.map((c) => ({
+                  label: c.nome,
+                  value: String(c.id),
+                }))}
+                value={
+                  idColaboradorSelecionado ? String(idColaboradorSelecionado) : null
+                }
+                onChange={(val) => setIdColaboradorSelecionado(Number(val))}
+                placeholder="Selecione um colaborador"
               />
             </S.ModalInputGroup>
 
