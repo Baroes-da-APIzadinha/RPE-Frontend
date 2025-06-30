@@ -28,7 +28,6 @@ function getHigherPilar() {
 
 export function ColaboradorEvolution() {
   const theme = useTheme();
-  if (loading || !perfil) return null;
 
   const higherPilar = getHigherPilar();
   const currentNote = historicoNotas[historicoNotas.length - 1];
