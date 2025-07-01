@@ -10,7 +10,6 @@ import Button from '@/components/Button';
 import { Modal } from '@/components/Modal';
 import Input from '@/components/Input';
 import React from 'react';
-import { ToggleBar } from '@/components/ToggleBar';
 
 export function RhCyclePage() {
   const { perfil, loading } = usePerfil();
@@ -22,7 +21,6 @@ export function RhCyclePage() {
     dataDeInicioEqualizacao: '',
     dataDeTermino: '',
   });
-  const [modalTab, setModalTab] = React.useState<'datas' | 'criterios'>('datas');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
