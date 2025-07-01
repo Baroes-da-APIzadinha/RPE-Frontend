@@ -44,10 +44,10 @@ export const WorkTime = styled.span`
 
 `;
 
-export const StatusContainer = styled.div<{ $status: 'avaliado' | 'andamento' | 'pendente' }>`
+export const StatusContainer = styled.div<{ $status: 'avaliado' | 'andamento' | 'pendente' | 'Finalizado' }>`
   border: 2px solid
     ${({ $status, theme }) =>
-      $status === 'avaliado'
+    ($status === 'avaliado' || $status === 'Finalizado')
         ? theme.colors.success.text
         : $status === 'andamento'
         ? theme.colors.secondary.hover
@@ -59,11 +59,11 @@ export const StatusContainer = styled.div<{ $status: 'avaliado' | 'andamento' | 
   justify-content: center;
 `;
 
-export const Status = styled.span<{$status: 'avaliado' | 'andamento' | 'pendente' }>`
+export const Status = styled.span<{$status: 'avaliado' | 'andamento' | 'pendente' | 'Finalizado' }>`
   font-size: 1rem;
   font-weight: bold;
   color:     ${({ $status, theme }) =>
-      $status === 'avaliado'
+        $status === 'avaliado' || $status === 'Finalizado'
         ? theme.colors.success.text
         : $status === 'andamento'
         ? theme.colors.secondary.hover

@@ -66,6 +66,11 @@ export function Sidebar({ roles, mainRole, userName }: SidebarProps) {
         label: "Colaboradores (RH)",
         icon: <MdGroup size={24} />,
       },
+            {
+        to: "/rh/cycle",
+        label: "Gestão de Ciclos",
+        icon: <MdHistory size={24} />,
+      },
       {
         to: "/rh/criteria",
         label: "Critérios",
@@ -76,6 +81,7 @@ export function Sidebar({ roles, mainRole, userName }: SidebarProps) {
         label: "Importação de dados",
         icon: <MdFileUpload size={24} />,
       },
+
     ],
     gestor: [
       {
