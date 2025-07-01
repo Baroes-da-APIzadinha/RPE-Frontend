@@ -5,19 +5,8 @@ import { Card } from '@/components/Card';
 import { TableBase } from '@/components/TableBase';
 import TableRowBox from '@/components/TableRowBox';
 import { MdHistory } from 'react-icons/md';
-
-const cicloAtual = {
-  nome: '2025.1',
-  status: 'Em andamento',
-  dataInicio: '01/03/2025',
-  dataFim: '30/06/2025',
-};
-
-const historicoCiclos = [
-  { nome: '2024.2', status: 'Finalizado', dataInicio: '01/09/2024', dataFim: '31/12/2024' },
-  { nome: '2024.1', status: 'Finalizado', dataInicio: '01/03/2024', dataFim: '30/06/2024' },
-  { nome: '2023.2', status: 'Finalizado', dataInicio: '01/09/2023', dataFim: '31/12/2023' },
-];
+import { cicloAtual, historicoCiclos } from '@/data/manageCycle';
+import Button from '@/components/Button';
 
 export function RhCyclePage() {
   const { perfil, loading } = usePerfil();
@@ -25,7 +14,12 @@ export function RhCyclePage() {
 
   return (
     <>
-      <Title>Gestão de Ciclos</Title>
+      <S.TopBar>
+        <Title>Gestão de Ciclos</Title>
+        <Button onClick={() => { /* ação de criar ciclo */ }}>
+          Criar ciclo
+        </Button>
+      </S.TopBar>
       <S.CardContainer>
         <Card>
           <TableRowBox
