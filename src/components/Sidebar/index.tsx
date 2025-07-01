@@ -1,9 +1,5 @@
-import { useLocation, NavLink, useNavigate } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import {
-  MdDashboardCustomize,
-  MdAssignment,
-  MdTrendingUp,
-  MdGroups,
   MdChecklist,
   MdFileUpload,
   MdHistory,
@@ -34,7 +30,6 @@ type SidebarProps = {
 };
 
 export function Sidebar({ roles, mainRole, userName }: SidebarProps) {
-  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
 
   const allNavItems = {
