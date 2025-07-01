@@ -6,7 +6,7 @@ interface TableRowBoxProps {
   name: string;
   role: string;
   workTime?: string;
-  status: "avaliado" | "andamento" | "pendente" | "Finalizado";
+  status: "avaliado" | "andamento" | "pendente" | "Finalizado" | "Em revisão" | "Em equalização";
   onClick?: () => void;
   icon?: React.ReactNode;
 }

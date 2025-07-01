@@ -1,6 +1,6 @@
 export const cicloAtual = {
   nome: '2025.1',
-  status: 'Em andamento',
+  status: 'Agendado',
   dataInicio: '01/03/2025',
   dataFim: '30/06/2025',
 };

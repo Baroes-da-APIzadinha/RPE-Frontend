@@ -11,6 +11,10 @@ import { Modal } from '@/components/Modal';
 import Input from '@/components/Input';
 import React from 'react';
 
+function getStatusLabel(status: string): string {
+  return status;
+}
+
 export function RhCyclePage() {
   const { perfil, loading } = usePerfil();
   const [modalOpen, setModalOpen] = React.useState(false);
@@ -62,9 +66,9 @@ export function RhCyclePage() {
           key={0}
           name= {cicloAtual.nome}
             role={`Período: ${cicloAtual.dataInicio} a ${cicloAtual.dataFim}`}
-            status={cicloAtual.status === 'Em andamento' ? 'andamento' : cicloAtual.status === 'Finalizado' ? 'Finalizado' : 'pendente'}
+            status={getStatusLabel(cicloAtual.status) as any}
             icon={<MdHistory size={64} />}
-          ></TableRowBox>
+          />
         </Card>
       </S.CardContainer>
       <TableBase title="Histórico de Ciclos">
@@ -74,7 +78,7 @@ export function RhCyclePage() {
             key={i}
             name={ciclo.nome}
             role={`Período: ${ciclo.dataInicio} a ${ciclo.dataFim}`}
-            status={ciclo.status === 'Finalizado' ? 'Finalizado' : ciclo.status === 'Em andamento' ? 'andamento' : 'pendente'}
+            status={getStatusLabel(ciclo.status) as any}
           />
         ))}
       </TableBase>
