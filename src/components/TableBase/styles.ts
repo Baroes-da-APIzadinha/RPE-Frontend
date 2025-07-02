@@ -15,6 +15,7 @@ export const StyledTableTitle = styled.div`
   font-size: ${({ theme }) => theme.font.sizes.xlarge};
   font-weight: ${({ theme }) => theme.font.bold};
   color: ${({ theme }) => theme.colors.text.primary};
+  margin-bottom: 1rem;
 `;
 export const StyledTableSubtitle = styled.div`
   font-size: ${({ theme }) => theme.font.sizes.medium};

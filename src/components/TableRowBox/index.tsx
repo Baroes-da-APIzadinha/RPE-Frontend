@@ -5,9 +5,10 @@ import { MdAccountCircle, MdArrowForward } from "react-icons/md";
 interface TableRowBoxProps {
   name: string;
   role: string;
-  workTime: string;
-  status: "avaliado" | "andamento" | "pendente";
+  workTime?: string;
+  status: "avaliado" | "andamento" | "pendente" | "Finalizado" | "Em revisão" | "Em equalização";
   onClick?: () => void;
+  icon?: React.ReactNode;
 }
 
 const TableRowBox: React.FC<TableRowBoxProps> = ({
@@ -16,11 +17,12 @@ const TableRowBox: React.FC<TableRowBoxProps> = ({
   workTime,
   status,
   onClick,
+  icon = <MdAccountCircle size={64} />, // Default icon if none provided
 }) => {
   return (
     <S.Container>
       <S.InfoContainer>
-        <MdAccountCircle size={64} />
+        {icon}
         <div>
           <S.Name>{name}</S.Name>
           <S.Role>{role}</S.Role>

@@ -30,7 +30,6 @@ export const Container = styled.div`
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
   display: flex;
   flex-direction: column;
-  gap: 2rem;
   box-sizing: border-box;
 
   @media (max-width: 768px) {
@@ -47,7 +46,6 @@ export const Header = styled.div`
   align-items: flex-start;
   flex-wrap: nowrap;
   gap: 1rem;
-  margin-bottom: 2rem;
 
   @media (max-width: 768px) {
     align-items: flex-start;
@@ -64,6 +62,7 @@ export const Subtitle = styled.p`
   font-size: ${({ theme }) => theme.font.sizes.small};
   color: ${({ theme }) => theme.colors.text.secondary};
   margin-top: 0.4rem;
+  margin-bottom: 1rem;
 `;
 
 export const CloseButton = styled.button`
@@ -82,7 +81,6 @@ export const CloseButton = styled.button`
 export const Content = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 1.6rem;
   min-width: 0;
   word-break: break-word;
 `;
