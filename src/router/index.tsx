@@ -1,6 +1,10 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Login } from "@/pages/Login";
 
+import PublicRoute from "./publicRoute";
+import ProtectedRoute from "./protectedRoute";
+import { BaseLayout } from "@/components/BaseLayout";
+
 import { ColaboradorHome } from "@/pages/colaborador/home";
 import { ColaboradorEvolution } from "@/pages/colaborador/evolution";
 import { EvaluationBasePage } from "@/pages/colaborador/evaluation/base.tsx";
@@ -9,14 +13,13 @@ import { Import } from "@/pages/rh/Import";
 import { EvaluationCriteria } from "@/pages/rh/EvaluationCriteria";
 import { RhDashboard } from "@/pages/rh/Dashboard";
 import { RhCollaborator } from "@/pages/rh/Collaborator";
-import { CycleHistory } from "@/pages/comite/CycleHistory";
+
+import { CollaboratorReview } from "@/pages/manager/CollaboratorReview";
 import { MananegerDashboard } from "@/pages/manager/Dashboard";
 import { ManagerTeam } from "@/pages/manager/Team";
-import ProtectedRoute from "./protectedRoute";
-import PublicRoute from "./publicRoute";
-import { CollaboratorEqualization } from "@/pages/comite/CollaboratorEqualization/cuzinho";
-import { CollaboratorReview } from "@/pages/manager/CollaboratorReview";
-import { BaseLayout } from "@/components/BaseLayout";
+
+import { CycleHistory } from "@/pages/comite/CycleHistory";
+
 import RhCyclePage from '@/pages/rh/cycle';
 import CycleCriteriaPage from '@/pages/rh/cycleCriteria';
 
