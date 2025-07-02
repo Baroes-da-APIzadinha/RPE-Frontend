@@ -10,16 +10,26 @@ import { Checkbox } from "@/components/CheckBox/index.tsx";
 import { MdOutlinePersonAdd } from "react-icons/md";
 import { SearchInput } from "@/components/SearchInput";
 import { toast } from "sonner";
+import { useCreateColaborador } from "@/hooks/colaboradores/useColaborador.ts";
+import { useListColaboradores } from "@/hooks/colaboradores/useListColaboradores.ts";
+import { useColaboradorConstantes } from "@/hooks/colaboradores/useColaboradorConstantes.ts";
 
 export function RhCollaborator() {
+  const { create, loading: creating } = useCreateColaborador();
+  const {
+    colaboradores,
+    loading: loadingList,
+    refetch,
+  } = useListColaboradores();
+  const { constantes, loading: loadingConstantes } = useColaboradorConstantes();
+
   const [busca, setBusca] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [name, setName] = useState("");
-  const [cargo, setCargo] = useState("");
   const [email, setEmail] = useState("");
+  const [cargo, setCargo] = useState<string | null>(null);
   const [trilha, setTrilha] = useState<string | null>(null);
   const [unidade, setUnidade] = useState<string | null>(null);
-  const [gestor, setGestor] = useState<string | null>(null);
   const [tiposUsuario, setTiposUsuario] = useState<string[]>([]);
   const [errors, setErrors] = useState({
     name: false,
@@ -27,81 +37,49 @@ export function RhCollaborator() {
     email: false,
     trilha: false,
     unidade: false,
-    gestor: false,
     tiposUsuario: false,
   });
 
-  const [colaboradores, setColaboradores] = useState([
-    {
-      name: "João Silva",
-      email: "joao.silva@rocketcorp.com",
-      role: "Desenvolvedor Senior",
-      track: "Tecnologia",
-      unit: "São Paulo",
-      manager: "Maria Oliveira",
-      userType: "colaborador",
-    },
-    {
-      name: "Gustavo Silva",
-      email: "gustavo.silva@rocketcorp.com",
-      role: "Analista de Produto",
-      track: "Produto",
-      unit: "Remoto",
-      manager: "Lucas Menezes",
-      userType: "rh",
-    },
-    {
-      name: "Aline Barbosa",
-      email: "aline.barbosa@rocketcorp.com",
-      role: "Engenheira de Dados",
-      track: "Dados",
-      unit: "Belo Horizonte",
-      manager: "João Gomes",
-      userType: "comite",
-    },
-  ]);
-
-  const gestores = [
-    { value: "maria_oliveira", label: "Maria Oliveira" },
-    { value: "carlos_santos", label: "Carlos Santos" },
-    { value: "fernanda_lima", label: "Fernanda Lima" },
-    { value: "joao_gomes", label: "João Gomes" },
-    { value: "paula_braga", label: "Paula Braga" },
-    { value: "carla_souza", label: "Carla Souza" },
-    { value: "lucas_menezes", label: "Lucas Menezes" },
-  ];
-
   const tiposDeUsuario = [
-    { value: "colaborador", label: "Colaborador" },
-    { value: "gestor", label: "Gestor" },
-    { value: "rh", label: "RH" },
-    { value: "comite", label: "Comitê" },
+    { value: "COLABORADOR_COMUM", label: "Colaborador" },
+    { value: "GESTOR", label: "Gestor" },
+    { value: "RH", label: "RH" },
+    { value: "MEMBRO_COMITE", label: "Comitê" },
+    { value: "ADMIN", label: "Admin" },
   ];
 
-  const trilhas = [
-    { value: "tecnologia", label: "Tecnologia" },
-    { value: "produto", label: "Produto" },
-    { value: "design", label: "Design" },
-    { value: "gestao", label: "Gestão" },
-    { value: "dados", label: "Dados" },
-  ];
+  const trilhas =
+    constantes?.trilhas.map((value) => ({
+      value,
+      label: formatar(value),
+    })) || [];
 
-  const unidades = [
-    { value: "sao_paulo", label: "São Paulo" },
-    { value: "rio_de_janeiro", label: "Rio de Janeiro" },
-    { value: "recife", label: "Recife" },
-    { value: "belo_horizonte", label: "Belo Horizonte" },
-    { value: "remoto", label: "Remoto" },
-  ];
+  const cargos =
+    constantes?.cargos.map((value) => ({
+      value,
+      label: formatar(value),
+    })) || [];
 
-  const handleSubmit = () => {
+  const unidades =
+    constantes?.unidades.map((value) => ({
+      value,
+      label: formatar(value),
+    })) || [];
+
+  function formatar(str: string) {
+    return str
+      .toLowerCase()
+      .replace(/_/g, " ")
+      .replace(/\b\w/g, (l) => l.toUpperCase());
+  }
+
+  const handleSubmit = async () => {
     const newErrors = {
       name: !name,
-      cargo: !cargo,
       email: !email,
+      cargo: !cargo,
       trilha: !trilha,
       unidade: !unidade,
-      gestor: !gestor,
       tiposUsuario: tiposUsuario.length === 0,
     };
 
@@ -114,30 +92,35 @@ export function RhCollaborator() {
       return;
     }
 
-    const novoColaborador = {
-      name,
-      email,
-      role: cargo,
-      track: trilha,
-      unit: unidade,
-      manager: gestores.find((g) => g.value === gestor)?.label || gestor,
-      userType: null,
-    };
+    try {
+      await create({
+        nomeCompleto: name,
+        email,
+        senha: "senha123",
+        cargo: cargo!,
+        trilhaCarreira: trilha!,
+        unidade: unidade!,
+        tiposPerfil: tiposUsuario,
+      });
 
-    setColaboradores((prev) => [...prev, novoColaborador]);
-    toast.success("Colaborador adicionado com sucesso!");
+      toast.success("Colaborador criado com sucesso!");
+      await refetch();
+      resetForm();
+      setShowModal(false);
 
-    resetForm();
-    setShowModal(false);
+      resetForm();
+      setShowModal(false);
+    } catch {
+      toast.error("Erro ao criar colaborador.");
+    }
   };
 
   const resetForm = () => {
     setName("");
     setEmail("");
-    setCargo("");
+    setCargo(null);
     setTrilha(null);
     setUnidade(null);
-    setGestor(null);
     setTiposUsuario([]);
   };
 
@@ -167,13 +150,6 @@ export function RhCollaborator() {
                   value={busca}
                   onChange={(e) => setBusca(e.target.value)}
                 />
-
-                {/* <Button variant="outline">
-                  <MdFileDownload /> Exportar
-                </Button>
-                <Button variant="outline">
-                  <MdFileUpload /> Importar
-                </Button> */}
               </S.Actions>
             </S.FiltersRow>
 
@@ -184,7 +160,6 @@ export function RhCollaborator() {
                   <th>Cargo</th>
                   <th>Trilha</th>
                   <th>Unidade</th>
-                  <th>Gestor</th>
                   <th>Ações</th>
                 </tr>
               </thead>
@@ -192,15 +167,27 @@ export function RhCollaborator() {
                 {colaboradores
                   .filter(
                     (c) =>
-                      c.name.toLowerCase().includes(busca.toLowerCase()) ||
+                      c.nomeCompleto
+                        .toLowerCase()
+                        .includes(busca.toLowerCase()) ||
                       c.email.toLowerCase().includes(busca.toLowerCase()) ||
-                      c.role.toLowerCase().includes(busca.toLowerCase()) ||
-                      c.track.toLowerCase().includes(busca.toLowerCase()) ||
-                      c.unit.toLowerCase().includes(busca.toLowerCase()) ||
-                      c.manager.toLowerCase().includes(busca.toLowerCase())
+                      c.cargo.toLowerCase().includes(busca.toLowerCase()) ||
+                      c.trilhaCarreira
+                        .toLowerCase()
+                        .includes(busca.toLowerCase()) ||
+                      c.unidade.toLowerCase().includes(busca.toLowerCase())
                   )
                   .map((c) => (
-                    <CollaboratorRow key={c.email} {...c} />
+                    <CollaboratorRow
+                      key={c.id}
+                      name={c.nomeCompleto}
+                      email={c.email}
+                      role={formatar(c.cargo)}
+                      track={formatar(c.trilhaCarreira)}
+                      unit={formatar(c.unidade)}
+
+                      // userType={c.perfis?.join(", ") || ""}
+                    />
                   ))}
               </tbody>
             </S.Table>
@@ -226,13 +213,15 @@ export function RhCollaborator() {
           <S.ModalRow>
             <S.ModalDiv>
               <S.ModalText>Cargo:*</S.ModalText>
-              <Input
-                placeholder="Digite o cargo"
+              <Select
+                placeholder="Selecione o cargo"
                 value={cargo}
-                onChange={(e) => setCargo(e.target.value)}
+                onChange={setCargo}
+                options={cargos}
                 error={errors.cargo}
               />
             </S.ModalDiv>
+
             <S.ModalDiv>
               <S.ModalText>Email:*</S.ModalText>
               <Input
@@ -262,18 +251,6 @@ export function RhCollaborator() {
                 onChange={setUnidade}
                 options={unidades}
                 error={errors.unidade}
-              />
-            </S.ModalDiv>
-          </S.ModalRow>
-          <S.ModalRow>
-            <S.ModalDiv>
-              <S.ModalText>Gestor:*</S.ModalText>
-              <Select
-                placeholder="Selecione o gestor"
-                value={gestor}
-                onChange={setGestor}
-                options={gestores}
-                error={errors.gestor}
               />
             </S.ModalDiv>
           </S.ModalRow>
