@@ -13,15 +13,16 @@ import { Import } from "@/pages/rh/Import";
 import { EvaluationCriteria } from "@/pages/rh/EvaluationCriteria";
 import { RhDashboard } from "@/pages/rh/Dashboard";
 import { RhCollaborator } from "@/pages/rh/Collaborator";
+import RhCyclePage from '@/pages/rh/cycle';
+import CycleCriteriaPage from '@/pages/rh/cycleCriteria';
 
 import { CollaboratorReview } from "@/pages/manager/CollaboratorReview";
 import { MananegerDashboard } from "@/pages/manager/Dashboard";
 import { ManagerTeam } from "@/pages/manager/Team";
 
 import { CycleHistory } from "@/pages/comite/CycleHistory";
+import { CollaboratorEqualization } from "@/pages/comite/CollaboratorEqualization";
 
-import RhCyclePage from '@/pages/rh/cycle';
-import CycleCriteriaPage from '@/pages/rh/cycleCriteria';
 
 function AppRoutes() {
   return (
