@@ -1,7 +1,7 @@
 import * as S from "./styles";
 
 type Props = {
-  label: string;
+  label?: string;
   checked: boolean;
   onChange: () => void;
 };

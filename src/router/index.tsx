@@ -18,6 +18,7 @@ import { CollaboratorEqualization } from "@/pages/comite/CollaboratorEqualizatio
 import { CollaboratorReview } from "@/pages/manager/CollaboratorReview";
 import { BaseLayout } from "@/components/BaseLayout";
 import RhCyclePage from '@/pages/rh/cycle';
+import CycleCriteriaPage from '@/pages/rh/cycleCriteria';
 
 function AppRoutes() {
   return (
@@ -60,6 +61,7 @@ function AppRoutes() {
               <Route path="criteria" element={<EvaluationCriteria />} />
               <Route path="import" element={<Import />} />
               <Route path="cycle" element={<RhCyclePage />} />
+              <Route path="cycle/criteria" element={<CycleCriteriaPage />} />
             </Route>
 
             {/* Comitê */}

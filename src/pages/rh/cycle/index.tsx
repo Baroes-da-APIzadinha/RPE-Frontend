@@ -10,6 +10,7 @@ import Button from '@/components/Button';
 import { Modal } from '@/components/Modal';
 import Input from '@/components/Input';
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 function getStatusLabel(status: string): string {
   return status;
@@ -25,6 +26,7 @@ export function RhCyclePage() {
     dataDeInicioEqualizacao: '',
     dataDeTermino: '',
   });
+  const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -68,6 +70,7 @@ export function RhCyclePage() {
             role={`Período: ${cicloAtual.dataInicio} a ${cicloAtual.dataFim}`}
             status={getStatusLabel(cicloAtual.status) as any}
             icon={<MdHistory size={64} />}
+            onClick={() => navigate('/rh/cycle/criteria')}
           />
         </Card>
       </S.CardContainer>
