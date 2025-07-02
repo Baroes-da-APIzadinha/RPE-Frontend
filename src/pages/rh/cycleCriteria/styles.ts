@@ -101,3 +101,18 @@ export const Table = styled.table`
 
 `;
 
+export const InfoGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+export const Label = styled.h4`
+  font-size: ${theme.font.sizes.small};
+  font-weight: ${theme.font.semibold};
+  margin-bottom: 0.5rem;
+`;
