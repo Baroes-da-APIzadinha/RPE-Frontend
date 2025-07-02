@@ -1,18 +1,23 @@
 import * as S from "./styles.ts";
 import { Title } from "@/components/Title/index.tsx";
 import Button from "@/components/Button/index.tsx";
-import { CollaboratorRow } from "@/components/CollaboratorRow/index.tsx";
 import { Modal } from "@/components/Modal/index.tsx";
 import { useState } from "react";
 import Input from "@/components/Input";
 import { Select } from "@/components/Select";
 import { Checkbox } from "@/components/CheckBox/index.tsx";
-import { MdOutlinePersonAdd } from "react-icons/md";
+import {
+  MdAccountCircle,
+  MdApartment,
+  MdInsertDriveFile,
+  MdOutlinePersonAdd,
+} from "react-icons/md";
 import { SearchInput } from "@/components/SearchInput";
 import { toast } from "sonner";
 import { useCreateColaborador } from "@/hooks/colaboradores/useColaborador.ts";
 import { useListColaboradores } from "@/hooks/colaboradores/useListColaboradores.ts";
 import { useColaboradorConstantes } from "@/hooks/colaboradores/useColaboradorConstantes.ts";
+import { DropdownActions } from "@/components/DropdownActions/index.tsx";
 
 export function RhCollaborator() {
   const { create, loading: creating } = useCreateColaborador();
@@ -39,6 +44,8 @@ export function RhCollaborator() {
     unidade: false,
     tiposUsuario: false,
   });
+
+  const searchTerm = busca.toLowerCase();
 
   const tiposDeUsuario = [
     { value: "COLABORADOR_COMUM", label: "Colaborador" },
@@ -67,10 +74,30 @@ export function RhCollaborator() {
     })) || [];
 
   function formatar(str: string) {
-    return str
+    if (!str) return "";
+
+    const SIGLAS = ["QA", "RH", "UX"];
+    const NOMES_CORRIGIDOS: Record<string, string> = {
+      "sao paulo": "São Paulo",
+      florianopolis: "Florianópolis",
+      recife: "Recife",
+      "rio de janeiro": "Rio de Janeiro",
+    };
+
+    const texto = str
       .toLowerCase()
       .replace(/_/g, " ")
-      .replace(/\b\w/g, (l) => l.toUpperCase());
+      .split(" ")
+      .map((palavra) => {
+        const upper = palavra.toUpperCase();
+        if (SIGLAS.includes(upper)) return upper;
+
+        return palavra.charAt(0).toUpperCase() + palavra.slice(1);
+      })
+      .join(" ");
+
+    const chave = texto.toLowerCase();
+    return NOMES_CORRIGIDOS[chave] || texto;
   }
 
   const handleSubmit = async () => {
@@ -105,9 +132,6 @@ export function RhCollaborator() {
 
       toast.success("Colaborador criado com sucesso!");
       await refetch();
-      resetForm();
-      setShowModal(false);
-
       resetForm();
       setShowModal(false);
     } catch {
@@ -165,29 +189,54 @@ export function RhCollaborator() {
               </thead>
               <tbody>
                 {colaboradores
-                  .filter(
-                    (c) =>
-                      c.nomeCompleto
-                        .toLowerCase()
-                        .includes(busca.toLowerCase()) ||
-                      c.email.toLowerCase().includes(busca.toLowerCase()) ||
-                      c.cargo.toLowerCase().includes(busca.toLowerCase()) ||
-                      c.trilhaCarreira
-                        .toLowerCase()
-                        .includes(busca.toLowerCase()) ||
-                      c.unidade.toLowerCase().includes(busca.toLowerCase())
+                  .filter((c) =>
+                    [
+                      c.nomeCompleto,
+                      c.email,
+                      c.cargo,
+                      c.trilhaCarreira,
+                      c.unidade,
+                    ].some((field) => field.toLowerCase().includes(searchTerm))
                   )
                   .map((c) => (
-                    <CollaboratorRow
-                      key={c.id}
-                      name={c.nomeCompleto}
-                      email={c.email}
-                      role={formatar(c.cargo)}
-                      track={formatar(c.trilhaCarreira)}
-                      unit={formatar(c.unidade)}
-
-                      // userType={c.perfis?.join(", ") || ""}
-                    />
+                    <S.Row key={c.id}>
+                      <S.Colaborador>
+                        <MdAccountCircle size={64} />
+                        <S.Info>
+                          <p>{c.nomeCompleto}</p>
+                          <span>{c.email}</span>
+                        </S.Info>
+                      </S.Colaborador>
+                      <td>{formatar(c.cargo)}</td>
+                      <td>
+                        <S.Track>
+                          <MdInsertDriveFile size={24} />
+                          {formatar(c.trilhaCarreira)}
+                        </S.Track>
+                      </td>
+                      <td>
+                        <S.Unit>
+                          <MdApartment size={24} />
+                          {formatar(c.unidade)}
+                        </S.Unit>
+                      </td>
+                      <td>
+                        <DropdownActions
+                          actions={[
+                            { label: "Editar", onClick: () => {} },
+                            {
+                              label: "Modificar Permissões",
+                              onClick: () => {},
+                            },
+                            {
+                              label: "Desativar",
+                              onClick: () => {},
+                              danger: true,
+                            },
+                          ]}
+                        />
+                      </td>
+                    </S.Row>
                   ))}
               </tbody>
             </S.Table>
