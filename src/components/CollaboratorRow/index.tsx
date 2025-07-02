@@ -12,17 +12,9 @@ interface Props {
   role: string;
   track: string;
   unit: string;
-  manager: string;
 }
 
-export function CollaboratorRow({
-  name,
-  email,
-  role,
-  track,
-  unit,
-  manager,
-}: Props) {
+export function CollaboratorRow({ name, email, role, track, unit }: Props) {
   return (
     <S.Row>
       <S.Colaborador>
@@ -45,7 +37,6 @@ export function CollaboratorRow({
           {unit}
         </S.Unit>
       </td>
-      <td>{manager}</td>
       <td>
         <DropdownActions
           actions={[
