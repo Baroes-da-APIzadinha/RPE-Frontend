@@ -1,14 +1,16 @@
 import * as S from "./styles";
+import { useState } from "react";
 import { Title } from "@/components/Title";
 import { Card } from "@/components/Card";
 import { SearchInput } from "@/components/SearchInput";
-import { useState } from "react";
-import { MdArrowDropDown, MdOutlineCheckCircleOutline } from "react-icons/md";
+import { MdOutlineCheckCircleOutline } from "react-icons/md";
 import Button from "@/components/Button";
 import Textarea from "@/components/Textarea";
 import { IoSparklesOutline } from "react-icons/io5";
 import { FaStar } from "react-icons/fa";
 import { Select } from "@/components/Select";
+import { ExpandableCard } from "@/components/ExpandableCard";
+import { collaboratorsMock } from "@/data/colaboradoresComite";
 
 type Status = "concluida" | "andamento" | "pendente";
 
@@ -23,48 +25,7 @@ type Colaborador = {
   equalization: Status;
 };
 
-const collaboratorsMock: Colaborador[] = [
-  {
-    nome: "João Silva",
-    cargo: "Desenvolvedor Backend Sênior",
-    desde: "2022-03-15",
-    autoavaliacao: 4.3,
-    avaliacao360: 3.2,
-    discrepancy: 0.6,
-    notaGestor: 4.0,
-    equalization: "pendente",
-  },
-  {
-    nome: "Ana Costa",
-    cargo: "Product Owner",
-    desde: "2023-01-10",
-    autoavaliacao: 4.1,
-    avaliacao360: 3.2,
-    discrepancy: 1.6,
-    notaGestor: null,
-    equalization: "pendente",
-  },
-  {
-    nome: "Pedro Santos",
-    cargo: "Desenvolvedor Backend Júnior",
-    desde: "2023-08-01",
-    autoavaliacao: null,
-    avaliacao360: 3.2,
-    discrepancy: 0.7,
-    notaGestor: null,
-    equalization: "pendente",
-  },
-  {
-    nome: "Carla Mendes",
-    cargo: "QA Analyst",
-    desde: "2022-09-20",
-    autoavaliacao: null,
-    avaliacao360: 3.2,
-    discrepancy: 0.1,
-    notaGestor: null,
-    equalization: "pendente",
-  },
-];
+
 
 export function CollaboratorEqualization() {
   const [notas, setNotas] = useState<Record<number, number>>({});
@@ -86,10 +47,6 @@ export function CollaboratorEqualization() {
 
     return matchesSearch && matchesStatus;
   });
-
-  const toggleExpand = (index: number) => {
-    setExpandedIndex((prev) => (prev === index ? null : index));
-  };
 
   return (
     <>
@@ -127,11 +84,14 @@ export function CollaboratorEqualization() {
       </Card>
 
       <Card>
-        {filteredCollaborators.map((colab, index) => {
-          const isExpanded = expandedIndex === index;
-
-          return (
-            <S.CardContainer key={index}>
+        {filteredCollaborators.map((colab, index) => (
+          <ExpandableCard
+            key={index}
+            expanded={expandedIndex === index}
+            onToggle={() =>
+              setExpandedIndex((prev) => (prev === index ? null : index))
+            }
+            header={
               <S.UserHeader>
                 <S.UserInfo>
                   <S.Avatar />
@@ -145,7 +105,6 @@ export function CollaboratorEqualization() {
                     <S.Role>{colab.cargo}</S.Role>
                   </div>
                 </S.UserInfo>
-                <S.UserActions>
                   <S.ScoreContainer>
                     <S.ScoreLabel>Autoavaliação</S.ScoreLabel>
                     <S.ScoreValue>{colab.autoavaliacao ?? "-"}</S.ScoreValue>
@@ -164,87 +123,62 @@ export function CollaboratorEqualization() {
                       {colab.discrepancy ?? "-"}
                     </S.DiscrepancyValue>
                   </S.ScoreContainer>
-
-                  <S.DropButton onClick={() => toggleExpand(index)}>
-                    <MdArrowDropDown
-                      size={36}
-                      style={{
-                        transform: isExpanded
-                          ? "rotate(180deg)"
-                          : "rotate(0deg)",
-                        transition: "transform 0.2s ease",
-                      }}
-                    />
-                  </S.DropButton>
-                </S.UserActions>
               </S.UserHeader>
+            }
+          >
+            <S.InfoGrid>
+              <div>
+                <S.Label>Resumo IA</S.Label>
+                <S.SummaryBox>
+                  <S.IconSpan>
+                    <IoSparklesOutline size={24} />
+                  </S.IconSpan>
+                  <S.SummaryContent>
+                    <strong>Resumo</strong>
+                    <span>Aguarde o resumo gerado pela IA...</span>
+                  </S.SummaryContent>
+                </S.SummaryBox>
+              </div>
+            </S.InfoGrid>
 
-              {isExpanded && (
-                <S.InfoWrapper>
-                  <S.InfoGrid>
-                    <div>
-                      <S.Label>Resumo IA</S.Label>
-                      <S.SummaryBox>
-                        <S.IconSpan>
-                          <IoSparklesOutline size={24} />
-                        </S.IconSpan>
-                        <S.SummaryContent>
-                          <strong>Resumo</strong>
-                          <span>Aguarde o resumo gerado pela IA...</span>
-                        </S.SummaryContent>
-                      </S.SummaryBox>
-                    </div>
-                  </S.InfoGrid>
+            <S.Label>Avaliação Final do Comitê</S.Label>
+            <S.InfoGrid>
+              <S.RatingRow>
+                <S.Label>Nota:</S.Label>
+                {[1.0, 2.0, 3.0, 4.0, 5.0].map((star) => (
+                  <S.StarButton
+                    key={star}
+                    onClick={() => setNotas({ ...notas, [index]: star })}
+                    onMouseEnter={() => setHover(star)}
+                    onMouseLeave={() => setHover(null)}
+                    $active={star <= (hover ?? notas[index] ?? 0)}
+                  >
+                    <FaStar />
+                  </S.StarButton>
+                ))}
+                <S.Score>{notas[index] ?? 0}</S.Score>
+              </S.RatingRow>
+              <Textarea
+                placeholder="Descreva os motivos para a decisão do comitê…"
+                value={justifications[index] ?? ""}
+                onChange={(e) =>
+                  setJustifications({
+                    ...justifications,
+                    [index]: e.target.value,
+                  })
+                }
+              />
+            </S.InfoGrid>
 
-                  <S.Label>Avaliação Final do Comitê</S.Label>
-                  <S.InfoGrid>
-                    <S.RatingRow>
-                      <S.Label>Nota:</S.Label>
-                      {[1.0, 2.0, 3.0, 4.0, 5.0].map((star) => (
-                        <S.StarButton
-                          key={star}
-                          onClick={() => setNotas({ ...notas, [index]: star })}
-                          onMouseEnter={() => setHover(star)}
-                          onMouseLeave={() => setHover(null)}
-                          $active={star <= (hover ?? notas[index] ?? 0)}
-                          aria-label={`Dar nota ${star}`}
-                        >
-                          <FaStar />
-                        </S.StarButton>
-                      ))}
-                      <S.Score>{notas[index] ?? 0}</S.Score>
-                    </S.RatingRow>
-                    <Textarea
-                      placeholder="Descreva os motivos para a decisão do comitê…"
-                      value={justifications[index] ?? ""}
-                      onChange={(e) =>
-                        setJustifications({
-                          ...justifications,
-                          [index]: e.target.value,
-                        })
-                      }
-                    />
-                  </S.InfoGrid>
-
-                  <S.FooterButtons>
-                    <Button
-                      variant="outline"
-                      onClick={() => console.log("Revisando")}
-                    >
-                      Revisar
-                    </Button>
-                    <Button
-                      variant="primary"
-                      onClick={() => console.log("Aprovado")}
-                    >
-                      <MdOutlineCheckCircleOutline /> Aprovar
-                    </Button>
-                  </S.FooterButtons>
-                </S.InfoWrapper>
-              )}
-            </S.CardContainer>
-          );
-        })}
+            <S.FooterButtons>
+              <Button variant="outline">Revisar</Button>
+              <Button variant="primary">
+                <MdOutlineCheckCircleOutline />
+                Aprovar
+              </Button>
+            </S.FooterButtons>
+          </ExpandableCard>
+        ))}
       </Card>
     </>
   );

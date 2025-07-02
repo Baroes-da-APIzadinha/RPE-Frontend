@@ -1,18 +1,6 @@
 import theme from '@/styles/theme'
 import styled, { css } from 'styled-components'
 
-export const Wrapper = styled.div`
-  display: flex;
-  height: 100vh;
-  background-color: ${theme.colors.background};
-`
-export const Main = styled.main`
-  flex: 1;
-  padding: ${theme.spacings.large};
-  background-color: ${theme.colors.background};
-  overflow-y: auto;
-  padding-top: ${theme.spacings.small}; 
-`
 export const Header = styled.div`
   display: flex;
   justify-content: space-between;
@@ -24,13 +12,6 @@ export const HeaderButtons = styled.div`
   display: flex;
   gap: 1.2rem;
 `
-export const CardContainer = styled.div`
-  background-color: ${theme.colors.surface.default};
-  border-radius: ${theme.border.radius.medium};
-  border: 1px solid ${theme.colors.border};
-  margin-bottom: 1rem;
-  padding: 2rem;
-`;
 
 // Card styles
 
@@ -131,7 +112,6 @@ export const InfoWrapper = styled.div`
   flex-direction: column;
   margin-top: 1.2rem;
   padding-top: 1.2rem;
-  border-top: 1px solid ${theme.colors.border};
   gap: 1.2rem;
 `;
 

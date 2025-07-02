@@ -14,7 +14,7 @@ import { MananegerDashboard } from "@/pages/manager/Dashboard";
 import { ManagerTeam } from "@/pages/manager/Team";
 import ProtectedRoute from "./protectedRoute";
 import PublicRoute from "./publicRoute";
-import { CollaboratorEqualization } from "@/pages/comite/CollaboratorEqualization";
+import { CollaboratorEqualization } from "@/pages/comite/CollaboratorEqualization/cuzinho";
 import { CollaboratorReview } from "@/pages/manager/CollaboratorReview";
 import { BaseLayout } from "@/components/BaseLayout";
 import RhCyclePage from '@/pages/rh/cycle';
