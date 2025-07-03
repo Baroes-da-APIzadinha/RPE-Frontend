@@ -20,9 +20,12 @@ import { AlertList } from "@/components/AlertList/index.tsx";
 import { DetailedProgress } from "@/components/DetailedProgress/index.tsx";
 import { useCicloAtual } from "@/hooks/useCicloAtual";
 import { useCollaboratorsCount } from "@/hooks/rh/useCollaboratorsCount.ts";
+import { useUnidadesCount } from "@/hooks/rh/useUnidadesCount.ts";
+
 export function RhDashboard() {
   const { cicloAtual, treatTimeRemaining } = useCicloAtual();  
   const { count } = useCollaboratorsCount(cicloAtual?.id ?? "");
+  const { unitCount } = useUnidadesCount();
   return (
     <>
       <>
@@ -65,7 +68,7 @@ export function RhDashboard() {
           <CardBox
             icon={<MdOutlineHomeWork />}
             title="Unidades"
-            bigSpan="5"
+            bigSpan={unitCount?.toString() ?? "Carregando..."}
             span="Unidades ativas"
           />
         </CardContainer>
