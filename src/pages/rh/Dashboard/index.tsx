@@ -19,12 +19,10 @@ import ReactApexChart from "react-apexcharts";
 import { AlertList } from "@/components/AlertList/index.tsx";
 import { DetailedProgress } from "@/components/DetailedProgress/index.tsx";
 import { useCicloAtual } from "@/hooks/useCicloAtual";
-
+import { useCollaboratorsCount } from "@/hooks/rh/useCollaboratorsCount.ts";
 export function RhDashboard() {
-
-  const { cicloAtual, treatTimeRemaining } = useCicloAtual();
-
-
+  const { cicloAtual, treatTimeRemaining } = useCicloAtual();  
+  const { count } = useCollaboratorsCount(cicloAtual?.id ?? "");
   return (
     <>
       <>
@@ -61,7 +59,7 @@ export function RhDashboard() {
           <CardBox
             icon={<MdOutlinePeopleAlt />}
             title="Colaboradores"
-            bigSpan="248"
+            bigSpan={(count ?? 0).toString()}
             span="Participando do ciclo"
           />
           <CardBox

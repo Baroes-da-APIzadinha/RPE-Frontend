@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { getCicloAtivos } from "@/services/HTTP/ciclos";
 
 type Ciclo = {
+  id: string;
   nome: string;
   tempoRestante: string;
   [key: string]: any;
