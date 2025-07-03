@@ -6,11 +6,11 @@ import * as S from "./styles";
 import { Card } from "@/components/Card";
 import { ToggleBar } from "@/components/ToggleBar";
 import { MdAssignment } from "react-icons/md";
-import React from "react";
-import { Checkbox } from "@/components/CheckBox";
+import React, { useState } from "react";
 import { ExpandableCard } from "@/components/ExpandableCard";
 import { Select } from "@/components/Select";
 import { useColaboradorConstantes } from "@/hooks/colaboradores/useColaboradorConstantes";
+import ButtonFrame from "@/components/ButtonFrame";
 
 export function CycleCriteriaPage() {
   const execucao = criteriosIniciais.filter((c) => c.categoria === "execucao");
@@ -26,11 +26,21 @@ export function CycleCriteriaPage() {
     Record<string, boolean>
   >({});
 
+  const [trilhasSelecionadas, setTrilhasSelecionadas] = useState<string[]>([]);
+  const [unidadeSelecionadas, setUnidadeSelecionadas] = useState<string[]>([]);
+
   const categorias = [
     { value: "execucao", label: "Execução" },
     { value: "comportamento", label: "Comportamento" },
     { value: "gestao", label: "Gestão e Liderança" },
   ];
+
+  function handleRemoveTrilha(value: string) {
+    setTrilhasSelecionadas((prev) => prev.filter((t) => t !== value));
+  }
+  function handleRemoveUnidade(value: string) {
+    setUnidadeSelecionadas((prev) => prev.filter((t) => t !== value));
+  }
 
   const criteriosPorTipo =
     tipo === "execucao"
@@ -52,6 +62,10 @@ export function CycleCriteriaPage() {
       value,
       label: formatar(value),
     })) || [];
+
+  const trilhasOptions = [{ value: "ALL", label: "Todas" }, ...trilhas];
+
+  const unidadesOptions = [{ value: "ALL", label: "Todas" }, ...unidades];
 
   function formatar(str: string) {
     if (!str) return "";
@@ -141,34 +155,114 @@ export function CycleCriteriaPage() {
                   }))
                 }
                 header={
-                  <div>
-                    <p>{criterio.nome}</p>
-                    <p>{criterio.descricao}</p>
-                  </div>
+                  <S.CardHeader>
+                    <S.CriteriaInfo>
+                      <div>
+                        <S.CriteriaTitle>{criterio.nome}</S.CriteriaTitle>
+                        <S.CriteriaDescription>
+                          {criterio.descricao}
+                        </S.CriteriaDescription>
+                      </div>
+                    </S.CriteriaInfo>
+                    <S.CriteriaActions>
+                      <S.CriteriaContainer>
+                        <S.CriteriaLabel>Peso do critério</S.CriteriaLabel>
+                        <S.CriteriaValue>
+                          {Number(criterio.peso).toFixed(1)}
+                        </S.CriteriaValue>
+                      </S.CriteriaContainer>
+                    </S.CriteriaActions>
+                  </S.CardHeader>
                 }
               >
                 <S.InfoGrid>
                   <div>
-                    <S.Label>Peso do critério</S.Label>
-                    <p>{Number(criterio.peso).toFixed(1)}</p>
-                  </div>
-                  <div>
                     <S.Label>Trilhas</S.Label>
                     <Select
+                      isMulti={true}
                       placeholder="Selecionar trilhas"
-                      // isMulti
-                      options={trilhas}
-                      onChange={(values) => console.log("Trilhas:", values)}
+                      options={trilhasOptions}
+                      value={trilhasSelecionadas}
+                      onChange={(val) => {
+                        if (Array.isArray(val)) {
+                          if (val.includes("ALL")) {
+                            setTrilhasSelecionadas(["ALL"]);
+                          } else {
+                            setTrilhasSelecionadas(val);
+                          }
+                        }
+                      }}
                     />
+                    <S.BadgeList>
+                      {trilhasSelecionadas.includes("ALL") ? (
+                        <S.Badge key="ALL">
+                          Todas
+                          <button onClick={() => setTrilhasSelecionadas([])}>
+                            ×
+                          </button>
+                        </S.Badge>
+                      ) : (
+                        trilhasSelecionadas.map((trilha) => {
+                          const label = trilhas.find(
+                            (t) => t.value === trilha
+                          )?.label;
+                          return (
+                            <S.Badge key={trilha}>
+                              {label}
+                              <button
+                                onClick={() => handleRemoveTrilha(trilha)}
+                              >
+                                ×
+                              </button>
+                            </S.Badge>
+                          );
+                        })
+                      )}
+                    </S.BadgeList>
                   </div>
                   <div>
                     <S.Label>Unidades</S.Label>
                     <Select
                       placeholder="Selecionar unidades"
-                      // isMulti
-                      options={unidades}
-                      onChange={(values) => console.log("Unidades:", values)}
+                      isMulti={true}
+                      options={unidadesOptions}
+                      value={unidadeSelecionadas}
+                      onChange={(val) => {
+                        if (Array.isArray(val)) {
+                          if (val.includes("ALL")) {
+                            setUnidadeSelecionadas(["ALL"]);
+                          } else {
+                            setUnidadeSelecionadas(val);
+                          }
+                        }
+                      }}
                     />
+                    <S.BadgeList>
+                      {unidadeSelecionadas.includes("ALL") ? (
+                        <S.Badge key="ALL">
+                          Todas
+                          <button onClick={() => setUnidadeSelecionadas([])}>
+                            ×
+                          </button>
+                        </S.Badge>
+                      ) : (
+                        unidadeSelecionadas.map((unidade) => {
+                          const label = unidades.find(
+                            (t) => t.value === unidade
+                          )?.label;
+                          return (
+                            <S.Badge key={unidade}>
+                              {label}
+                              <button
+                                onClick={() => handleRemoveUnidade(unidade)}
+                              >
+                                ×
+                              </button>
+                            </S.Badge>
+                          );
+                        })
+                      )}
+                    </S.BadgeList>
                   </div>
                 </S.InfoGrid>
               </ExpandableCard>
@@ -176,8 +270,11 @@ export function CycleCriteriaPage() {
           })}
         </div>
       </Card>
-
-      <Button>Salvar Alocação</Button>
+      <ButtonFrame text="Para salvar os critérios, clique no botão de salvar.">
+        <Button variant="primary">
+          Salvar
+        </Button>
+      </ButtonFrame>
     </>
   );
 }

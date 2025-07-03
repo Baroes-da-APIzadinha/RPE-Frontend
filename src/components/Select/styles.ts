@@ -56,13 +56,20 @@ export const OptionsList = styled.ul`
   z-index: 10;
 `;
 
-export const Option = styled.li`
+export const Option = styled.li<{ $selected?: boolean }>`
   padding: 0.8rem 1.2rem;
   font-size: ${({ theme }) => theme.font.sizes.small};
   cursor: pointer;
+  transition: background 0.2s;
+  border-radius: ${({ theme }) => theme.border.radius.xsmall};
+
+  background-color: ${({ $selected, theme }) =>
+    $selected ? theme.colors.primary.light : 'transparent'};
+
+  color: ${({ $selected, theme }) =>
+    $selected ? theme.colors.primary.default : theme.colors.text.primary};
 
   &:hover {
-    background: ${({ theme }) => theme.colors.button.outline.hover};
-    border-radius: ${({ theme }) => theme.border.radius.xsmall};
+    background-color: ${({ theme }) => theme.colors.surface.hover};
   }
 `;
