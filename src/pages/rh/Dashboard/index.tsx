@@ -21,11 +21,25 @@ import { DetailedProgress } from "@/components/DetailedProgress/index.tsx";
 import { useCicloAtual } from "@/hooks/useCicloAtual";
 import { useCollaboratorsCount } from "@/hooks/rh/useCollaboratorsCount.ts";
 import { useUnidadesCount } from "@/hooks/rh/useUnidadesCount.ts";
+import { useEvaluationStatusCount } from "@/hooks/rh/useEvaluationStatusCount.ts";
+import { useState } from "react";
+
+function getStatusPercentage(statusCount: number, total: number) : number {
+  if (total === 0) return 0;
+
+  const percentage = Number(((statusCount / total) * 100).toFixed(2));
+
+  return percentage;
+}
+
 
 export function RhDashboard() {
   const { cicloAtual, treatTimeRemaining } = useCicloAtual();  
   const { count } = useCollaboratorsCount(cicloAtual?.id ?? "");
   const { unitCount } = useUnidadesCount();
+  const { quantConcluidas, quantPendentes, quantEmAndamento } = useEvaluationStatusCount(cicloAtual?.id ?? "");
+  const total = (quantConcluidas) + (quantPendentes) + (quantEmAndamento);
+  const concludedPercentage = getStatusPercentage((quantConcluidas), total);
   return (
     <>
       <>
@@ -54,9 +68,9 @@ export function RhDashboard() {
           <CardBox
             icon={<MdOutlineTaskAlt />}
             title="Progresso Geral"
-            bigSpan="44%"
-            progress={44}
-            span="876 de 1984 avaliações concluídas"
+            bigSpan={`${concludedPercentage}%`}
+            progress={(concludedPercentage)}
+            span= {`${quantConcluidas} concluídas de ${total} avaliações`}
           />
 
           <CardBox
@@ -117,10 +131,11 @@ export function RhDashboard() {
             subtitle="Status atual de todas as avaliações do ciclo"
           >
             <ReactApexChart
+              key={[quantConcluidas, quantEmAndamento, quantPendentes].join('-')}
               type="pie"
-              height={300}
+              height={"100%"}
               width={"100%"}
-              series={[299, 176, 150]}
+              series={[ quantConcluidas, quantEmAndamento, quantPendentes ]}
               options={{
                 labels: ["Concluídas", "Em Andamento", "Pendentes"],
                 chart: { toolbar: { show: false } },
@@ -131,15 +146,14 @@ export function RhDashboard() {
                 ],
                 legend: {
                   position: "bottom",
-                  fontSize: "12px",
+                  fontSize: "11px",
                 },
                 dataLabels: {
                   enabled: true,
-                  formatter: (val: number, opts: any) => {
-                    const label = opts.w.globals.labels[opts.seriesIndex];
-                    const value = opts.w.globals.series[opts.seriesIndex];
-                    return `${label} ${value}`;
+                   formatter: (val: number) => {
+                    return `${val.toFixed(0)}%`;
                   },
+
                 },
               }}
             />
