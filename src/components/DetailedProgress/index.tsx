@@ -68,7 +68,7 @@ export function DetailedProgress({ title }: { title: string }) {
               <S.BarFill percent={item.value} />
             </S.BarContainer>
             <S.Value>
-              {item.value}% ({item.totalColab} colab.)
+              {item.value}% de {item.totalColab} avaliações
             </S.Value>
           </S.Item>
         ))}

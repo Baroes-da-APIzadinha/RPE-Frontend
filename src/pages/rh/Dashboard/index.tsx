@@ -86,6 +86,37 @@ export function RhDashboard() {
           />
         </CardContainer>
 
+         <AlertList
+          title="Alertas e Ações Necessárias"
+          subtitle="Itens que requerem sua atenção"
+          items={[
+            {
+              type: "red",
+              icon: <MdErrorOutline />,
+              title: "Prazo se aproximando",
+              description: "Restam apenas 12 dias para o fim do ciclo",
+              buttonLabel: "Enviar Lembrete",
+              onClick: () => console.log("Enviar Lembrete"),
+            },
+            {
+              type: "yellow",
+              icon: <MdInfoOutline />,
+              title: "Baixa participação na unidade Recife",
+              description: "Apenas 31% das avaliações foram concluídas",
+              buttonLabel: "Ver Detalhes",
+              onClick: () => console.log("Ver Detalhes"),
+            },
+            {
+              type: "blue",
+              icon: <MdGroups />,
+              title: "Novos colaboradores adicionados",
+              description: "5 novos colaboradores foram adicionados ao ciclo",
+              buttonLabel: "Revisar",
+              onClick: () => console.log("Revisar"),
+            },
+          ]}
+        />
+
         <CardContainer>
           <ChartBox
             title="Avaliações por Dia"
@@ -161,36 +192,7 @@ export function RhDashboard() {
 
         <DetailedProgress title="Progresso Detalhado" />
 
-        <AlertList
-          title="Alertas e Ações Necessárias"
-          subtitle="Itens que requerem sua atenção"
-          items={[
-            {
-              type: "red",
-              icon: <MdErrorOutline />,
-              title: "Prazo se aproximando",
-              description: "Restam apenas 12 dias para o fim do ciclo",
-              buttonLabel: "Enviar Lembrete",
-              onClick: () => console.log("Enviar Lembrete"),
-            },
-            {
-              type: "yellow",
-              icon: <MdInfoOutline />,
-              title: "Baixa participação na unidade Recife",
-              description: "Apenas 31% das avaliações foram concluídas",
-              buttonLabel: "Ver Detalhes",
-              onClick: () => console.log("Ver Detalhes"),
-            },
-            {
-              type: "blue",
-              icon: <MdGroups />,
-              title: "Novos colaboradores adicionados",
-              description: "5 novos colaboradores foram adicionados ao ciclo",
-              buttonLabel: "Revisar",
-              onClick: () => console.log("Revisar"),
-            },
-          ]}
-        />
+       
       </>
     </>
   );
