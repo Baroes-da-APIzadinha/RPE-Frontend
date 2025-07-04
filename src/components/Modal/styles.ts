@@ -22,18 +22,15 @@ export const Container = styled.div`
   max-width: 100vh;
   min-width: 0;
   max-height: 90vh;
-  overflow-y: auto;
 
   background: ${({ theme }) => theme.colors.surface.default};
   border-radius: ${({ theme }) => theme.border.radius.medium};
-  padding: 2rem;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
 
   @media (max-width: 768px) {
-    padding: 1.2rem;
     max-width: 100%;
   }
 `;
@@ -46,9 +43,17 @@ export const Header = styled.div`
   align-items: flex-start;
   flex-wrap: nowrap;
   gap: 1rem;
+  padding: 2rem 2rem 1rem 2rem;
+  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
+  position: sticky;
+  top: 0;
+  background: ${({ theme }) => theme.colors.surface.default};
+  z-index: 1;
+  border-radius: ${({ theme }) => theme.border.radius.medium} ${({ theme }) => theme.border.radius.medium} 0 0;
 
   @media (max-width: 768px) {
     align-items: flex-start;
+    padding: 1.2rem 1.2rem 1rem 1.2rem;
   }
 `;
 
@@ -83,6 +88,12 @@ export const Content = styled.div`
   flex-direction: column;
   min-width: 0;
   word-break: break-word;
+  overflow-y: auto;
+  padding: 1rem 2rem 2rem 2rem;
+
+  @media (max-width: 768px) {
+    padding: 1rem 1.2rem 1.2rem 1.2rem;
+  }
 `;
 
 export const Icon = styled.div<{
