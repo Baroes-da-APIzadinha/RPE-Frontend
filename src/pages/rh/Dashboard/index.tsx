@@ -22,7 +22,6 @@ import { useCicloAtual } from "@/hooks/useCicloAtual";
 import { useCollaboratorsCount } from "@/hooks/rh/useCollaboratorsCount.ts";
 import { useUnidadesCount } from "@/hooks/rh/useUnidadesCount.ts";
 import { useEvaluationStatusCount } from "@/hooks/rh/useEvaluationStatusCount.ts";
-import { useState } from "react";
 
 function getStatusPercentage(statusCount: number, total: number) : number {
   if (total === 0) return 0;
