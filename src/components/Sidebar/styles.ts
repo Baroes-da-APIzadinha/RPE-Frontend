@@ -105,7 +105,7 @@ export const NavItem = styled.button<{ active?: boolean }>`
   border: none;
   font-size: ${theme.font.sizes.xsmall};
   color: ${theme.colors.text.primary};
-  padding: 1rem;
+  padding: .9rem;
   border-radius: ${theme.border.radius.medium};
   cursor: pointer;
   text-align: left;

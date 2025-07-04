@@ -63,7 +63,9 @@ export function RhCyclePage() {
        
       </Modal>
       <S.CardContainer>
-        <Card>
+        <TableBase title="Ciclo Ativo"
+        //  subtitle="Clique para gerenciar critérios e colaboradores"
+         >
           <TableRowBox
           key={0}
           name= {cicloAtual.nome}
@@ -72,7 +74,7 @@ export function RhCyclePage() {
             icon={<MdHistory size={64} />}
             onClick={() => navigate('/rh/cycle/criteria')}
           />
-        </Card>
+        </TableBase>
       </S.CardContainer>
       <TableBase title="Histórico de Ciclos">
         {historicoCiclos.map((ciclo, i) => (
