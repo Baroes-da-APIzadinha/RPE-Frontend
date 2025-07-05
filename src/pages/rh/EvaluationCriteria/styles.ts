@@ -139,7 +139,7 @@ export const Actions = styled.div`
 export const ModalContent = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 1.6rem;
+  gap: 1.23rem;
 `
 export const ModalButtons = styled.div`
   display: flex;
