@@ -113,6 +113,9 @@ export const ModalTextArea = styled.textarea`
   border: 1px solid #ccc;
   font-family: inherit;
   font-size: 1rem;
+  resize: none;
+  oveflow-y: auto;
+  margin-bottom: 1.2rem;
 `;
 
 export const ModalInputGroup = styled.div`
