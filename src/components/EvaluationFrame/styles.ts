@@ -4,8 +4,8 @@ export const Container = styled.div`
   background: ${({ theme }) => theme.colors.surface.default};
   border-radius: ${({ theme }) => theme.border.radius.medium};
   border: 1px solid ${({ theme }) => theme.colors.border};
-  padding: 2rem 2.5rem;
-  margin-top: 2rem;
+  padding: 1.5rem 2.5rem;
+  margin-top: 1.5rem;
   width: 100%;
 `;
 
@@ -34,5 +34,4 @@ export const CountContainer = styled.div`
 export const Content = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 1.2rem;
 `;
