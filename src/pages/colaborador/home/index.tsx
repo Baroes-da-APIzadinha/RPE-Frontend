@@ -1,9 +1,3 @@
-import * as S from "./styles.ts";
-import CardBox from "@/components/CardBox";
-import { MdOutlineInsertInvitation } from "react-icons/md";
-import { MdOutlineTimelapse } from "react-icons/md";
-import { MdGrade } from "react-icons/md";
-import CardContainer from "@/components/CardContainer/index.tsx";
 import { useTheme } from "styled-components";
 import RowProgressBox from "@/components/RowProgressBox";
 import StatusRowBox from "@/components/StatusRowBox";
