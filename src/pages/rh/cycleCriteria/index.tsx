@@ -26,8 +26,15 @@ export function CycleCriteriaPage() {
     Record<string, boolean>
   >({});
 
-  const [trilhasSelecionadas, setTrilhasSelecionadas] = useState<string[]>([]);
-  const [unidadeSelecionadas, setUnidadeSelecionadas] = useState<string[]>([]);
+  const [criteriosSelecionados, setCriteriosSelecionados] = useState<
+    Record<
+      string,
+      {
+        trilhas: string[];
+        unidades: string[];
+      }
+    >
+  >({});
 
   const categorias = [
     { value: "execucao", label: "Execução" },
@@ -35,11 +42,24 @@ export function CycleCriteriaPage() {
     { value: "gestao", label: "Gestão e Liderança" },
   ];
 
-  function handleRemoveTrilha(value: string) {
-    setTrilhasSelecionadas((prev) => prev.filter((t) => t !== value));
+  function updateTrilhas(id: string, values: string[]) {
+    setCriteriosSelecionados((prev) => ({
+      ...prev,
+      [id]: {
+        ...prev[id],
+        trilhas: values.includes("ALL") ? ["ALL"] : values,
+      },
+    }));
   }
-  function handleRemoveUnidade(value: string) {
-    setUnidadeSelecionadas((prev) => prev.filter((t) => t !== value));
+
+  function updateUnidades(id: string, values: string[]) {
+    setCriteriosSelecionados((prev) => ({
+      ...prev,
+      [id]: {
+        ...prev[id],
+        unidades: values.includes("ALL") ? ["ALL"] : values,
+      },
+    }));
   }
 
   const criteriosPorTipo =
@@ -95,6 +115,10 @@ export function CycleCriteriaPage() {
   }
 
   if (loadingConstantes || !constantes) return null;
+
+  async function handleSalvar() {
+    console.log("Salvando");
+  }
 
   return (
     <>
@@ -182,27 +206,19 @@ export function CycleCriteriaPage() {
                       isMulti={true}
                       placeholder="Selecionar trilhas"
                       options={trilhasOptions}
-                      value={trilhasSelecionadas}
-                      onChange={(val) => {
-                        if (Array.isArray(val)) {
-                          if (val.includes("ALL")) {
-                            setTrilhasSelecionadas(["ALL"]);
-                          } else {
-                            setTrilhasSelecionadas(val);
-                          }
-                        }
-                      }}
+                      value={criteriosSelecionados[id]?.trilhas || []}
+                      onChange={(val) => updateTrilhas(id, val as string[])}
                     />
                     <S.BadgeList>
-                      {trilhasSelecionadas.includes("ALL") ? (
+                      {criteriosSelecionados[id]?.trilhas?.includes("ALL") ? (
                         <S.Badge key="ALL">
                           Todas
-                          <button onClick={() => setTrilhasSelecionadas([])}>
+                          <button onClick={() => updateTrilhas(id, [])}>
                             ×
                           </button>
                         </S.Badge>
                       ) : (
-                        trilhasSelecionadas.map((trilha) => {
+                        criteriosSelecionados[id]?.trilhas?.map((trilha) => {
                           const label = trilhas.find(
                             (t) => t.value === trilha
                           )?.label;
@@ -210,7 +226,14 @@ export function CycleCriteriaPage() {
                             <S.Badge key={trilha}>
                               {label}
                               <button
-                                onClick={() => handleRemoveTrilha(trilha)}
+                                onClick={() =>
+                                  updateTrilhas(
+                                    id,
+                                    criteriosSelecionados[id].trilhas.filter(
+                                      (t) => t !== trilha
+                                    )
+                                  )
+                                }
                               >
                                 ×
                               </button>
@@ -226,35 +249,34 @@ export function CycleCriteriaPage() {
                       placeholder="Selecionar unidades"
                       isMulti={true}
                       options={unidadesOptions}
-                      value={unidadeSelecionadas}
-                      onChange={(val) => {
-                        if (Array.isArray(val)) {
-                          if (val.includes("ALL")) {
-                            setUnidadeSelecionadas(["ALL"]);
-                          } else {
-                            setUnidadeSelecionadas(val);
-                          }
-                        }
-                      }}
+                      value={criteriosSelecionados[id]?.unidades || []}
+                      onChange={(val) => updateUnidades(id, val as string[])}
                     />
                     <S.BadgeList>
-                      {unidadeSelecionadas.includes("ALL") ? (
+                      {criteriosSelecionados[id]?.unidades?.includes("ALL") ? (
                         <S.Badge key="ALL">
                           Todas
-                          <button onClick={() => setUnidadeSelecionadas([])}>
+                          <button onClick={() => updateUnidades(id, [])}>
                             ×
                           </button>
                         </S.Badge>
                       ) : (
-                        unidadeSelecionadas.map((unidade) => {
+                        criteriosSelecionados[id]?.unidades?.map((unidade) => {
                           const label = unidades.find(
-                            (t) => t.value === unidade
+                            (u) => u.value === unidade
                           )?.label;
                           return (
                             <S.Badge key={unidade}>
                               {label}
                               <button
-                                onClick={() => handleRemoveUnidade(unidade)}
+                                onClick={() =>
+                                  updateUnidades(
+                                    id,
+                                    criteriosSelecionados[id].unidades.filter(
+                                      (u) => u !== unidade
+                                    )
+                                  )
+                                }
                               >
                                 ×
                               </button>
@@ -271,7 +293,7 @@ export function CycleCriteriaPage() {
         </div>
       </Card>
       <ButtonFrame text="Para salvar os critérios, clique no botão de salvar.">
-        <Button variant="primary">
+        <Button variant="primary" onClick={handleSalvar}>
           Salvar
         </Button>
       </ButtonFrame>
