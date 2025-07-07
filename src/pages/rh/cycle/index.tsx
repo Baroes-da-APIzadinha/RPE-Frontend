@@ -10,12 +10,13 @@ import Button from "@/components/Button";
 import { Modal } from "@/components/Modal";
 import { useNavigate } from "react-router-dom";
 import { useCiclos } from "@/hooks/useTodosCiclos";
+import { createCiclo } from "@/services/HTTP/ciclos";
 // import { Card } from '@/components/Card';
 
-function getStatusLabel(status: string): string{
+function getStatusLabel(status: string): string {
   switch (status) {
     case "AGENDADO":
-      return "AGENDADO"; // ou outro valor estilizado
+      return "AGENDADO"; 
     case "EM_ANDAMENTO":
       return "andamento";
     case "FECHADO":
@@ -29,7 +30,6 @@ function getStatusLabel(status: string): string{
   }
 }
 
-
 export function RhCyclePage() {
   const navigate = useNavigate();
   const { perfil, loading } = usePerfil();
@@ -41,7 +41,7 @@ export function RhCyclePage() {
     dataDeInicioEqualizacao: "",
     dataDeTermino: "",
   });
-  const { cicloAtivo, historico } = useCiclos();
+  const { cicloAtivo, historico, refetch } = useCiclos();
 
   function formatDate(dateString: string) {
     return new Date(dateString).toLocaleDateString("pt-BR");
@@ -49,6 +49,77 @@ export function RhCyclePage() {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (event?: React.FormEvent) => {
+    if (event) event.preventDefault();
+
+    try {
+      const {
+        nomeCiclo,
+        dataDeInicio,
+        dataDeInicioRevisao,
+        dataDeInicioEqualizacao,
+        dataDeTermino,
+      } = form;
+
+      if (
+        !nomeCiclo ||
+        !dataDeInicio ||
+        !dataDeInicioRevisao ||
+        !dataDeInicioEqualizacao ||
+        !dataDeTermino
+      ) {
+        alert("Preencha todos os campos de data e nome do ciclo.");
+        return;
+      }
+
+      const [anoInit, mesInit, diaInit] = dataDeInicio.split("-").map(Number);
+      const inicio = new Date(anoInit, mesInit - 1, diaInit);
+
+      const revisao = new Date(dataDeInicioRevisao);
+      const equalizacao = new Date(dataDeInicioEqualizacao);
+
+      const [anoFim, mesFim, diaFim] = dataDeTermino.split("-").map(Number);
+      const fim = new Date(anoFim, mesFim - 1, diaFim);
+
+      const diasEntre = (start: Date, end: Date) => {
+        const diffMs = end.getTime() - start.getTime();
+        return Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+      };
+
+      const cicloData = {
+        nome: nomeCiclo,
+        dataInicioAno: inicio.getFullYear(),
+        dataInicioMes: inicio.getMonth() + 1,
+        dataInicioDia: inicio.getDate(),
+
+        dataFimAno: fim.getFullYear(),
+        dataFimMes: fim.getMonth() + 1,
+        dataFimDia: fim.getDate(),
+
+        duracaoEmAndamentoDias: diasEntre(inicio, revisao),
+        duracaoEmRevisaoDias: diasEntre(revisao, equalizacao),
+        duracaoEmEqualizacaoDias: diasEntre(equalizacao, fim),
+      };
+
+      console.log("Payload enviado para o backend:", cicloData);
+      await createCiclo(cicloData);
+      await refetch();
+
+      alert("Ciclo criado com sucesso!");
+      setForm({
+        nomeCiclo: "",
+        dataDeInicio: "",
+        dataDeInicioRevisao: "",
+        dataDeInicioEqualizacao: "",
+        dataDeTermino: "",
+      });
+      setModalOpen(false);
+    } catch (error) {
+      console.error("Erro ao criar ciclo:", error);
+      alert("Erro ao criar ciclo. Veja o console para detalhes.");
+    }
   };
 
   if (loading || !perfil) return null;
@@ -104,7 +175,7 @@ export function RhCyclePage() {
               onChange={handleChange}
             />
           </S.DateRow>
-          <Button>Salvar</Button>
+          <Button onClick={handleSubmit}>Salvar</Button>
         </S.ModalForm>
       </Modal>
       <S.CardContainer>
@@ -114,7 +185,9 @@ export function RhCyclePage() {
               <TableRowBox
                 key={cicloAtivo.idCiclo}
                 name={cicloAtivo.nomeCiclo}
-                role={`Período: ${formatDate(cicloAtivo.dataInicio)} a ${formatDate(cicloAtivo.dataFim)}`}
+                role={`Período: ${formatDate(
+                  cicloAtivo.dataInicio
+                )} a ${formatDate(cicloAtivo.dataFim)}`}
                 status={getStatusLabel(cicloAtivo.status) as any}
                 icon={<MdHistory size={64} />}
                 onClick={() => {
@@ -128,12 +201,14 @@ export function RhCyclePage() {
         )}
       </S.CardContainer>
       <TableBase title="Histórico de Ciclos">
-        {historico.map((ciclo, i) => (
+        {historico.map((ciclo) => (
           <TableRowBox
             icon={<MdHistory size={64} />}
             key={ciclo.idCiclo}
             name={ciclo.nomeCiclo}
-            role={`Período: ${formatDate(ciclo.dataInicio)} a ${formatDate(ciclo.dataFim)}`}
+            role={`Período: ${formatDate(ciclo.dataInicio)} a ${formatDate(
+              ciclo.dataFim
+            )}`}
             status={getStatusLabel(ciclo.status) as any}
             onClick={() => {
               if (ciclo.status === "AGENDADO") {
