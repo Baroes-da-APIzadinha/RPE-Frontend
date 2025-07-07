@@ -9,38 +9,16 @@ import RowProgressBox from "@/components/RowProgressBox";
 import StatusRowBox from "@/components/StatusRowBox";
 import { Title } from "@/components/Title";
 import { useCicloAtual } from "@/hooks/useCicloAtual";
+import { CicloStatusBox } from "@/components/CicloStatusBox";
+import { TableBase } from "@/components/TableBase/index.tsx";
 
 export function ColaboradorHome() {
   const theme = useTheme();
-  const { cicloAtual, treatTimeRemaining } = useCicloAtual();
-
+  const { cicloAtual } = useCicloAtual();
+  
   return (
     <>
       <Title>Olá, João Gomes</Title>
-      <CardContainer>
-        <CardBox
-          icon={<MdOutlineInsertInvitation />}
-          title="ciclo atual"
-          bigSpan={cicloAtual ? cicloAtual.nome : "Carregando..."}
-          span={
-            cicloAtual
-              ? treatTimeRemaining(cicloAtual.tempoRestante)
-              : "Carregando..."
-          }
-        />
-        <CardBox
-          icon={<MdOutlineTimelapse />}
-          title="progresso do ciclo"
-          bigSpan="40%"
-          progress={40}
-        />
-        <CardBox
-          icon={<MdGrade />}
-          title="ultima Avaliação"
-          bigSpan="4.3"
-          miniSpan="-0.3"
-        />
-      </CardContainer>
 
       <RowProgressBox
         title="Status do Ciclo Atual"
@@ -62,6 +40,17 @@ export function ColaboradorHome() {
           },
         ]}
       />
+      <TableBase title={"status do ciclo"} subtitle={"Veja o status do ciclo atual e as etapas concluídas"}>
+
+      <CicloStatusBox
+        steps={[
+          { label: "Agendado", active: cicloAtual?.status === "AGENDADO"  },
+          { label: "Em Andamento", active: cicloAtual?.status === "EM_ANDAMENTO"  },
+          { label: "Em Revisão", active: cicloAtual?.status === "EM_REVISAO" },
+          { label: "Em Equalização", active: cicloAtual?.status === "EM_EQUALIZACAO" },
+        ]}
+        />
+        </TableBase>
 
       <StatusRowBox
         title="Situação das Metas"

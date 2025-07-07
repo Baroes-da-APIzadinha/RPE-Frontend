@@ -6,6 +6,7 @@ import Button from "@/components/Button/index.tsx";
 import { useNavigate } from "react-router-dom";
 import { handleLogin } from "@/services/Auth/login.ts";
 import { getPerfil } from "@/services/HTTP/perfil";
+import { toast } from "sonner"; 
 
 export function Login() {
   const [email, setEmail] = useState("");
@@ -30,11 +31,10 @@ export function Login() {
       } else if (roles.includes("COMITE")) {
         destination = "/comite/historico";
       }
-
+      toast.success("Login realizado com sucesso!");
       navigate(destination);
     } catch (error) {
-      console.error("Erro ao fazer login:", error);
-      // TODO: mostrar mensagem de erro pro usuário
+      toast.error("Erro ao fazer login. Verifique suas credenciais e tente novamente.");
     }
   };
 
