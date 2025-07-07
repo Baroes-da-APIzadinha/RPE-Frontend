@@ -192,7 +192,7 @@ export function RhCyclePage() {
                 icon={<MdHistory size={64} />}
                 onClick={() => {
                   if (cicloAtivo.status === "AGENDADO") {
-                    navigate("/rh/cycle/criteria");
+                    navigate("/rh/cycle/criteria", { state: { cicloAtivo } });
                   }
                 }}
               />
@@ -212,7 +212,7 @@ export function RhCyclePage() {
             status={getStatusLabel(ciclo.status) as any}
             onClick={() => {
               if (ciclo.status === "AGENDADO") {
-                navigate("/rh/cycle/criteria");
+                navigate("/rh/cycle/criteria", { state: { ciclo } });
               }
             }}
           />

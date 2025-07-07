@@ -10,10 +10,22 @@ import { Select } from "@/components/Select";
 import { useColaboradorConstantes } from "@/hooks/colaboradores/useColaboradorConstantes";
 import ButtonFrame from "@/components/ButtonFrame";
 import { useCriterios } from "@/hooks/useCriterios";
-import { useParams } from "react-router-dom"; // caso precise do id do ciclo
+import { useLocation, useNavigate } from "react-router-dom"; 
+import { useAssociacoesCriterioCiclo } from "@/hooks/useAssociacoesCriterioCiclo";
 
 export function CycleCriteriaPage() {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const ciclo = location.state?.ciclo;
+
+  if (!ciclo) {
+    // Redireciona se a pessoa acessar a rota diretamente sem passar o ciclo
+    navigate("/rh/cycle");
+    return null;
+  }
+
   const { criterios, fetchAllPilares } = useCriterios();
+  const { associacoes, adicionarAssociacao, editarAssociacao } = useAssociacoesCriterioCiclo(ciclo.idCiclo);
 
   const [tipo, setTipo] = React.useState<"execucao" | "comportamento" | "gestao">("execucao");
   const [checkedCriterios, setCheckedCriterios] = React.useState<Record<string, boolean>>({});
@@ -92,25 +104,92 @@ export function CycleCriteriaPage() {
   }
 
   function isCriterioAtivoNoCiclo(id: string): boolean {
-  const selecionado = criteriosSelecionados[id];
-  return (
-    selecionado &&
-    (selecionado.trilhas?.length > 0 && selecionado.unidades?.length > 0)
-  );
-}
+    const selecionado = criteriosSelecionados[id];
+    return (
+      selecionado &&
+      (selecionado.trilhas?.length > 0 && selecionado.unidades?.length > 0)
+    );
+  }
+
+  function formatDate(dateString: string) {
+    return new Date(dateString).toLocaleDateString("pt-BR");
+  }
 
 
   async function handleSalvar() {
-    console.log("Salvar critérios selecionados para o ciclo:", criteriosSelecionados);
-    // Aqui você fará o POST associando critérios ao ciclo
+  const ativos = Object.entries(criteriosSelecionados).filter(
+    ([_, val]) => val.trilhas?.length && val.unidades?.length
+  );
+
+  for (const [idCriterio, { trilhas, unidades }] of ativos) {
+
+    
+    let trilhasProcessadas: string[] = trilhas;
+    let unidadesProcessadas: string[] = unidades;
+
+    if (constantes && constantes.trilhas != null && constantes.unidades != null) {
+      trilhasProcessadas = trilhas.includes("ALL") ? constantes.trilhas : trilhas;
+      unidadesProcessadas = unidades.includes("ALL") ? constantes.unidades : unidades;
+    }
+
+    for (const trilha of trilhasProcessadas) {
+      for (const unidade of unidadesProcessadas) {
+        const existe = associacoes.find(
+          (a) =>
+            a.idCriterio === idCriterio &&
+            a.trilhaCarreira === trilha &&
+            a.unidade === unidade
+        );
+
+        const payload = {
+          idCiclo: ciclo.idCiclo,
+          idCriterio,
+          trilhaCarreira: trilha,
+          unidade,
+        };
+
+        try {
+          if (existe) {
+            await editarAssociacao(existe.id, payload);
+          } else {
+            await adicionarAssociacao(payload);
+          }
+        } catch (err) {
+          console.error("Erro ao salvar associação:", err);
+        }
+      }
+    }
   }
+
+  alert("Critérios salvos com sucesso!");
+}
+
+
+
 
   if (loadingConstantes || !constantes) return null;
 
   return (
     <>
       <header>
-        <Title>Alocação de Critérios</Title>
+        <Title>Alocação de Critérios - {ciclo.nomeCiclo}</Title>
+        <S.Subtitle>
+          <div>
+            {" "}
+            Status:{" "}
+            <span className="infos">
+              {ciclo.status.toLocaleUpperCase()}
+            </span>{" "}
+          </div>
+          |
+          <div>
+            {" "}
+            Período:{" "}
+            <span className="infos">
+              {formatDate(ciclo.dataInicio)} a {formatDate(ciclo.dataFim)}
+            </span>{" "}
+          </div>
+        </S.Subtitle>
       </header>
 
       <Card>
@@ -182,7 +261,10 @@ export function CycleCriteriaPage() {
                     />
                     <S.BadgeList>
                       {criteriosSelecionados[id]?.trilhas?.map((trilha) => {
-                        const label = trilhas.find((t) => t.value === trilha)?.label || trilha;
+                        const label =
+                          trilha === "ALL"
+                            ? "Todas"
+                            : trilhas.find((t) => t.value === trilha)?.label || trilha;
                         return (
                           <S.Badge key={trilha}>
                             {label}
@@ -206,7 +288,10 @@ export function CycleCriteriaPage() {
                     />
                     <S.BadgeList>
                       {criteriosSelecionados[id]?.unidades?.map((unidade) => {
-                        const label = unidades.find((u) => u.value === unidade)?.label || unidade;
+                        const label =
+                          unidade === "ALL"
+                            ? "Todas"
+                            : unidades.find((u) => u.value === unidade)?.label || unidade;
                         return (
                           <S.Badge key={unidade}>
                             {label}
