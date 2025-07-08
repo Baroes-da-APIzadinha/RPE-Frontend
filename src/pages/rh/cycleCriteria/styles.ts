@@ -212,3 +212,18 @@ export const CriteriaValue = styled.span`
   font-weight: ${theme.font.bold};
   color: ${theme.colors.text.primary};
 `;
+
+export const CriteriaBadge = styled.span<{ ativo: boolean }>`
+  background-color: ${({ ativo, theme }) =>
+    ativo ? theme.colors.success.light : theme.colors.lightGray};
+  color: ${({ ativo, theme }) =>
+    ativo ? theme.colors.success.default : theme.colors.text.secondary};
+  font-size: ${theme.font.sizes.xxsmall};
+  font-weight: ${theme.font.semibold};
+  padding: 0.4rem 0.8rem;
+  border-radius: ${theme.border.radius.full};
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+`;
+
