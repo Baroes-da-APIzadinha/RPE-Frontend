@@ -21,7 +21,7 @@ import * as S from "./styles";
 import { useState } from "react";
 import { useLogout } from "@/services/Auth/logout";
 
-type Role = "colaborador" | "rh" | "gestor" | "comite";
+type Role = "colaborador" | "rh" | "gestor" | "comite" | "lider";
 
 type SidebarProps = {
   roles: Role[]; // papéis ativos
@@ -102,6 +102,7 @@ export function Sidebar({ roles, mainRole, userName }: SidebarProps) {
         icon: <MdHistoryToggleOff size={24} />,
       },
     ],
+    lider: [],
   };
 
   const combinedNavItems = Array.from(
@@ -115,6 +116,7 @@ export function Sidebar({ roles, mainRole, userName }: SidebarProps) {
     rh: "Painel do RH",
     gestor: "Painel do Gestor",
     comite: "Painel do Comitê",
+    lider: "Painel do Líder",
   };
 
   return (
