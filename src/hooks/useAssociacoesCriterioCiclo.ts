@@ -39,7 +39,7 @@ export function useAssociacoesCriterioCiclo(idCiclo: string) {
     async (id: string, atualizacao: UpdateAssociacaoCriterioCicloDto) => {
       const atualizada = await atualizarAssociacao(id, atualizacao);
       setAssociacoes((prev) =>
-        prev.map((a) => (a.id === id ? atualizada : a))
+        prev.map((a) => (a.idAssociacao === id ? atualizada : a))
       );
       return atualizada;
     },
@@ -49,7 +49,7 @@ export function useAssociacoesCriterioCiclo(idCiclo: string) {
   const deletarAssociacao = useCallback(
     async (id: string) => {
       await removerAssociacao(id);
-      setAssociacoes((prev) => prev.filter((a) => a.id !== id));
+      setAssociacoes((prev) => prev.filter((a) => a.idAssociacao !== id));
     },
     []
   );

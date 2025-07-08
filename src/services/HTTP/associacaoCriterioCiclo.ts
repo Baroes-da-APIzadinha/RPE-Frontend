@@ -1,7 +1,7 @@
 import { deleteRequest, getRequest, patchRequest, postRequest } from "./requests";
 
 export interface AssociacaoCriterioCiclo {
-  id: string;
+  idAssociacao: string;
   idCiclo: string;
   idCriterio: string;
   trilhaCarreira: string;
