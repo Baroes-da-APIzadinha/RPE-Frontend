@@ -47,5 +47,9 @@ export async function getColaboradorById(id: string) {
   return await getRequest(`${baseEndpoint}/${id}`);
 };
 
+export async function getNotasHistorico(id: string) {
+  return await getRequest(`${baseEndpoint}/notas/historico/${id}`);
+}
+
 
 

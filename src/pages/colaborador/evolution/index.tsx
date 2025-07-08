@@ -7,7 +7,9 @@ import { IoMdTrophy } from "react-icons/io";
 import ReactApexChart from "react-apexcharts";
 import ChartBox from "@/components/ChartBox/index.tsx";
 import { useTheme } from "styled-components";
-import { notasPorPilarData, ciclosParticipados, historicoNotas } from "@/data/collaboratorEvolution.ts";
+import { notasPorPilarData, ciclosParticipados } from "@/data/collaboratorEvolution.ts";
+import { usePerfil } from "@/hooks/usePerfil";
+import { useColaboradorNotasHistorico } from "@/hooks/colaboradores/useColaboradorNotasHistorico";
 
 function getHigherPilar() {
   // Pega o último valor de cada pilar
@@ -26,10 +28,19 @@ function getHigherPilar() {
 
 export function ColaboradorEvolution() {
   const theme = useTheme();
-
+  const { perfil } = usePerfil();
+  const { notasHistorico } = useColaboradorNotasHistorico(perfil?.userId || "");
   const higherPilar = getHigherPilar();
-  const currentNote = historicoNotas[historicoNotas.length - 1];
-  const differNote = (currentNote - historicoNotas[historicoNotas.length - 2]).toFixed(1);
+
+  const notas = notasHistorico.map((item) => item.cicloNota)
+
+  const last   =  notas[notas.length - 1] || 0;   // undefined se array vazio
+  const before =  notas[notas.length - 2] || 0;   // undefined se < 2 itens
+
+  const currentNote  = (last);
+  const previousNote = (before);
+  const differNote = (currentNote - previousNote).toFixed(2);
+
 
   return (
     <>
@@ -65,7 +76,7 @@ export function ColaboradorEvolution() {
                 series={[
                   {
                     name: "Performance",
-                    data: historicoNotas,
+                    data: notasHistorico.map((nota) => nota.cicloNota || 0), // Garante que não haja valores nulos
                   },
                 ]}
                 options={{

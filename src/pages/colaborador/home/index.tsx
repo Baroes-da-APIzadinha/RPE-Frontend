@@ -1,9 +1,3 @@
-import * as S from "./styles.ts";
-import CardBox from "@/components/CardBox";
-import { MdOutlineInsertInvitation } from "react-icons/md";
-import { MdOutlineTimelapse } from "react-icons/md";
-import { MdGrade } from "react-icons/md";
-import CardContainer from "@/components/CardContainer/index.tsx";
 import { useTheme } from "styled-components";
 import RowProgressBox from "@/components/RowProgressBox";
 import StatusRowBox from "@/components/StatusRowBox";
@@ -20,8 +14,21 @@ export function ColaboradorHome() {
     <>
       <Title>Olá, João Gomes</Title>
 
-      <RowProgressBox
-        title="Status do Ciclo Atual"
+      
+      <TableBase title={"Status do ciclo atual"} subtitle={"Veja o status do ciclo atual e as etapas concluídas"}>
+
+      <CicloStatusBox
+        steps={[
+          { label: "Agendado", active: cicloAtual?.status === "AGENDADO"  },
+          { label: "Em Andamento", active: cicloAtual?.status === "EM_ANDAMENTO"  },
+          { label: "Em Revisão", active: cicloAtual?.status === "EM_REVISAO" },
+          { label: "Em Equalização", active: cicloAtual?.status === "EM_EQUALIZACAO" },
+        ]}
+        />
+        </TableBase>
+        
+        <RowProgressBox
+        title="Progresso no ciclo atual"
         bars={[
           {
             subtitle: "Autoavaliação",
@@ -40,18 +47,6 @@ export function ColaboradorHome() {
           },
         ]}
       />
-      <TableBase title={"status do ciclo"} subtitle={"Veja o status do ciclo atual e as etapas concluídas"}>
-
-      <CicloStatusBox
-        steps={[
-          { label: "Agendado", active: cicloAtual?.status === "AGENDADO"  },
-          { label: "Em Andamento", active: cicloAtual?.status === "EM_ANDAMENTO"  },
-          { label: "Em Revisão", active: cicloAtual?.status === "EM_REVISAO" },
-          { label: "Em Equalização", active: cicloAtual?.status === "EM_EQUALIZACAO" },
-        ]}
-        />
-        </TableBase>
-
       <StatusRowBox
         title="Situação das Metas"
         subtitle="Resumo do status de cada meta"

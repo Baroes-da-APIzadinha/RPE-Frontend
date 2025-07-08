@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
+import Cookies from "js-cookie";
 import { getPerfil } from "@/services/HTTP/perfil";
 
-type Role = "colaborador" | "rh" | "gestor" | "comite";
+type Role = "colaborador" | "rh" | "gestor" | "comite" | "lider";
 
 type PerfilData = {
+  userId: string;
   userName: string;
   roles: Role[];
   mainRole: Role;
@@ -14,13 +16,15 @@ const roleMap: Record<string, Role> = {
   GESTOR: "gestor",
   COMITE: "comite",
   COLABORADOR_COMUM: "colaborador",
+  LIDER: "lider",
 };
 
-// Função para formatar o nome a partir do e-mail
 function formatUserName(email: string): string {
-  const namePart = email.split("@")[0];
-  const words = namePart.split(/[._]/);
-  return words.map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(" ");
+  return email
+    .split("@")[0]
+    .split(/[._]/)
+    .map(w => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(" ");
 }
 
 export function usePerfil() {
@@ -28,29 +32,45 @@ export function usePerfil() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    /** 1) Tenta ler o cookie primeiro */
+    const cookie = Cookies.get("perfil");
+
+    if (cookie) {
+      try {
+        const parsed: PerfilData = JSON.parse(cookie);
+        setPerfil(parsed);
+        setLoading(false);
+        return;           
+      } catch (err) {
+        console.warn("Cookie de perfil corrompido, removendo…");
+        Cookies.remove("perfil");
+      }
+    }
+
+    /** 2) Caso não haja cookie válido, faz a request */
     async function fetchPerfil() {
       try {
         const res = await getPerfil();
 
-        const rolesFromApi = res.roles || [];
-
+        const rolesFromApi: string[] = res.roles ?? [];
         let finalRoles: Role[] = rolesFromApi
-          .map((r: string) => roleMap[r])
+          .map(r => roleMap[r])
           .filter(Boolean) as Role[];
 
-        // Se for admin, dá todas as permissões
         if (rolesFromApi.includes("ADMIN")) {
-          finalRoles = ["colaborador", "rh", "gestor", "comite"];
+          finalRoles = ["colaborador", "rh", "gestor", "comite", "lider"];
         }
 
-        const mainRole = finalRoles[0];
-        const userName = res.email ? formatUserName(res.email) : "Usuário";
-
-        setPerfil({
-          userName,
+        const perfilData: PerfilData = {
+          userId: res.userId ?? "",
+          userName: res.email ? formatUserName(res.email) : "Usuário",
           roles: finalRoles,
-          mainRole,
-        });
+          mainRole: finalRoles[0],
+        };
+
+        setPerfil(perfilData);
+        /** 3) Salva em cookie para as próximas vezes */
+        Cookies.set("perfil", JSON.stringify(perfilData), { expires: 7 });
       } catch (err) {
         console.error("Erro ao buscar perfil:", err);
         setPerfil(null);
