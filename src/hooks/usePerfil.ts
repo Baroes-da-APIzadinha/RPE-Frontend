@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { getPerfil } from "@/services/HTTP/perfil";
 
-type Role = "colaborador" | "rh" | "gestor" | "comite";
+type Role = "colaborador" | "rh" | "gestor" | "comite" | "lider";
 
 type PerfilData = {
+  userId: string;
   userName: string;
   roles: Role[];
   mainRole: Role;
@@ -14,6 +15,7 @@ const roleMap: Record<string, Role> = {
   GESTOR: "gestor",
   COMITE: "comite",
   COLABORADOR_COMUM: "colaborador",
+  LIDER: "lider",
 };
 
 // Função para formatar o nome a partir do e-mail
@@ -32,6 +34,7 @@ export function usePerfil() {
       try {
         const res = await getPerfil();
 
+        const userId = res.userId || "";
         const rolesFromApi = res.roles || [];
 
         let finalRoles: Role[] = rolesFromApi
@@ -40,13 +43,14 @@ export function usePerfil() {
 
         // Se for admin, dá todas as permissões
         if (rolesFromApi.includes("ADMIN")) {
-          finalRoles = ["colaborador", "rh", "gestor", "comite"];
+          finalRoles = ["colaborador", "rh", "gestor", "comite", "lider"];
         }
 
         const mainRole = finalRoles[0];
         const userName = res.email ? formatUserName(res.email) : "Usuário";
 
         setPerfil({
+          userId,
           userName,
           roles: finalRoles,
           mainRole,
