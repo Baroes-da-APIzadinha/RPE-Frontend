@@ -11,7 +11,7 @@ import { usePerfil } from "@/hooks/usePerfil";
 import { useColaboradorNotasHistorico } from "@/hooks/colaboradores/useColaboradorNotasHistorico";
 import { useColaboradorPilarNotas } from "@/hooks/colaboradores/useColaboradorPilarNotas";
 import type { CicloPilarNotas, PilarNota } from "@/types/PilarNota.ts";
-import { ciclosParticipados, notasPorPilarData } from "@/data/collaboratorEvolution";
+import { useCountAvaliacoes } from "@/hooks/colaboradores/useCountAvaliacoes";
 
 function getHigherPilar(pilarNotas: CicloPilarNotas[]) {
   // Pega o último ciclo
@@ -49,7 +49,7 @@ export function ColaboradorEvolution() {
   const currentNote  = (last);
   const previousNote = (before);
   const differNote = (currentNote - previousNote).toFixed(2);
-
+  const { countAvaliacoes } = useCountAvaliacoes(perfil?.userId || "");
   return (
     <>
       <Title>Sua evolução na RocketCorp</Title>
@@ -63,7 +63,7 @@ export function ColaboradorEvolution() {
             />
             <CardBox
               title="Avaliações"
-              bigSpan="12"
+              bigSpan={countAvaliacoes.length > 1 ? countAvaliacoes.toString() : "0"+countAvaliacoes}
               span="recebidas no total"
               icon={<FaFileAlt />}
             />

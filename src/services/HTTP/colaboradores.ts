@@ -55,4 +55,8 @@ export async function getColaboradorPilarNotas(id: string) {
   return await getRequest(`${baseEndpoint}/pilar/historico/${id}`);
 }
 
+export async function getCountAvaliacoesByColaborador(id: string) {
+  return await getRequest(`${baseEndpoint}/avaliacoes-recebidas/${id}`);
+}
+
 
