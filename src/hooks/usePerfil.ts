@@ -14,7 +14,7 @@ type PerfilData = {
 const roleMap: Record<string, Role> = {
   RH: "rh",
   GESTOR: "gestor",
-  COMITE: "comite",
+  MEMBRO_COMITE: "comite",
   COLABORADOR_COMUM: "colaborador",
   LIDER: "lider",
 };

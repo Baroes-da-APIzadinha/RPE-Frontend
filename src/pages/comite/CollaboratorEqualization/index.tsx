@@ -1,5 +1,6 @@
 import * as S from "./styles";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Title } from "@/components/Title";
 import { Card } from "@/components/Card";
 import { SearchInput } from "@/components/SearchInput";
@@ -25,9 +26,8 @@ type Colaborador = {
   equalization: Status;
 };
 
-
-
 export function CollaboratorEqualization() {
+  const navigate = useNavigate();
   const [notas, setNotas] = useState<Record<number, number>>({});
   const [hover, setHover] = useState<number | null>(null);
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
@@ -47,6 +47,18 @@ export function CollaboratorEqualization() {
 
     return matchesSearch && matchesStatus;
   });
+
+  const sortedCollaborators = [...filteredCollaborators].sort((a, b) => {
+    const discrepancyA = a.discrepancy ?? -Infinity;
+    const discrepancyB = b.discrepancy ?? -Infinity;
+    return discrepancyB - discrepancyA;
+  });
+
+  const handleReview = (collaboratorName: string) => {
+    navigate(
+      `/comite/collaborator-discrepancy/${encodeURIComponent(collaboratorName)}`
+    );
+  };
 
   return (
     <>
@@ -84,7 +96,7 @@ export function CollaboratorEqualization() {
       </Card>
 
       <Card>
-        {filteredCollaborators.map((colab, index) => (
+        {sortedCollaborators.map((colab, index) => (
           <ExpandableCard
             key={index}
             expanded={expandedIndex === index}
@@ -105,24 +117,24 @@ export function CollaboratorEqualization() {
                     <S.Role>{colab.cargo}</S.Role>
                   </div>
                 </S.UserInfo>
-                  <S.ScoreContainer>
-                    <S.ScoreLabel>Autoavaliação</S.ScoreLabel>
-                    <S.ScoreValue>{colab.autoavaliacao ?? "-"}</S.ScoreValue>
-                  </S.ScoreContainer>
-                  <S.ScoreContainer>
-                    <S.ScoreLabel>Avaliação 360</S.ScoreLabel>
-                    <S.ScoreValue>{colab.avaliacao360 ?? "-"}</S.ScoreValue>
-                  </S.ScoreContainer>
-                  <S.ScoreContainer>
-                    <S.ScoreLabel>Nota gestor</S.ScoreLabel>
-                    <S.ScoreValue>{colab.notaGestor ?? "-"}</S.ScoreValue>
-                  </S.ScoreContainer>
-                  <S.ScoreContainer>
-                    <S.ScoreLabel>Discrepância</S.ScoreLabel>
-                    <S.DiscrepancyValue $value={colab.discrepancy}>
-                      {colab.discrepancy ?? "-"}
-                    </S.DiscrepancyValue>
-                  </S.ScoreContainer>
+                <S.ScoreContainer>
+                  <S.ScoreLabel>Autoavaliação</S.ScoreLabel>
+                  <S.ScoreValue>{colab.autoavaliacao ?? "-"}</S.ScoreValue>
+                </S.ScoreContainer>
+                <S.ScoreContainer>
+                  <S.ScoreLabel>Avaliação 360</S.ScoreLabel>
+                  <S.ScoreValue>{colab.avaliacao360 ?? "-"}</S.ScoreValue>
+                </S.ScoreContainer>
+                <S.ScoreContainer>
+                  <S.ScoreLabel>Nota gestor</S.ScoreLabel>
+                  <S.ScoreValue>{colab.notaGestor ?? "-"}</S.ScoreValue>
+                </S.ScoreContainer>
+                <S.ScoreContainer>
+                  <S.ScoreLabel>Discrepância</S.ScoreLabel>
+                  <S.DiscrepancyValue $value={colab.discrepancy}>
+                    {colab.discrepancy ?? "-"}
+                  </S.DiscrepancyValue>
+                </S.ScoreContainer>
               </S.UserHeader>
             }
           >
@@ -171,7 +183,12 @@ export function CollaboratorEqualization() {
             </S.InfoGrid>
 
             <S.FooterButtons>
-              <Button variant="outline">Revisar</Button>
+              <Button
+                variant="outline"
+                onClick={() => handleReview(colab.nome)}
+              >
+                Revisar
+              </Button>
               <Button variant="primary">
                 <MdOutlineCheckCircleOutline />
                 Aprovar

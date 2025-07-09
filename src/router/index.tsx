@@ -22,6 +22,7 @@ import { ManagerTeam } from "@/pages/manager/Team";
 
 import { CycleHistory } from "@/pages/comite/CycleHistory";
 import { CollaboratorEqualization } from "@/pages/comite/CollaboratorEqualization";
+import { CollaboratorDiscrepancy } from "@/pages/comite/collaboratorDiscrepancy";
 
 
 function AppRoutes() {
@@ -71,6 +72,7 @@ function AppRoutes() {
             {/* Comitê */}
             <Route path="/comite" >
               <Route path="equalization" element={<CollaboratorEqualization />} />
+              <Route path="collaborator-discrepancy/:id" element={<CollaboratorDiscrepancy />} />
               <Route path="history" element={<CycleHistory />} />
             </Route>
 
