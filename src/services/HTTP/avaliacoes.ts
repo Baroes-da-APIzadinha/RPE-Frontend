@@ -27,7 +27,17 @@ export async function getAvaliacoesPorTipoUsuario(
   const params: Record<string, string> = { tipoAvaliacao };
   if (idCiclo) params.idCiclo = idCiclo;
 
-  return await getRequest(`/avaliacoes/tipo/usuario/${idColaborador}`, params);
+  return await getRequest(`${baseEndpoint}/tipo/usuario/${idColaborador}`, params);
+}
+
+// Busca avaliações do tipo autoavaliação pelo ID do usuário
+export async function getAutoAvaliacaoByUserId(userId: string) {
+  return await getRequest(`${baseEndpoint}/tipo/usuario/${userId}?tipoAvaliacao=AUTOAVALIACAO`);
+}
+
+// Busca os critérios da autoavaliação organizados por pilar
+export async function getCriteriosAutoAvaliacao(idAvaliacao: string) {
+  return await getRequest(`${baseEndpoint}/forms-autoavaliacao/${idAvaliacao}`);
 }
 
 export async function preencherAvaliacaoPares(data: Record<string, any>) {

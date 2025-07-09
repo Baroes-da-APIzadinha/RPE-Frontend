@@ -1,130 +1,145 @@
 import EvaluationFrame from "@/components/EvaluationFrame";
 import CriteryBox from "@/components/CriteryBox";
 import { Title } from "@/components/Title";
-import { useForm, Controller } from "react-hook-form";
 import RowProgressBox from "@/components/RowProgressBox";
-import ButtonFrame from "@/components/ButtonFrame/index.tsx";
+import ButtonFrame from "@/components/ButtonFrame";
+import Button from "@/components/Button";
 import { FaPaperPlane } from "react-icons/fa";
-import Button from "@/components/Button/index.tsx";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import { criteriosComportamento, criteriosLogistica } from "@/data/autoevaluation";
+import { Controller, useForm, useWatch } from "react-hook-form";
+import { useOutletContext } from "react-router-dom";
 
-const LOCAL_STORAGE_KEY = "autoavaliacao-cache";
+import { useAutoAvaliacaoId } from "@/hooks/avaliacoes/useAutoAvaliacaoId";
+import { useCriteriosAutoAvaliacao } from "@/hooks/avaliacoes/useCriteriosAutoAvaliacao";
+import type { PerfilData } from "@/types/PerfilData";
+import { preencherAutoAvaliacao } from "@/services/HTTP/avaliacoes";
 
 export function AutoEvaluationForm() {
+  const { perfil } = useOutletContext<{ perfil: PerfilData }>();
+  const {
+    idAvaliacao,
+    respostas,
+    loading: loadingId,
+  } = useAutoAvaliacaoId(perfil.userId);
+  const { criterios, loading: loadingCriterios } = useCriteriosAutoAvaliacao( idAvaliacao ?? undefined );
   const { handleSubmit, control, getValues, watch, reset } = useForm();
   const [progress, setProgress] = useState(0);
-  const [comportamentoPreenchido, setCompPreenchido] = useState(0);
-  const [logisticaPreenchido, setLogPreenchido] = useState(0);
   const [camposComErro, setCamposComErro] = useState<string[]>([]);
+  const submitClickedRef = useRef(false);
+  const modoVisualizacao = !!respostas?.length;
 
-  const totalComportamento = criteriosComportamento.length;
-  const totalLogistica = criteriosLogistica.length;
 
-  // Carregar dados salvos no localStorage
   useEffect(() => {
-    const stored = localStorage.getItem(LOCAL_STORAGE_KEY);
-    if (stored) {
-      try {
-        const data = JSON.parse(stored);
-        reset(data);
-        calculateProgress(data);
-      } catch (err) {
-        console.error("Erro ao recuperar cache:", err);
-      }
+    if (!criterios || !respostas) return;
+
+    const valoresIniciais: Record<
+      string,
+      { nota: number; justificativa: string }
+    > = {};
+
+    for (const pilar in criterios) {
+      criterios[pilar].forEach((c) => {
+        const resposta = respostas?.find(
+          (r) => r.nomeCriterio === c.nomeCriterio
+        );
+        const key = `${c.nomeCriterio}`;
+        valoresIniciais[key] = {
+          nota: resposta ? Number(resposta.nota) : 0,
+          justificativa: resposta?.justificativa || "",
+        };
+      });
     }
-  }, [reset]);
 
-  // Salvar no localStorage sempre que mudar algo
+    reset(valoresIniciais);
+    calculateProgress(valoresIniciais);
+  }, [criterios, respostas, reset]);
+
+  const watchedValues = useWatch({ control });
   useEffect(() => {
-    const subscription = watch((values) => {
-      calculateProgress(values);
-      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(values));
-    });
-    return () => subscription.unsubscribe();
-  }, [watch]);
+    calculateProgress(watchedValues);
+  }, [watchedValues, criterios]);
 
   const calculateProgress = (values: any) => {
-    const filled1 = criteriosComportamento.filter((c) => {
-      const value = values[`comportamento_${c.id}`];
-      return value?.nota > 0 && value?.justificativa.trim() !== "";
-    }).length;
+    let preenchidos = 0;
+    let total = 0;
 
-    const filled2 = criteriosLogistica.filter((c) => {
-      const value = values[`logistica_${c.id}`];
-      return value?.nota > 0 && value?.justificativa.trim() !== "";
-    }).length;
+    for (const pilar in criterios) {
+      criterios[pilar].forEach((c) => {
+        const key = `${c.nomeCriterio}`;
+        const val = values[key];
+        if (val?.nota > 0 && val?.justificativa.trim()) preenchidos++;
+        total++;
+      });
+    }
 
-    const filledTotal = filled1 + filled2;
-    const total = totalComportamento + totalLogistica;
-
-    setProgress(Number((filledTotal / total).toPrecision(2)) * 100);
-    setCompPreenchido(filled1);
-    setLogPreenchido(filled2);
+    setProgress(
+      total === 0 ? 0 : Number((preenchidos / total).toPrecision(2)) * 100
+    );
   };
 
-  const submitClickedRef = useRef(false);
-  const onSubmit = () => {
+  const onSubmit = async () => {
     if (!submitClickedRef.current) return;
-
-    submitClickedRef.current = false; // resetar depois do uso
+    submitClickedRef.current = false;
 
     const values = getValues();
     const erros: string[] = [];
 
-    const faltandoComportamento = criteriosComportamento.filter((c) => {
-      const val = values[`comportamento_${c.id}`];
-      const isEmpty = !(val?.nota > 0 && val?.justificativa.trim() !== "");
-      if (isEmpty) {
-        erros.push(`comportamento_${c.id}`);
-        return isEmpty;
-      }
-    });
+    const criteriosPayload: {
+      nome: string;
+      nota: number;
+      justificativa: string;
+    }[] = [];
 
-    const faltandoLogistica = criteriosLogistica.filter((c) => {
-      const val = values[`logistica_${c.id}`];
-      const isEmpty = !(val?.nota > 0 && val?.justificativa.trim() !== "");
-      if (isEmpty) {
-        erros.push(`logistica_${c.id}`);
-        return isEmpty;
-      }
-    });
+    for (const pilar in criterios) {
+      criterios[pilar].forEach((criterio) => {
+        const nome = criterio.nomeCriterio;
+        const val = values[nome];
+
+        const isFilled = val?.nota > 0 && val?.justificativa?.trim() !== "";
+
+        if (!isFilled) {
+          erros.push(nome);
+        } else {
+          criteriosPayload.push({
+            nome,
+            nota: Number(val.nota),
+            justificativa: val.justificativa.trim(),
+          });
+        }
+      });
+    }
 
     setCamposComErro(erros);
 
-    if (faltandoComportamento.length > 0 || faltandoLogistica.length > 0) {
+    if (erros.length > 0) {
       toast.error(
         "Preencha todos os critérios da sua autoavaliação antes de enviar."
       );
       return;
     }
 
-    const data = {
-      Comportamento: {
-        nomePilar: "Comportamento",
-        criterios: criteriosComportamento.map((c) => ({
-          id: c.id,
-          nome: c.nome,
-          nota: values[`comportamento_${c.id}`]?.nota || "",
-          justificativa: values[`comportamento_${c.id}`]?.justificativa || "",
-        })),
-      },
-      Logistica: {
-        nomePilar: "Logística",
-        criterios: criteriosLogistica.map((c) => ({
-          id: c.id,
-          nome: c.nome,
-          nota: values[`logistica_${c.id}`]?.nota || "",
-          justificativa: values[`logistica_${c.id}`]?.justificativa || "",
-        })),
-      },
-    };
+    if (!idAvaliacao) {
+      toast.error("ID da avaliação não encontrado.");
+      return;
+    }
 
-    localStorage.removeItem(LOCAL_STORAGE_KEY);
-    toast.success("Autoavaliação enviada com sucesso!");
-    console.log(data);
+    try {
+      await preencherAutoAvaliacao({
+        idAvaliacao,
+        criterios: criteriosPayload,
+      });
+
+      toast.success("Autoavaliação enviada com sucesso!");
+    } catch (err) {
+      console.error(err);
+      toast.error("Erro ao enviar sua autoavaliação.");
+    }
   };
+
+  if (loadingId || loadingCriterios) return <p>Carregando...</p>;
+  if (!idAvaliacao || Object.keys(criterios).length === 0)
+    return <p>Avaliação não encontrada.</p>;
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -134,51 +149,40 @@ export function AutoEvaluationForm() {
       />
       <Title>Sua autoavaliação</Title>
 
-      <EvaluationFrame
-        title="Comportamento"
-        count={`${comportamentoPreenchido}/${totalComportamento}`}
-      >
-        {criteriosComportamento.map((c) => (
-          <Controller
-            key={c.id}
-            name={`comportamento_${c.id}`}
-            control={control}
-            defaultValue={{ nota: 0, justificativa: "" }}
-            render={({ field }) => (
-              <CriteryBox
-                title={c.nome}
-                subtitle={c.subtitle}
-                value={field.value}
-                onChange={field.onChange}
-                error={camposComErro.includes(`comportamento_${c.id}`)}
+      {Object.entries(criterios).map(([pilar, lista]) => (
+        <EvaluationFrame
+          key={pilar}
+          title={pilar}
+          count={`${
+            lista.filter((c) => {
+              const key = `${c.nomeCriterio}`;
+              const val = getValues(key);
+              return val?.nota > 0 && val?.justificativa.trim();
+            }).length
+          }/${lista.length}`}
+        >
+          {lista.map((criterio) => {
+            const fieldName = `${criterio.nomeCriterio}`;
+            return (
+              <Controller
+                key={fieldName}
+                name={fieldName}
+                control={control}
+                defaultValue={{ nota: 0, justificativa: "" }}
+                render={({ field }) => (
+                  <CriteryBox
+                    title={criterio.nomeCriterio}
+                    subtitle={criterio.descricao}
+                    value={field.value}
+                    onChange={field.onChange}
+                    error={camposComErro.includes(fieldName)}
+                  />
+                )}
               />
-            )}
-          />
-        ))}
-      </EvaluationFrame>
-
-      <EvaluationFrame
-        title="Logística"
-        count={`${logisticaPreenchido}/${totalLogistica}`}
-      >
-        {criteriosLogistica.map((c) => (
-          <Controller
-            key={c.id}
-            name={`logistica_${c.id}`}
-            control={control}
-            defaultValue={{ nota: 0, justificativa: "" }}
-            render={({ field }) => (
-              <CriteryBox
-                title={c.nome}
-                subtitle={c.subtitle}
-                value={field.value}
-                onChange={field.onChange}
-                error={camposComErro.includes(`logistica_${c.id}`)}
-              />
-            )}
-          />
-        ))}
-      </EvaluationFrame>
+            );
+          })}
+        </EvaluationFrame>
+      ))}
 
       <ButtonFrame text="Para submeter sua autoavaliação, preencha todos os critérios.">
         <Button
