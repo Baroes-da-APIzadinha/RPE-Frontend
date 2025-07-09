@@ -51,5 +51,8 @@ export async function getNotasHistorico(id: string) {
   return await getRequest(`${baseEndpoint}/notas/historico/${id}`);
 }
 
+export async function getColaboradorPilarNotas(id: string) {
+  return await getRequest(`${baseEndpoint}/pilar/historico/${id}`);
+}
 
 

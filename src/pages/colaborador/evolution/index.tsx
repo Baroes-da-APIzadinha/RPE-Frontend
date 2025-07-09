@@ -7,31 +7,40 @@ import { IoMdTrophy } from "react-icons/io";
 import ReactApexChart from "react-apexcharts";
 import ChartBox from "@/components/ChartBox/index.tsx";
 import { useTheme } from "styled-components";
-import { notasPorPilarData, ciclosParticipados } from "@/data/collaboratorEvolution.ts";
 import { usePerfil } from "@/hooks/usePerfil";
 import { useColaboradorNotasHistorico } from "@/hooks/colaboradores/useColaboradorNotasHistorico";
+import { useColaboradorPilarNotas } from "@/hooks/colaboradores/useColaboradorPilarNotas";
+import type { CicloPilarNotas, PilarNota } from "@/types/PilarNota.ts";
+import { ciclosParticipados, notasPorPilarData } from "@/data/collaboratorEvolution";
 
-function getHigherPilar() {
-  // Pega o último valor de cada pilar
-  const pilarNotas = notasPorPilarData.map((item) => ({
-    name: item.name,
-    nota: item.data[item.data.length - 1],
+function getHigherPilar(pilarNotas: CicloPilarNotas[]) {
+  // Pega o último ciclo
+  const lastCycle = pilarNotas[pilarNotas.length - 1];
+  if (!lastCycle) return { name: "Nenhum", nota: 0 }; // Caso não haja ciclos
+
+  // Pega as notas do último ciclo
+  const Notas = lastCycle.notas.map((item: PilarNota) => ({
+    name: item.pilarNome,
+    nota: item.pilarNota || 0, // Garante que não haja valores nulos
   }));
+
   // Ordena por nota decrescente, depois por nome crescente
-  pilarNotas.sort((a, b) => {
+  Notas.sort((a, b) => {
     if (b.nota !== a.nota) return b.nota - a.nota;
     return a.name.localeCompare(b.name);
   });
+
   // Retorna o pilar com maior nota
-  return { name: pilarNotas[0].name, nota: pilarNotas[0].nota };
+  return { name: Notas[0].name, nota: Notas[0].nota };
 }
 
 export function ColaboradorEvolution() {
   const theme = useTheme();
   const { perfil } = usePerfil();
   const { notasHistorico } = useColaboradorNotasHistorico(perfil?.userId || "");
-  const higherPilar = getHigherPilar();
-
+  const { pilarNotas } = useColaboradorPilarNotas(perfil?.userId || "");
+  console.log("Notas do a:", pilarNotas);
+  const higherPilar = getHigherPilar(pilarNotas);
   const notas = notasHistorico.map((item) => item.cicloNota)
 
   const last   =  notas[notas.length - 1] || 0;   // undefined se array vazio
@@ -40,7 +49,6 @@ export function ColaboradorEvolution() {
   const currentNote  = (last);
   const previousNote = (before);
   const differNote = (currentNote - previousNote).toFixed(2);
-
 
   return (
     <>
@@ -85,7 +93,7 @@ export function ColaboradorEvolution() {
                     zoom: { enabled: false },
                   },
                   xaxis: {
-                    categories: ciclosParticipados
+                    categories: notasHistorico.map((nota) => nota.cicloNome)
                     ,
                   },
                   yaxis: {
@@ -98,13 +106,13 @@ export function ColaboradorEvolution() {
             </ChartBox>
             <ChartBox title="Última avaliação por pilar avaliativo">
               <ReactApexChart
-                type="radar"
+                type="bar"
                 height={320}  
                 width={500}
                 series={[
                   {
                     name: "Nota",
-                    data: notasPorPilarData.map((item) => item.data[item.data.length - 1]),
+                    data: pilarNotas[pilarNotas.length - 1]?.notas.map((item: PilarNota) => item.pilarNota || 0) || [],
                   },
                 ]}
                 options={{
@@ -112,8 +120,7 @@ export function ColaboradorEvolution() {
                     toolbar: { show: false },
                   },
                   xaxis: {
-                    categories: notasPorPilarData.map((item) => item.name)                      
-                    ,
+                    categories: pilarNotas[pilarNotas.length - 1]?.notas.map((item: PilarNota) => item.pilarNome) || [],                      
                   },
                   yaxis: {
                     min: 0,
@@ -124,12 +131,7 @@ export function ColaboradorEvolution() {
                     show: true,
                     width: 2,
                   },
-                  fill: {
-                    opacity: 0.2,
-                  },
-                  markers: {
-                    size: 2,
-                  },
+                  
                   colors: [theme.colors.primary.default],
                   dataLabels: {
                     enabled: true,
@@ -147,14 +149,31 @@ export function ColaboradorEvolution() {
                 type="line"
                 height={280}
                 width={900}
-                series={notasPorPilarData}
+                series={
+                  (() => {
+                    const allPilarNames = Array.from(
+                      new Set(
+                        pilarNotas.flatMap((ciclo) =>
+                          ciclo.notas.map((nota: PilarNota) => nota.pilarNome)
+                        )
+                      )
+                    );
+                    return allPilarNames.map((pilarName) => ({
+                      name: pilarName,
+                      data: pilarNotas.map((ciclo) => {
+                        const notaObj = ciclo.notas.find((nota: PilarNota) => nota.pilarNome === pilarName);
+                        return notaObj ? notaObj.pilarNota || 0 : 0;
+                      }),
+                    }));
+                  })()
+                }
                 options={{
                   chart: {
                     toolbar: { show: false },
                     zoom: { enabled: false },
                   },
                   xaxis: {
-                    categories: ciclosParticipados,
+                    categories: pilarNotas.map((ciclo: CicloPilarNotas) => ciclo.ciclo),
                   },
                   yaxis: {
                     min: 0,
