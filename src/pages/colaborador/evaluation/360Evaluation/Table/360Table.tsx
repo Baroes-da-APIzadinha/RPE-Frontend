@@ -1,22 +1,31 @@
 import React from "react";
-import { mockColaboradores } from "@/data/colaboradores360";
-import { useAvaliacoes360 } from "@/hooks/Avaliacoes360";
 import * as S from "./styles";
+import { useAvaliacoes360 } from "@/hooks/Avaliacoes360";
 import theme from "@/styles/theme";
 import { TableBase } from "@/components/TableBase";
 import TableRowBox from "@/components/TableRowBox";
+import { useOutletContext } from "react-router-dom";
+import { useAvaliacoesPares } from "@/hooks/avaliacoes/useAvaliacoesPares";
+import type { PerfilData } from "@/types/PerfilData";
 
 interface Table360Props {
-  onSelect: (id: number) => void;
+  onSelect: (id: string) => void;
 }
 
 const Table360: React.FC<Table360Props> = ({ onSelect }) => {
-  const { getStatus } = useAvaliacoes360();
+  // const { getStatus } = useAvaliacoes360();
 
-  const total = mockColaboradores.length;
-  const concluidas = mockColaboradores.filter((c) => getStatus(c.id) === "avaliado").length;
-  const andamento = mockColaboradores.filter((c) => getStatus(c.id) === "andamento").length;
+  const { perfil } = useOutletContext<{ perfil: PerfilData }>();
+  const userId = perfil?.userId;
+  const { avaliacoes, loading } = useAvaliacoesPares(userId);
+
+  if (loading || !perfil?.userId) return <div>Carregando avaliações…</div>;
+
+  const total = avaliacoes.length;
+  const concluidas = avaliacoes.filter(a => a.status === "CONCLUIDA").length;
+  const andamento = avaliacoes.filter(a => a.status === "EM_ANDAMENTO").length;
   const pendentes = total - concluidas - andamento;
+
 
   const progresso = total > 0 ? Math.round((concluidas / total) * 100) : 0;
 
@@ -26,7 +35,9 @@ const Table360: React.FC<Table360Props> = ({ onSelect }) => {
         <S.Header>
           <div>
             <S.Title>Avaliação de Pares</S.Title>
-            <S.Subtitle>Avalie os colegas com quem você trabalhou nos últimos 6 meses</S.Subtitle>
+            <S.Subtitle>
+              Avalie os colegas com quem você trabalhou nos últimos 6 meses
+            </S.Subtitle>
           </div>
           <S.Right>
             <S.Porcentagem>{progresso}%</S.Porcentagem>
@@ -40,11 +51,15 @@ const Table360: React.FC<Table360Props> = ({ onSelect }) => {
 
       <S.SummaryRow>
         <S.SummaryBox>
-          <S.SummaryValue color={theme.colors.success.text}>{concluidas}</S.SummaryValue>
+          <S.SummaryValue color={theme.colors.success.text}>
+            {concluidas}
+          </S.SummaryValue>
           <S.SummaryLabel>Concluídas</S.SummaryLabel>
         </S.SummaryBox>
         <S.SummaryBox>
-          <S.SummaryValue color={theme.colors.warning}>{andamento}</S.SummaryValue>
+          <S.SummaryValue color={theme.colors.warning}>
+            {andamento}
+          </S.SummaryValue>
           <S.SummaryLabel>Em Andamento</S.SummaryLabel>
         </S.SummaryBox>
         <S.SummaryBox>
@@ -57,14 +72,14 @@ const Table360: React.FC<Table360Props> = ({ onSelect }) => {
         title="Colaboradores para avaliar"
         subtitle="Selecione os colaboradores abaixo para iniciar a avaliação"
       >
-        {mockColaboradores.map((colaborador) => (
+        {avaliacoes.map((a) => (
           <TableRowBox
-            key={colaborador.id}
-            name={colaborador.name}
-            role={colaborador.role}
-            workTime={colaborador.workTime}
-            status={getStatus(colaborador.id)}
-            onClick={() => onSelect(colaborador.id)}
+            key={a.idAvaliacao}
+            name={a.avaliado.nomeCompleto}
+            role="Colaborador"
+            workTime={`${a.ciclo.nomeCiclo}`} 
+            status={a.status as any}
+            onClick={() => onSelect(a.idAvaliacao)} 
           />
         ))}
       </TableBase>
