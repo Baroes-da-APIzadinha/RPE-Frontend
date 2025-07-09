@@ -107,8 +107,8 @@ export function ColaboradorEvolution() {
             <ChartBox title="Última avaliação por pilar avaliativo">
               <ReactApexChart
                 type="bar"
-                height={320}  
-                width={500}
+                height={300}  
+                width={400}
                 series={[
                   {
                     name: "Nota",
@@ -127,12 +127,12 @@ export function ColaboradorEvolution() {
                     max: 5,
                     tickAmount: 5,
                   },
-                  stroke: {
-                    show: true,
-                    width: 2,
+                  plotOptions: {
+                    bar: {
+                      distributed: true,
+                    },
                   },
-                  
-                  colors: [theme.colors.primary.default],
+                  colors: [theme.colors.chart.orange, theme.colors.chart.blue, theme.colors.chart.green],
                   dataLabels: {
                     enabled: true,
                   },
