@@ -17,7 +17,7 @@ export function BaseLayout() {
         userName={perfil.userName}
       />
       <S.Main>
-        <Outlet />
+        <Outlet  context={{ perfil }} />
       </S.Main>
     </S.Wrapper>
   );
