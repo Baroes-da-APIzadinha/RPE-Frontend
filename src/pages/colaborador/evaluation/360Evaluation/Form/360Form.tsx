@@ -2,27 +2,38 @@ import React, { useEffect, useState } from "react";
 import * as S from "./styles.ts";
 import { MdAccountCircle, MdArrowBack, MdOutlineInfo } from "react-icons/md";
 import Button from "@/components/Button";
-import { mockColaboradores } from "@/data/colaboradores360";
 import { Card } from "@/components/Card";
 import { Select } from "@/components/Select";
 import ButtonFrame from "@/components/ButtonFrame";
 import { FaPaperPlane } from "react-icons/fa";
-import { useAvaliacoes360 } from "@/hooks/Avaliacoes360";
 import { toast } from "sonner";
 import { StarRating } from "@/components/StarRating";
+import { useOutletContext } from "react-router-dom";
+import { useAvaliacaoParesPorId } from "@/hooks/avaliacoes/useAvaliacaoParesPorId.ts";
+import type { PerfilData } from "@/types/PerfilData.tsx";
+import { preencherAvaliacaoPares } from "@/services/HTTP/avaliacoes.ts";
+import { useColaboradorById } from "@/hooks/colaboradores/useColaboradorById.ts";
 
 interface Props {
-  id: number;
+  id: string;
   onBack: () => void;
 }
 
 const EvaluationDetails: React.FC<Props> = ({ id, onBack }) => {
-  const colaborador = mockColaboradores.find((c) => c.id === id);
+  const { perfil } = useOutletContext<{ perfil: PerfilData }>();
+  const { avaliacao, loading: loadingAvaliacao } = useAvaliacaoParesPorId(
+    perfil.userId,
+    id
+  );
+  const idAvaliado = avaliacao?.idAvaliado ?? "";
+  const { colaborador: colaboradorCompleto, loading: loadingColaborador } =
+    useColaboradorById(idAvaliado);
+
   const [nota, setNota] = useState(0);
   const [melhoria, setMelhoria] = useState("");
   const [forte, setForte] = useState("");
   const [motivacao, setMotivacao] = useState<string | null>(null);
-  const { salvarAvaliacao, buscarAvaliacao } = useAvaliacoes360();
+  const [jaEnviado, setJaEnviado] = useState(false);
 
   const [errors, setErrors] = useState({
     nota: false,
@@ -31,19 +42,31 @@ const EvaluationDetails: React.FC<Props> = ({ id, onBack }) => {
     melhoria: false,
   });
 
-  if (!colaborador) {
-    return <p>Colaborador não encontrado.</p>;
-  }
+  useEffect(() => {
+    if (avaliacao?.avaliacaoPares) {
+      const pares = avaliacao.avaliacaoPares;
+      setNota(parseFloat(pares.nota));
+      setMotivacao(pares.motivadoTrabalharNovamente);
+      setForte(pares.pontosFortes);
+      setMelhoria(pares.pontosFracos);
+      setJaEnviado(true);
+    }
+  }, [avaliacao]);
+
+  if (loadingAvaliacao) return <p>Carregando...</p>;
+  if (!avaliacao) return <p>Avaliação não encontrada.</p>;
+
+  const colaborador = avaliacao.avaliado;
 
   const motivacoes = [
-    { value: "discordoTot", label: "Discordo Totalmente" },
-    { value: "discordoParc", label: "Discordo Parcialmente" },
-    { value: "neutro", label: "Neutro" },
-    { value: "concordoParc", label: "Concordo Parcialmente" },
-    { value: "concordoTot", label: "Concordo Totalmente" },
+    { value: "Discordo Totalmente", label: "Discordo Totalmente" },
+    { value: "Discordo Parcialmente", label: "Discordo Parcialmente" },
+    { value: "Neutro", label: "Neutro" },
+    { value: "Concordo Parcialmente", label: "Concordo Parcialmente" },
+    { value: "Concordo Totalmente", label: "Concordo Totalmente" },
   ];
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const newErrors = {
       nota: nota === 0,
       motivacao: !motivacao,
@@ -54,50 +77,28 @@ const EvaluationDetails: React.FC<Props> = ({ id, onBack }) => {
     setErrors(newErrors);
 
     const hasErrors = Object.values(newErrors).some(Boolean);
-
     if (hasErrors) {
       toast.error("Preencha todos os campos obrigatórios.");
       return;
     }
 
-    const avaliacaoFinal = {
-      id: colaborador.id,
-      nota,
-      motivacao,
-      forte,
-      melhoria,
-      status: "avaliado" as "avaliado",
-    };
-
-    salvarAvaliacao(avaliacaoFinal);
-    toast.success("Avaliação enviada com sucesso!");
-
-    console.log("ENVIADO AO BACKEND:", avaliacaoFinal);
-  };
-
-  useEffect(() => {
-    const avaliacaoExistente = buscarAvaliacao(colaborador.id);
-    if (avaliacaoExistente) {
-      setNota(avaliacaoExistente.nota || 0);
-      setMotivacao(avaliacaoExistente.motivacao || null);
-      setForte(avaliacaoExistente.forte || "");
-      setMelhoria(avaliacaoExistente.melhoria || "");
-    }
-  }, []);
-
-  useEffect(() => {
-    return () => {
-      const parcial = {
-        id: colaborador.id,
-        nota,
-        motivacao,
-        forte,
-        melhoria,
-        status: (nota && motivacao ? "avaliado" : "andamento") as "avaliado" | "andamento" | "pendente",
+    try {
+      const payload = {
+        idAvaliacao: avaliacao.idAvaliacao,
+        nota: nota.toString(),
+        motivadoTrabalharNovamente: motivacao,
+        pontosFortes: forte,
+        pontosFracos: melhoria,
       };
-      salvarAvaliacao(parcial);
-    };
-  }, [nota, motivacao, forte, melhoria]);
+
+      await preencherAvaliacaoPares(payload);
+      toast.success("Avaliação enviada com sucesso!");
+      setJaEnviado(true);
+    } catch (err) {
+      console.error(err);
+      toast.error("Erro ao enviar a avaliação.");
+    }
+  };
 
   return (
     <S.Container>
@@ -105,11 +106,12 @@ const EvaluationDetails: React.FC<Props> = ({ id, onBack }) => {
         <MdAccountCircle size={64} />
         <S.ColabInfo>
           <S.ColabNome>
-            Avaliando: <strong>{colaborador.name}</strong>
+            Avaliando: <strong>{colaborador?.nomeCompleto}</strong>
           </S.ColabNome>
           <S.ColabCargo>
-            {colaborador.role} • {colaborador.unit} • Trabalhou junto por{" "}
-            {colaborador.workTime}
+            {colaboradorCompleto?.cargo || "Cargo desconhecido"} •{" "}
+            {colaboradorCompleto?.unidade || "Unidade desconhecida"} • Trabalhou
+            junto por 6 meses
           </S.ColabCargo>
         </S.ColabInfo>
         <S.RightContent>
@@ -124,8 +126,7 @@ const EvaluationDetails: React.FC<Props> = ({ id, onBack }) => {
         <MdOutlineInfo size={20} />
         <span>
           <strong>Importante:</strong> Avalie com base no trabalho conjunto nos
-          últimos {colaborador.workTime}. Seja específico e construtivo em suas
-          justificativas.
+          últimos 6 meses. Seja específico e construtivo em suas justificativas.
         </span>
       </S.InfoCard>
 
@@ -143,7 +144,8 @@ const EvaluationDetails: React.FC<Props> = ({ id, onBack }) => {
                 <S.StarsGroup>
                   <StarRating
                     value={nota}
-                    onChange={(star) => setNota(star)}
+                    onChange={(val) => setNota(val)}
+                    readOnly={jaEnviado}
                   />
                 </S.StarsGroup>
               </S.FormBlock>
@@ -155,9 +157,12 @@ const EvaluationDetails: React.FC<Props> = ({ id, onBack }) => {
                 <Select
                   placeholder="Selecione uma opção"
                   value={motivacao}
-                  onChange={setMotivacao}
+                  onChange={(val) =>
+                    setMotivacao(typeof val === "string" ? val : val[0] || null)
+                  }
                   options={motivacoes}
                   error={errors.motivacao}
+                  disabled={jaEnviado}
                 />
               </S.FormBlock>
             </S.FormRow>
@@ -169,6 +174,7 @@ const EvaluationDetails: React.FC<Props> = ({ id, onBack }) => {
                   value={forte}
                   onChange={(e) => setForte(e.target.value)}
                   error={errors.forte}
+                  disabled={jaEnviado}
                 />
               </S.FormBlock>
               <S.FormBlock>
@@ -178,13 +184,14 @@ const EvaluationDetails: React.FC<Props> = ({ id, onBack }) => {
                   value={melhoria}
                   onChange={(e) => setMelhoria(e.target.value)}
                   error={errors.melhoria}
+                  disabled={jaEnviado}
                 />
               </S.FormBlock>
             </S.FormRow>
           </S.FormWrapper>
         </Card>
         <ButtonFrame text="Para submeter sua avaliação do colaborador, preencha todos os campos.">
-          <Button>
+          <Button disabled={jaEnviado}>
             <FaPaperPlane />
             Enviar
           </Button>

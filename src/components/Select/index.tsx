@@ -13,6 +13,7 @@ type Props = {
   value: string | string[] | null;
   isMulti?: boolean;
   error?: boolean;
+  disabled?: boolean;
   onChange: (value: string | string[]) => void;
 };
 
@@ -24,10 +25,13 @@ export function Select({
   onChange,
   isMulti = false,
   error,
+  disabled = false,
 }: Props) {
   const [open, setOpen] = useState(false);
 
   const handleSelect = (selectedValue: string) => {
+    if (disabled) return;
+
     if (isMulti) {
       const current = Array.isArray(value) ? value : [];
       const alreadySelected = current.includes(selectedValue);
@@ -54,7 +58,12 @@ export function Select({
     <S.Container>
       {label && <S.Label>{label}</S.Label>}
 
-      <S.SelectBox onClick={() => setOpen(!open)} $open={open} error={error}>
+      <S.SelectBox
+        onClick={() => !disabled && setOpen(!open)}
+        $open={open}
+        error={error}
+        $disabled={disabled}
+      >
         <span>
           {isMulti
             ? Array.isArray(value) && value.length > 0
@@ -65,7 +74,7 @@ export function Select({
         <S.Chevron $open={open}>▾</S.Chevron>
       </S.SelectBox>
 
-      {open && (
+      {open && !disabled && (
         <S.OptionsList>
           {options.map((option) => (
             <S.Option
