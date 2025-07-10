@@ -68,7 +68,7 @@ export function Login() {
           placeholder="Digite sua senha"
           label="Senha"
         />
-        <Button variant="default">Entrar</Button>
+        <Button variant="default" type="submit">Entrar</Button>
       </S.Form>
     </S.Container>
   );
