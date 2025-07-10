@@ -4,88 +4,103 @@ import * as S from "./styles";
 import { Title } from "@/components/Title";
 import { Card } from "@/components/Card";
 import { ToggleBar } from "@/components/ToggleBar";
+import TextArea from "@/components/Textarea";
+import { StarRating } from "@/components/StarRating";
+import EvaluationFrame from "@/components/EvaluationFrame";
+import RowProgressBox from "@/components/RowProgressBox";
 import { IoSparklesOutline } from "react-icons/io5";
 import { FaUser, FaUsers, FaClipboardCheck } from "react-icons/fa";
+import { MdKeyboardArrowDown, MdKeyboardArrowUp } from "react-icons/md";
 import { collaboratorsMock } from "@/data/colaboradoresComite";
+import { useCountAvaliacoes } from "@/hooks/colaboradores/useCountAvaliacoes";
 
 type TabType = "autoavaliacao" | "gestor" | "360";
 
-// Mock data para demonstração
-const mockEvaluationData = {
-  autoavaliacao: {
-    questions: [
-      {
-        question: "Como você avalia sua performance geral neste período?",
-        answer: "Considero que tive uma performance sólida, cumprindo todas as metas estabelecidas e contribuindo ativamente para os projetos da equipe.",
-        rating: 4.3
-      },
-      {
-        question: "Quais foram seus principais desafios e como os superou?",
-        answer: "O principal desafio foi adaptar-me às novas tecnologias do projeto. Dediquei tempo extra para estudar e busquei mentoria com colegas mais experientes.",
-        rating: 4.0
-      },
-      {
-        question: "Como você contribuiu para o desenvolvimento da equipe?",
-        answer: "Compartilhei conhecimentos em sessões de code review e ajudei novos membros da equipe com onboarding técnico.",
-        rating: 4.5
-      }
-    ]
+// Mock data baseado na estrutura do CollaboratorReview
+const criteriosMock = [
+  {
+    id: "1",
+    nome: "Qualidade do trabalho",
+    pilar: "Postura"
   },
-  gestor: {
-    questions: [
-      {
-        question: "Avalie a performance técnica do colaborador",
-        answer: "Demonstra excelente domínio técnico e capacidade de resolver problemas complexos. Suas entregas são sempre de alta qualidade.",
-        rating: 4.0
-      },
-      {
-        question: "Como avalia a colaboração e trabalho em equipe?",
-        answer: "É um excelente colaborador, sempre disposto a ajudar os colegas e compartilhar conhecimento. Contribui positivamente para o ambiente de trabalho.",
-        rating: 4.2
-      },
-      {
-        question: "Pontos de melhoria identificados",
-        answer: "Poderia ser mais proativo em sugerir melhorias nos processos da equipe e assumir mais responsabilidades de liderança técnica.",
-        rating: 3.8
-      }
-    ]
+  {
+    id: "2", 
+    nome: "Pontualidade e assiduidade",
+    pilar: "Postura"
   },
-  colleagues360: [
-    {
-      name: "Ana Costa",
-      role: "Product Owner",
-      overallScore: 4.1,
-      feedback: "Excelente colaborador, sempre disposto a ajudar e com grande conhecimento técnico. Comunicação clara e objetiva.",
-      strengths: ["Conhecimento técnico", "Disponibilidade", "Comunicação"],
-      improvements: ["Proatividade em reuniões", "Sugestões de melhorias"]
-    },
-    {
-      name: "Pedro Santos",
-      role: "Desenvolvedor Backend",
-      overallScore: 3.8,
-      feedback: "Bom colega de trabalho, me ajudou muito durante meu onboarding. Poderia ser mais assertivo nas discussões técnicas.",
-      strengths: ["Mentoria", "Paciência", "Conhecimento técnico"],
-      improvements: ["Assertividade", "Participação em discussões"]
-    },
-    {
-      name: "Carla Mendes",
-      role: "QA Analyst",
-      overallScore: 4.2,
-      feedback: "Trabalha muito bem em equipe e sempre entrega código de qualidade. Facilita muito nosso trabalho de QA.",
-      strengths: ["Qualidade do código", "Colaboração", "Pontualidade"],
-      improvements: ["Documentação", "Testes unitários"]
-    }
-  ]
-};
+  {
+    id: "3",
+    nome: "Organização e planejamento",
+    pilar: "Logistica"
+  },
+  {
+    id: "4",
+    nome: "Comunicação efetiva",
+    pilar: "Logistica"
+  },
+  {
+    id: "5",
+    nome: "Liderança e tomada de decisão",
+    pilar: "Gestão e Liderança"
+  }
+];
+
+const autoavaliacaoMock = [
+  { id: "1", nota: 4.2, justificativa: "Considero que mantenho um alto padrão de qualidade em minhas entregas, sempre revisando meu trabalho antes de finalizar." },
+  { id: "2", nota: 4.5, justificativa: "Sempre chego no horário e raramente falto. Acredito ser um ponto forte meu." },
+  { id: "3", nota: 3.8, justificativa: "Tenho me esforçado para melhorar minha organização, usando ferramentas como Trello para organizar tarefas." },
+  { id: "4", nota: 4.0, justificativa: "Procuro ser claro e objetivo em minhas comunicações, tanto verbal quanto escrita." },
+  { id: "5", nota: 3.5, justificativa: "Ainda estou desenvolvendo minhas habilidades de liderança, mas tenho tomado iniciativas em projetos menores." }
+];
+
+const avaliacaoGestorMock = [
+  { id: "1", nota: 4.0, justificativa: "Demonstra excelente qualidade técnica, mas pode melhorar na revisão de código dos colegas." },
+  { id: "2", nota: 4.8, justificativa: "Exemplar em pontualidade. Nunca teve problemas de atraso ou falta injustificada." },
+  { id: "3", nota: 3.5, justificativa: "Melhorou significativamente sua organização, mas ainda pode aprimorar o planejamento de longo prazo." },
+  { id: "4", nota: 4.2, justificativa: "Comunicação clara e efetiva. Boa participação em reuniões e apresentações." },
+  { id: "5", nota: 3.2, justificativa: "Mostra potencial de liderança, mas precisa ser mais proativo em assumir responsabilidades." }
+];
+
+// Agrupamento dos critérios por pilar
+const criteriosPorPilar = [
+  {
+    titulo: "Postura",
+    criterios: criteriosMock.filter((c) => ["1", "2"].includes(c.id)),
+    autoavaliacao: autoavaliacaoMock.filter((c) => ["1", "2"].includes(c.id)),
+    avaliacaoGestor: avaliacaoGestorMock.filter((c) => ["1", "2"].includes(c.id)),
+  },
+  {
+    titulo: "Logistica",
+    criterios: criteriosMock.filter((c) => ["3", "4"].includes(c.id)),
+    autoavaliacao: autoavaliacaoMock.filter((c) => ["3", "4"].includes(c.id)),
+    avaliacaoGestor: avaliacaoGestorMock.filter((c) => ["3", "4"].includes(c.id)),
+  },
+  {
+    titulo: "Gestão e Liderança",
+    criterios: criteriosMock.filter((c) => ["5"].includes(c.id)),
+    autoavaliacao: autoavaliacaoMock.filter((c) => ["5"].includes(c.id)),
+    avaliacaoGestor: avaliacaoGestorMock.filter((c) => ["5"].includes(c.id)),
+  },
+];
 
 export function CollaboratorDiscrepancy() {
   const { id } = useParams<{ id: string }>();
   const [activeTab, setActiveTab] = useState<TabType>("autoavaliacao");
   const [summary, setSummary] = useState<string | null>(null);
   const [loadingSummary, setLoadingSummary] = useState(false);
+  const [open, setOpen] = useState<string[]>([criteriosMock[0].id]);
 
   // Buscar dados do colaborador (mock)
   const collaborator = collaboratorsMock.find(c => c.nome === id) || collaboratorsMock[0];
+
+  const totalCriterios = criteriosMock.length;
+  const criteriosAvaliados = criteriosMock.length; // Todos já foram avaliados para visualização
+
+  const handleAccordion = (id: string) => {
+    setOpen((prev) =>
+      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+    );
+  };
 
   const tabItems = [
     {
@@ -113,58 +128,121 @@ export function CollaboratorDiscrepancy() {
         **Resumo Geral - ${collaborator.nome}**
         
         **Pontos Fortes:**
-        • Excelente domínio técnico e capacidade de resolver problemas complexos
-        • Disponibilidade para ajudar colegas e compartilhar conhecimento
-        • Entregas de alta qualidade e dentro do prazo
+        • Excelente pontualidade e assiduidade
         • Boa comunicação e colaboração em equipe
+        • Qualidade técnica sólida
+        • Uso de ferramentas organizacionais
         
         **Pontos de Melhoria:**
-        • Maior proatividade em sugerir melhorias nos processos
-        • Mais assertividade nas discussões técnicas
-        • Assumir mais responsabilidades de liderança técnica
-        • Melhorar documentação e cobertura de testes
+        • Planejamento de longo prazo
+        • Proatividade em liderança
+        • Revisão de código dos colegas
+        • Desenvolvimento de habilidades de liderança
         
         **Análise da Discrepância:**
-        A discrepância de ${collaborator.discrepancy} pontos entre autoavaliação e avaliação 360° sugere que o colaborador pode estar sendo muito crítico consigo mesmo ou que há uma percepção ligeiramente diferente entre sua autopercepção e a percepção dos colegas.
+        A discrepância de ${collaborator.discrepancy} pontos sugere que há diferenças na percepção entre autoavaliação e avaliação do gestor. O colaborador tende a se avaliar ligeiramente mais alto em alguns critérios.
       `);
       setLoadingSummary(false);
     }, 2000);
   };
 
   const renderAutoavaliacaoTab = () => (
-    <S.EvaluationGrid>
-      <S.EvaluationSection>
-        <S.SectionTitle>
-          <FaUser />
-          Autoavaliação
-        </S.SectionTitle>
-        {mockEvaluationData.autoavaliacao.questions.map((item, index) => (
-          <S.QuestionItem key={index}>
-            <S.Question>{item.question}</S.Question>
-            <S.Rating>
-              <S.RatingValue>{item.rating}/5.0</S.RatingValue>
-            </S.Rating>
-            <S.Answer>{item.answer}</S.Answer>
-          </S.QuestionItem>
-        ))}
-      </S.EvaluationSection>
-      
-      <S.EvaluationSection>
-        <S.SectionTitle>
-          <FaClipboardCheck />
-          Avaliação do Gestor
-        </S.SectionTitle>
-        {mockEvaluationData.gestor.questions.map((item, index) => (
-          <S.QuestionItem key={index}>
-            <S.Question>{item.question}</S.Question>
-            <S.Rating>
-              <S.RatingValue>{item.rating}/5.0</S.RatingValue>
-            </S.Rating>
-            <S.Answer>{item.answer}</S.Answer>
-          </S.QuestionItem>
-        ))}
-      </S.EvaluationSection>
-    </S.EvaluationGrid>
+    <>
+      {criteriosPorPilar.map((pilar) => (
+        <EvaluationFrame key={pilar.titulo} title={pilar.titulo}>
+          {pilar.criterios.map((criterio) => {
+            const isOpen = open.includes(criterio.id);
+            const autoavaliacao = pilar.autoavaliacao.find((a) => a.id === criterio.id);
+            const avaliacaoGestor = pilar.avaliacaoGestor.find((a) => a.id === criterio.id);
+            
+            return (
+              <Card key={criterio.id}>
+                <S.CriterioHeader>
+                  <S.SectionTitle>{criterio.nome}</S.SectionTitle>
+                  <div style={{ display: "flex", alignItems: "center" }}>
+                    <S.NotaBadge $visible={!isOpen}>
+                      {(autoavaliacao?.nota ?? 0).toFixed(1)}
+                    </S.NotaBadge>
+                    <S.NotaBadge $visible={!isOpen}>
+                      {(avaliacaoGestor?.nota ?? 0).toFixed(1)}
+                    </S.NotaBadge>
+                    <S.ToggleIcon
+                      $open={isOpen}
+                      onClick={() => handleAccordion(criterio.id)}
+                      tabIndex={0}
+                      role="button"
+                      aria-label={
+                        isOpen ? "Fechar critério" : "Abrir critério"
+                      }
+                    >
+                      {isOpen ? (
+                        <MdKeyboardArrowUp size={36} />
+                      ) : (
+                        <MdKeyboardArrowDown size={36} />
+                      )}
+                    </S.ToggleIcon>
+                  </div>
+                </S.CriterioHeader>
+                {isOpen && (
+                  <S.CriteriaContent>
+                    {/* Autoavaliação */}
+                    <S.CriteriaSection>
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          width: "100%",
+                        }}
+                      >
+                        <S.Subtitle>Autoavaliação</S.Subtitle>
+                        <S.NotaBadge style={{ marginLeft: "auto" }}>
+                          {(autoavaliacao?.nota ?? 0).toFixed(1)}
+                        </S.NotaBadge>
+                      </div>
+                      <StarRating
+                        value={autoavaliacao?.nota ?? 0}
+                        readOnly
+                      />
+                      <TextArea
+                        value={autoavaliacao?.justificativa || ""}
+                        readOnly
+                        placeholder="Justificativa da autoavaliação"
+                        rows={4}
+                      />
+                    </S.CriteriaSection>
+                    {/* Avaliação do Gestor */}
+                    <S.CriteriaSection>
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          width: "100%",
+                        }}
+                      >
+                        <S.Subtitle>Avaliação do Gestor</S.Subtitle>
+                        <S.NotaBadge style={{ marginLeft: "auto" }}>
+                          {(avaliacaoGestor?.nota ?? 0).toFixed(1)}
+                        </S.NotaBadge>
+                      </div>
+                      <StarRating
+                        value={avaliacaoGestor?.nota ?? 0}
+                        readOnly
+                      />
+                      <TextArea
+                        value={avaliacaoGestor?.justificativa || ""}
+                        readOnly
+                        placeholder="Justificativa do gestor"
+                        rows={4}
+                      />
+                    </S.CriteriaSection>
+                  </S.CriteriaContent>
+                )}
+              </Card>
+            );
+          })}
+        </EvaluationFrame>
+      ))}
+    </>
   );
 
   const renderGestorTab = () => (
@@ -173,61 +251,13 @@ export function CollaboratorDiscrepancy() {
         <FaClipboardCheck />
         Avaliação Detalhada do Gestor
       </S.SectionTitle>
-      {mockEvaluationData.gestor.questions.map((item, index) => (
-        <S.QuestionItem key={index}>
-          <S.Question>{item.question}</S.Question>
-          <S.Rating>
-            <S.RatingValue>{item.rating}/5.0</S.RatingValue>
-          </S.Rating>
-          <S.Answer>{item.answer}</S.Answer>
-        </S.QuestionItem>
-      ))}
+      <p>Conteúdo da aba Gestor - A implementar</p>
     </S.EvaluationSection>
   );
 
   const render360Tab = () => (
     <S.Evaluation360Container>
-      {mockEvaluationData.colleagues360.map((colleague, index) => (
-        <S.ColleagueEvaluation key={index}>
-          <S.ColleagueName>
-            <FaUser />
-            {colleague.name}
-            <S.ColleagueRole>({colleague.role})</S.ColleagueRole>
-          </S.ColleagueName>
-          
-          <S.ScoreOverview>
-            <S.ScoreLabel>Nota Geral:</S.ScoreLabel>
-            <S.ScoreValue>{colleague.overallScore}/5.0</S.ScoreValue>
-          </S.ScoreOverview>
-          
-          <S.QuestionItem>
-            <S.Question>Feedback Geral</S.Question>
-            <S.Answer>{colleague.feedback}</S.Answer>
-          </S.QuestionItem>
-          
-          <S.QuestionItem>
-            <S.Question>Pontos Fortes</S.Question>
-            <S.Answer>
-              <ul>
-                {colleague.strengths.map((strength, i) => (
-                  <li key={i}>{strength}</li>
-                ))}
-              </ul>
-            </S.Answer>
-          </S.QuestionItem>
-          
-          <S.QuestionItem>
-            <S.Question>Pontos de Melhoria</S.Question>
-            <S.Answer>
-              <ul>
-                {colleague.improvements.map((improvement, i) => (
-                  <li key={i}>{improvement}</li>
-                ))}
-              </ul>
-            </S.Answer>
-          </S.QuestionItem>
-        </S.ColleagueEvaluation>
-      ))}
+      <p>Conteúdo da aba 360° - A implementar</p>
     </S.Evaluation360Container>
   );
 
@@ -255,7 +285,7 @@ export function CollaboratorDiscrepancy() {
       </S.Header>
 
       {(summary || loadingSummary) && (
-        <Card>
+        <div>
           <S.SummaryCard>
             <S.SummaryTitle>
               <IoSparklesOutline />
@@ -274,10 +304,10 @@ export function CollaboratorDiscrepancy() {
               )}
             </S.SummaryContent>
           </S.SummaryCard>
-        </Card>
+        </div>
       )}
 
-      <Card>
+      <div>
         <S.TabContainer>
           <ToggleBar
             items={tabItems}
@@ -289,7 +319,7 @@ export function CollaboratorDiscrepancy() {
         <S.TabContent>
           {renderTabContent()}
         </S.TabContent>
-      </Card>
+      </div>
     </>
   );
 }

@@ -20,7 +20,7 @@ export const GenerateSummaryButton = styled.button`
   align-items: center;
   gap: 0.5rem;
   transition: all 0.3s ease;
-  
+
   &:hover {
     transform: translateY(-2px);
     box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
@@ -48,7 +48,7 @@ export const SummaryTitle = styled.h3`
 export const SummaryContent = styled.div`
   color: ${({ theme }) => theme.colors.text.secondary};
   line-height: 1.6;
-  
+
   .loading {
     display: flex;
     align-items: center;
@@ -60,25 +60,25 @@ export const SummaryContent = styled.div`
 
 export const SummarySection = styled.div`
   margin-bottom: 1.5rem;
-  
+
   h4 {
     color: ${({ theme }) => theme.colors.text.primary};
     font-size: 1.2rem;
     margin-bottom: 0.5rem;
   }
-  
+
   ul {
     list-style: none;
     padding: 0;
-    
+
     li {
       padding: 0.5rem 0;
       border-bottom: 1px solid ${({ theme }) => theme.colors.border};
-      
+
       &:last-child {
         border-bottom: none;
       }
-      
+
       &:before {
         content: "•";
         color: ${({ theme }) => theme.colors.primary.default};
@@ -123,7 +123,7 @@ export const QuestionItem = styled.div`
   margin-bottom: 1.5rem;
   padding-bottom: 1.5rem;
   border-bottom: 1px solid ${({ theme }) => theme.colors.border};
-  
+
   &:last-child {
     border-bottom: none;
     margin-bottom: 0;
@@ -206,4 +206,71 @@ export const ScoreValue = styled.span`
   color: ${({ theme }) => theme.colors.primary.default};
   font-weight: 600;
   font-size: 1.2rem;
+`;
+
+// Estilos adicionais do CollaboratorReview
+export const CriteriaContent = styled.div`
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-start;
+  align-items: flex-start;
+  transition: opacity 1s cubic-bezier(0.4, 0, 0.2, 1);
+  opacity: 1;
+
+  @media (max-width: 900px) {
+    flex-direction: column;
+    gap: 16px;
+  }
+`;
+
+export const CriteriaSection = styled.div`
+  flex: 1;
+  min-width: 260px;
+  background: ${({ theme }) => theme.colors.surface.default};
+  border-radius: 8px;
+  padding: 20px 20px 24px 20px;
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+`;
+
+export const Subtitle = styled.span`
+  font-size: ${({ theme }) => theme.font.sizes.small};
+  font-weight: ${({ theme }) => theme.font.bold};
+  color: ${({ theme }) => theme.colors.text.secondary};
+  margin-bottom: 0.5rem;
+`;
+
+export const CriterioHeader = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem;
+  padding-bottom: 0;
+  background: ${({ theme }) => theme.colors.surface.default};
+  transition: background 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+`;
+
+export const ToggleIcon = styled.span<{ $open: boolean }>`
+  margin-left: 12px;
+  color: ${({ theme }) => theme.colors.text.primary};
+  cursor: pointer;
+  transition: color 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+`;
+
+export const NotaBadge = styled.span<{ $visible?: boolean }>`
+  display: ${({ $visible }) => ($visible === false ? 'none' : 'inline-flex')};
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  height: 32px;
+  padding: 0 10px;
+  border-radius: 8px;
+  background: ${({ theme }) => theme.colors.primary.light};
+  color: ${({ theme }) => theme.colors.text.primary};
+  font-weight: ${({ theme }) => theme.font.bold};
+  font-size: 1rem;
+  margin: 0 8px;
 `;
