@@ -7,26 +7,6 @@ export const Header = styled.div`
   margin-bottom: 2rem;
 `;
 
-export const GenerateSummaryButton = styled.button`
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  border: none;
-  padding: 1rem 2rem;
-  border-radius: 12px;
-  cursor: pointer;
-  font-size: 1rem;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  transition: all 0.3s ease;
-
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
-  }
-`;
-
 export const SummaryCard = styled.div`
   background: ${({ theme }) => theme.colors.surface.default};
   border: 1px solid ${({ theme }) => theme.colors.border};

@@ -13,6 +13,7 @@ import { FaUser, FaUsers, FaClipboardCheck } from "react-icons/fa";
 import { MdKeyboardArrowDown, MdKeyboardArrowUp } from "react-icons/md";
 import { collaboratorsMock } from "@/data/colaboradoresComite";
 import { useCountAvaliacoes } from "@/hooks/colaboradores/useCountAvaliacoes";
+import Button from "@/components/Button";
 
 type TabType = "autoavaliacao" | "gestor" | "360";
 
@@ -93,8 +94,6 @@ export function CollaboratorDiscrepancy() {
   // Buscar dados do colaborador (mock)
   const collaborator = collaboratorsMock.find(c => c.nome === id) || collaboratorsMock[0];
 
-  const totalCriterios = criteriosMock.length;
-  const criteriosAvaliados = criteriosMock.length; // Todos já foram avaliados para visualização
 
   const handleAccordion = (id: string) => {
     setOpen((prev) =>
@@ -108,15 +107,15 @@ export function CollaboratorDiscrepancy() {
       label: "Autoavaliação x Gestor",
       icon: <FaUser />
     },
+     {
+      value: "360",
+      label: "Avaliação 360°",
+      icon: <FaUsers />
+    },
     {
       value: "gestor",
       label: "Revisão do Gestor",
       icon: <FaClipboardCheck />
-    },
-    {
-      value: "360",
-      label: "Avaliação 360°",
-      icon: <FaUsers />
     }
   ];
 
@@ -278,10 +277,10 @@ export function CollaboratorDiscrepancy() {
     <>
       <S.Header>
         <Title>Análise de Discrepância - {collaborator.nome}</Title>
-        <S.GenerateSummaryButton onClick={handleGenerateSummary}>
-          <IoSparklesOutline />
+        <Button onClick={handleGenerateSummary} variant="primary">
+          <IoSparklesOutline size={24}/>
           Gerar Resumo IA
-        </S.GenerateSummaryButton>
+        </Button>
       </S.Header>
 
       {(summary || loadingSummary) && (
