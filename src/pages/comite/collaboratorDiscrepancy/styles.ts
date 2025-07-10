@@ -139,10 +139,11 @@ export const RatingValue = styled.span`
   font-size: 1.1rem;
 `;
 
+// 360 evaluation
+
 export const Evaluation360Container = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 2rem;
 `;
 
 export const ColleagueEvaluation = styled.div`
@@ -206,10 +207,8 @@ export const CriteriaContent = styled.div`
 export const CriteriaSection = styled.div`
   flex: 1;
   min-width: 260px;
-  background: ${({ theme }) => theme.colors.surface.default};
   border-radius: 8px;
-  padding: 20px 20px 24px 20px;
-  border: 1px solid ${({ theme }) => theme.colors.border};
+  padding: 20px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -246,11 +245,18 @@ export const NotaBadge = styled.span<{ $visible?: boolean }>`
   justify-content: center;
   min-width: 32px;
   height: 32px;
-  padding: 0 10px;
+  padding: 0 .5rem;
   border-radius: 8px;
   background: ${({ theme }) => theme.colors.primary.light};
   color: ${({ theme }) => theme.colors.text.primary};
   font-weight: ${({ theme }) => theme.font.bold};
   font-size: 1rem;
   margin: 0 8px;
+`;
+
+export const Divider = styled.div`
+  width: 80%;
+  height: 0.5px;
+  background-color: #ccc;
+  margin: 0 auto;
 `;

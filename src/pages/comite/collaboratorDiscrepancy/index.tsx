@@ -7,15 +7,14 @@ import { ToggleBar } from "@/components/ToggleBar";
 import TextArea from "@/components/Textarea";
 import { StarRating } from "@/components/StarRating";
 import EvaluationFrame from "@/components/EvaluationFrame";
-import RowProgressBox from "@/components/RowProgressBox";
+import { Select } from "@/components/Select";
 import { IoSparklesOutline } from "react-icons/io5";
 import { FaUser, FaUsers, FaClipboardCheck } from "react-icons/fa";
-import { MdKeyboardArrowDown, MdKeyboardArrowUp } from "react-icons/md";
+import { MdKeyboardArrowDown, MdKeyboardArrowUp, MdAccountCircle } from "react-icons/md";
 import { collaboratorsMock } from "@/data/colaboradoresComite";
-import { useCountAvaliacoes } from "@/hooks/colaboradores/useCountAvaliacoes";
 import Button from "@/components/Button";
 
-type TabType = "autoavaliacao" | "gestor" | "360";
+type TabType = "autoavaliacao" | "referencias" | "360";
 
 // Mock data baseado na estrutura do CollaboratorReview
 const criteriosMock = [
@@ -62,6 +61,54 @@ const avaliacaoGestorMock = [
   { id: "5", nota: 3.2, justificativa: "Mostra potencial de liderança, mas precisa ser mais proativo em assumir responsabilidades." }
 ];
 
+// Mock data para avaliações 360°
+const avaliacoes360Mock = [
+  {
+    id: "1",
+    avaliador: {
+      nome: "Ana Costa",
+      cargo: "Product Owner",
+      unidade: "Tech"
+    },
+    nota: 4.1,
+    motivadoTrabalharNovamente: "Concordo Parcialmente",
+    pontosFortes: "Excelente colaborador, sempre disposto a ajudar e com grande conhecimento técnico. Comunicação clara e objetiva durante os projetos.",
+    pontosFracos: "Poderia ser mais proativo em reuniões e sugerir melhorias nos processos da equipe com mais frequência."
+  },
+  {
+    id: "2", 
+    avaliador: {
+      nome: "Pedro Santos",
+      cargo: "Desenvolvedor Backend",
+      unidade: "Tech"
+    },
+    nota: 3.8,
+    motivadoTrabalharNovamente: "Concordo Totalmente",
+    pontosFortes: "Bom colega de trabalho, me ajudou muito durante meu onboarding. Tem paciência para explicar conceitos técnicos complexos.",
+    pontosFracos: "Poderia ser mais assertivo nas discussões técnicas e participar mais ativamente das decisões arquiteturais."
+  },
+  {
+    id: "3",
+    avaliador: {
+      nome: "Carla Mendes", 
+      cargo: "QA Analyst",
+      unidade: "Tech"
+    },
+    nota: 4.2,
+    motivadoTrabalharNovamente: "Concordo Totalmente",
+    pontosFortes: "Trabalha muito bem em equipe e sempre entrega código de qualidade. Facilita muito nosso trabalho de QA com suas entregas bem documentadas.",
+    pontosFracos: "Poderia melhorar a cobertura de testes unitários e a documentação técnica dos componentes desenvolvidos."
+  }
+];
+
+const motivacoes = [
+  { value: "Discordo Totalmente", label: "Discordo Totalmente" },
+  { value: "Discordo Parcialmente", label: "Discordo Parcialmente" },
+  { value: "Neutro", label: "Neutro" },
+  { value: "Concordo Parcialmente", label: "Concordo Parcialmente" },
+  { value: "Concordo Totalmente", label: "Concordo Totalmente" },
+];
+
 // Agrupamento dos critérios por pilar
 const criteriosPorPilar = [
   {
@@ -104,7 +151,7 @@ export function CollaboratorDiscrepancy() {
   const tabItems = [
     {
       value: "autoavaliacao",
-      label: "Autoavaliação x Gestor",
+      label: "Revisão do Gestor",
       icon: <FaUser />
     },
      {
@@ -113,8 +160,8 @@ export function CollaboratorDiscrepancy() {
       icon: <FaUsers />
     },
     {
-      value: "gestor",
-      label: "Revisão do Gestor",
+      value: "referencias",
+      label: "Referencias",
       icon: <FaClipboardCheck />
     }
   ];
@@ -244,19 +291,86 @@ export function CollaboratorDiscrepancy() {
     </>
   );
 
-  const renderGestorTab = () => (
+  const renderReferencesTab = () => (
     <S.EvaluationSection>
       <S.SectionTitle>
         <FaClipboardCheck />
-        Avaliação Detalhada do Gestor
+        Referencias - A implementar
       </S.SectionTitle>
-      <p>Conteúdo da aba Gestor - A implementar</p>
+      <p>Conteúdo da aba de referencias - A implementar</p>
     </S.EvaluationSection>
   );
 
   const render360Tab = () => (
     <S.Evaluation360Container>
-      <p>Conteúdo da aba 360° - A implementar</p>
+      {avaliacoes360Mock.map((avaliacao) => (
+        <Card key={avaliacao.id}>
+          <S.CriterioHeader>
+            <S.ColleagueName>
+              <MdAccountCircle size={24} />
+              {avaliacao.avaliador.nome}
+              <S.ColleagueRole>
+                ({avaliacao.avaliador.cargo} • {avaliacao.avaliador.unidade})
+              </S.ColleagueRole>
+            </S.ColleagueName>
+            <S.NotaBadge>
+              {avaliacao.nota.toFixed(1)}
+            </S.NotaBadge>
+          </S.CriterioHeader>
+          
+          <S.CriteriaContent>
+            {/* Avaliação Geral */}
+            <S.CriteriaSection>
+
+              <S.Subtitle>Nota de 1 a 5 dada ao colaborador: </S.Subtitle>
+              <div style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: "0.5rem" }}>
+              <StarRating
+                value={avaliacao.nota}
+                readOnly
+                />
+              <S.NotaBadge>
+              {avaliacao.nota.toFixed(1)}
+            </S.NotaBadge>
+                </div>
+            </S.CriteriaSection>
+            
+            {/* Motivação para trabalhar novamente */}
+            <S.CriteriaSection>
+              <S.Subtitle>Ficaria motivado em trabalhar novamente?</S.Subtitle>
+              <Select
+                onChange={() => {}}
+                value={avaliacao.motivadoTrabalharNovamente}
+                options={motivacoes}
+                disabled
+              />
+            </S.CriteriaSection>
+          </S.CriteriaContent>
+          
+          <S.Divider />
+          
+          <S.CriteriaContent>
+            {/* Pontos Fortes */}
+            <S.CriteriaSection>
+              <S.Subtitle>Pontos que faz bem e deve explorar</S.Subtitle>
+              <TextArea
+                value={avaliacao.pontosFortes}
+                readOnly
+                rows={4}
+              />
+            </S.CriteriaSection>
+            
+            {/* Pontos de Melhoria */}
+            <S.CriteriaSection>
+              <S.Subtitle>Pontos de melhoria</S.Subtitle>
+              <TextArea
+                value={avaliacao.pontosFracos}
+                readOnly
+                rows={4}
+              />
+            </S.CriteriaSection>
+          </S.CriteriaContent>
+        </Card>
+      ))}
     </S.Evaluation360Container>
   );
 
@@ -264,8 +378,8 @@ export function CollaboratorDiscrepancy() {
     switch (activeTab) {
       case "autoavaliacao":
         return renderAutoavaliacaoTab();
-      case "gestor":
-        return renderGestorTab();
+      case "referencias":
+        return renderReferencesTab();
       case "360":
         return render360Tab();
       default:
