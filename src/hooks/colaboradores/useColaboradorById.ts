@@ -17,8 +17,7 @@ export function useColaboradorById(id: string) {
   setLoading(true);
   getColaboradorById(id)
     .then((res) => {
-      console.log("response by id:", res);
-      setColaborador(res); // <- você esqueceu de setar isso!
+      setColaborador(res);
     })
     .catch((err) => {
       console.error("Erro ao buscar colaborador por ID:", err);
@@ -28,7 +27,6 @@ export function useColaboradorById(id: string) {
 }, [id]);
 
 
-  console.log("colaborador:", colaborador)
 
   return { colaborador, loading, error };
 }
