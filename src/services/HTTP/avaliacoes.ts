@@ -35,6 +35,10 @@ export async function getAutoAvaliacaoByUserId(userId: string) {
   return await getRequest(`${baseEndpoint}/tipo/usuario/${userId}?tipoAvaliacao=AUTOAVALIACAO`);
 }
 
+export async function getAvaliacaoParesByUserId(userId: string) {
+  return await getRequest(`${baseEndpoint}/tipo/usuario/${userId}?tipoAvaliacao=AVALIACAO_PARES`);
+}
+
 // Busca os critérios da autoavaliação organizados por pilar
 export async function getCriteriosAutoAvaliacao(idAvaliacao: string) {
   return await getRequest(`${baseEndpoint}/forms-autoavaliacao/${idAvaliacao}`);

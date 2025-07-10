@@ -8,75 +8,179 @@ import {
   MdOutlineEdit,
   MdOutlineGroup,
 } from "react-icons/md";
-import { FaPaperPlane } from "react-icons/fa";
 import { Modal } from "@/components/Modal/index.tsx";
-import { useState } from "react";
-import ButtonFrame from "@/components/ButtonFrame/index.tsx";
-import { useForm } from "react-hook-form";
+import { useEffect, useState } from "react";
 import theme from "@/styles/theme.ts";
-import {
-  colaboradoresDisponiveis,
-  referenciaTemplate,
-} from "@/data/referencesData";
 import { Select } from "@/components/Select";
-
-type TipoReferencia = "tecnica" | "cultural";
+import type { TipoReferencia } from "@/types/Referencia.tsx";
+import type { PerfilData } from "@/types/PerfilData.tsx";
+import { getAvaliacaoParesByUserId } from "@/services/HTTP/avaliacoes.ts";
+import { useOutletContext } from "react-router-dom";
+import {
+  atualizarReferencia,
+  criarReferencia,
+  deletarReferencia,
+} from "@/services/HTTP/referencias.ts";
+import { toast } from "sonner";
+import { useReferenciasIndicadas } from "@/hooks/referencias/useReferenciasIndicadas.ts";
 
 type Referencia = {
+  id?: string;
+  idAvaliado: string;
   nome: string;
   tipo: TipoReferencia;
   justificativa: string;
 };
 
-export function ReferencesPage() {
-  const { handleSubmit } = useForm();
+type Avaliado = {
+  idAvaliacao: string;
+  idCiclo: string;
+  idAvaliado: string;
+  nome: string;
+  cargo?: string;
+};
 
+export function ReferencesPage() {
   const [showModal, setShowModal] = useState(false);
   const [tipo, setTipo] = useState<TipoReferencia | null>(null);
   const [justificativa, setJustificativa] = useState("");
   const [referencias, setReferencias] = useState<Referencia[]>([]);
   const [editIndex, setEditIndex] = useState<number | null>(null);
-  const [idColaboradorSelecionado, setIdColaboradorSelecionado] = useState<
-    number | null
+  const { perfil } = useOutletContext<{ perfil: PerfilData }>();
+  const { data: referenciasSalvas, isSuccess } = useReferenciasIndicadas(
+    perfil?.userId || ""
+  );
+  const [avaliados, setAvaliados] = useState<Avaliado[]>([]);
+  const [idAvaliadoSelecionado, setIdAvaliadoSelecionado] = useState<
+    string | null
   >(null);
 
-  const handleIndicar = () => {
-    if (!idColaboradorSelecionado || !tipo || !justificativa) return;
-    const colaborador = colaboradoresDisponiveis.find(
-      (c) => c.id === idColaboradorSelecionado
+  useEffect(() => {
+    if (!perfil?.userId) return;
+
+    getAvaliacaoParesByUserId(perfil.userId)
+      .then((res) => {
+        const dados = res?.avaliacoes || [];
+
+        const avaliadosFormatados = dados.map((item: any) => ({
+          idAvaliacao: item.idAvaliacao,
+          idCiclo: item.idCiclo,
+          idAvaliado: item.idAvaliado,
+          nome: item.avaliado?.nomeCompleto || "Nome não encontrado",
+          cargo: item.avaliado?.cargo || "Cargo não informado",
+        }));
+
+        setAvaliados(avaliadosFormatados);
+      })
+      .catch((err) => {
+        console.error("Erro ao buscar avaliações de pares:", err);
+        toast.error("Erro ao carregar colaboradores disponíveis.");
+      });
+  }, [perfil?.userId]);
+
+  useEffect(() => {
+    if (!isSuccess || !referenciasSalvas) return;
+
+    const referenciasComNome = referenciasSalvas.map((ref: any) => {
+      const avaliado = avaliados.find((a) => a.idAvaliado === ref.idIndicado);
+      return {
+        id: ref.idIndicacao,
+        idAvaliado: ref.idIndicado,
+        nome: avaliado?.nome || "Colaborador não encontrado",
+        tipo: ref.tipo,
+        justificativa: ref.justificativa,
+      };
+    });
+
+    setReferencias(referenciasComNome);
+  }, [isSuccess, referenciasSalvas, avaliados]);
+
+  const handleIndicar = async () => {
+    if (!idAvaliadoSelecionado || !tipo || !justificativa || !perfil?.userId)
+      return;
+
+    const avaliado = avaliados.find(
+      (a) => a.idAvaliado === idAvaliadoSelecionado
     );
-    if (!colaborador) return;
-    const novaReferencia = {
-      ...referenciaTemplate,
-      idIndicado: idColaboradorSelecionado,
-      idIndicador: 999, // Exemplo: id do usuário logado
-      idCiclo: "2025-01", // Exemplo: ciclo atual
-      tipo,
+    if (!avaliado) return;
+
+    const payload = {
+      idIndicado: avaliado.idAvaliado,
+      idIndicador: perfil.userId,
+      idCiclo: avaliado.idCiclo,
+      tipo: tipo as TipoReferencia,
       justificativa,
-      nome: colaborador.nome, // para exibição local
     };
 
-    if (editIndex !== null) {
-      setReferencias((prev) =>
-        prev.map((r, i) => (i === editIndex ? novaReferencia : r))
-      );
-    } else {
-      setReferencias((prev) => [...prev, novaReferencia]);
+    try {
+      if (editIndex !== null) {
+        const referenciaEditando = referencias[editIndex];
+        if (!referenciaEditando?.id) {
+          toast.error("Erro ao editar: ID da referência não encontrado.");
+          return;
+        }
+
+        await atualizarReferencia(referenciaEditando.id, {
+          tipo: tipo as TipoReferencia,
+          justificativa,
+        });
+
+        setReferencias((prev) =>
+          prev.map((r, i) =>
+            i === editIndex
+              ? {
+                  ...r,
+                  tipo,
+                  justificativa,
+                }
+              : r
+          )
+        );
+
+        toast.success("Referência atualizada com sucesso!");
+      } else {
+        const res = await criarReferencia(payload);
+
+        if (!res?.idIndicacao) {
+          toast.error("Erro ao salvar: ID da nova referência não retornado.");
+          return;
+        }
+
+        setReferencias((prev) => [
+          ...prev,
+          {
+            id: res?.idIndicacao,
+            idAvaliado: avaliado.idAvaliado,
+            nome: avaliado.nome,
+            tipo,
+            justificativa,
+          },
+        ]);
+
+        toast.success("Referência indicada com sucesso!");
+      }
+
+      resetForm();
+    } catch (err) {
+      console.error("Erro ao indicar/editar referência:", err);
+      toast.error("Erro ao salvar referência. Tente novamente.");
     }
-
-    resetForm();
   };
 
-  const handleDelete = (indexToDelete: number) => {
-    setReferencias((prev) => prev.filter((_, i) => i !== indexToDelete));
-  };
+  const handleDelete = async (indexToDelete: number) => {
+    const referencia = referencias[indexToDelete];
 
-  const resetForm = () => {
-    setTipo(null);
-    setJustificativa("");
-    setShowModal(false);
-    setEditIndex(null);
-    setIdColaboradorSelecionado(null);
+    if (referencia?.id) {
+      try {
+        const res = await deletarReferencia(referencia.id);
+        toast.success("Referência removida com sucesso!");
+        setReferencias((prev) => prev.filter((_, i) => i !== indexToDelete));
+      } catch (err) {
+        console.error("Erro ao deletar referência:", err);
+        toast.error("Erro ao remover referência.");
+        return;
+      }
+    }
   };
 
   const handleEdit = (index: number) => {
@@ -84,31 +188,32 @@ export function ReferencesPage() {
     setTipo(ref.tipo);
     setJustificativa(ref.justificativa);
     setEditIndex(index);
+
+    const avaliadoCorrespondente = avaliados.find((a) => a.nome === ref.nome);
+    if (avaliadoCorrespondente) {
+      setIdAvaliadoSelecionado(avaliadoCorrespondente.idAvaliado);
+    }
+
     setShowModal(true);
-    // setIdColaboradorSelecionado(ref.idIndicado);
   };
 
   const referenciasTecnicas = referencias.filter(
-    (r) => r.tipo === "tecnica"
+    (r) => r.tipo === "TECNICA"
   ).length;
   const referenciasCulturais = referencias.filter(
-    (r) => r.tipo === "cultural"
+    (r) => r.tipo === "CULTURAL"
   ).length;
 
-  const onSubmit = () => {
-    const referenciasParaEnvio = referencias.map((r) => ({
-      // idIndicado: r.idIndicado,
-      // idIndicador: r.idIndicador,
-      // idCiclo: r.idCiclo,
-      tipo: r.tipo,
-      justificativa: r.justificativa,
-    }));
-    // Envie referenciasParaEnvio para o backend
-    console.log("Referências para envio:", referenciasParaEnvio);
+  const resetForm = () => {
+    setTipo(null);
+    setJustificativa("");
+    setShowModal(false);
+    setEditIndex(null);
+    setIdAvaliadoSelecionado(null);
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <>
       <S.CardContainer>
         <S.Title>Indicação de Referências</S.Title>
         <S.Subtitle>
@@ -139,18 +244,18 @@ export function ReferencesPage() {
         Referências Técnicas <span>{referenciasTecnicas}</span>
       </S.ReferTitle>
       {referencias
-        .filter((r) => r.tipo === "tecnica")
+        .filter((r) => r.tipo === "TECNICA")
         .map((r, i) => {
           const index = referencias.findIndex(
-            (ref) => ref.nome === r.nome && ref.tipo === "tecnica"
+            (ref) => ref.nome === r.nome && ref.tipo === "TECNICA"
           );
           return (
             <S.ReferenceCard key={i}>
               <S.Avatar />
               <S.UserData>
                 <strong>{r.nome}</strong>
-                <span>Desenvolvedor backend</span>
-                <small>Trabalhou junto por x meses</small>
+                {/* <span>{avaliados.find((a) => a.idAvaliado === r.idAvaliado)?.cargo || "Cargo não informado"}</span> */}
+                {/* <small>Trabalhou junto por x meses</small> */}
               </S.UserData>
               <S.TypeBadge $tipo="tecnica">
                 <MdOutlineCode />
@@ -173,18 +278,18 @@ export function ReferencesPage() {
         Referências Culturais <span>{referenciasCulturais}</span>
       </S.ReferTitle>
       {referencias
-        .filter((r) => r.tipo === "cultural")
+        .filter((r) => r.tipo === "CULTURAL")
         .map((r, i) => {
           const index = referencias.findIndex(
-            (ref) => ref.nome === r.nome && ref.tipo === "cultural"
+            (ref) => ref.nome === r.nome && ref.tipo === "CULTURAL"
           );
           return (
             <S.ReferenceCard key={i}>
               <S.Avatar />
               <S.UserData>
                 <strong>{r.nome}</strong>
-                <span>Desenvolvedor backend</span>
-                <small>Trabalhou junto por x meses</small>
+                {/* <span>{avaliados.find((a) => a.idAvaliado === r.idAvaliado)?.cargo || "Cargo não informado"}</span> */}
+                {/* <small>Trabalhou junto por x meses</small> */}
               </S.UserData>
               <S.TypeBadge $tipo="cultural">
                 <MdOutlineGroup />
@@ -200,12 +305,12 @@ export function ReferencesPage() {
           );
         })}
 
-      <ButtonFrame text="Para submeter suas indicações, clique em enviar.">
-        <Button onClick={handleSubmit(onSubmit)}>
-          <FaPaperPlane />
-          Enviar
-        </Button>
-      </ButtonFrame>
+      <S.CardContainer>
+        <S.CardText>
+          As indicações são enviadas automaticamente, remova e faça edições
+          enquanto o ciclo continua na fase de Avaliação
+        </S.CardText>
+      </S.CardContainer>
 
       <Modal
         open={showModal}
@@ -220,15 +325,14 @@ export function ReferencesPage() {
             <S.ModalInputGroup>
               <S.ModalText>Nome do Colaborador *</S.ModalText>
               <Select
-                options={colaboradoresDisponiveis.map((c) => ({
-                  label: c.nome,
-                  value: String(c.id),
+                options={avaliados.map((a) => ({
+                  label: a.nome,
+                  value: a.idAvaliado,
                 }))}
-                value={
-                  idColaboradorSelecionado ? String(idColaboradorSelecionado) : null
-                }
-                onChange={(val) => setIdColaboradorSelecionado(Number(val))}
+                value={idAvaliadoSelecionado}
+                onChange={(val) => setIdAvaliadoSelecionado(val as string)}
                 placeholder="Selecione um colaborador"
+                disabled={editIndex !== null}
               />
             </S.ModalInputGroup>
 
@@ -236,15 +340,15 @@ export function ReferencesPage() {
               <S.ModalText>Tipo de Referência *</S.ModalText>
               <S.ReferenceTypeButtons>
                 <S.ReferenceTypeButton
-                  selected={tipo === "tecnica"}
-                  onClick={() => setTipo("tecnica")}
+                  selected={tipo === "TECNICA"}
+                  onClick={() => setTipo("TECNICA")}
                 >
                   <MdOutlineCode size={20} />
                   Técnica
                 </S.ReferenceTypeButton>
                 <S.ReferenceTypeButton
-                  selected={tipo === "cultural"}
-                  onClick={() => setTipo("cultural")}
+                  selected={tipo === "CULTURAL"}
+                  onClick={() => setTipo("CULTURAL")}
                 >
                   <MdOutlineGroup size={20} />
                   Cultural
@@ -268,12 +372,12 @@ export function ReferencesPage() {
           <Button variant="outline" onClick={() => setShowModal(false)}>
             Cancelar
           </Button>
-          <Button onClick={handleIndicar}>
+          <Button type="submit" onClick={handleIndicar}>
             <MdOutlineAdd />
             Indicar Referência
           </Button>
         </S.ModalButtons>
       </Modal>
-    </form>
+    </>
   );
 }

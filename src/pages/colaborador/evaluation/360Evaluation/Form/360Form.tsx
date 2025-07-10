@@ -55,6 +55,7 @@ const EvaluationDetails: React.FC<Props> = ({ id, onBack }) => {
   }, [avaliacao]);
 
   if (loadingAvaliacao) return <p>Carregando...</p>;
+  if (loadingColaborador) return <p>Carregando...</p>;
   if (!avaliacao) return <p>Avaliação não encontrada.</p>;
 
   const colaborador = avaliacao.avaliado;
