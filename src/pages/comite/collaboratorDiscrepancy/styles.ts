@@ -260,3 +260,100 @@ export const Divider = styled.div`
   background-color: #ccc;
   margin: 0 auto;
 `;
+
+// Estilos para referências (baseado no TableRowBox)
+export const ReferenciaRow = styled.div`
+  display: grid;
+  grid-template-columns: 2fr 6fr 1fr;
+  align-items: center;
+  padding: 1rem;
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: 0.5rem;
+  background-color: ${({ theme }) => theme.colors.surface.default};
+  width: 100%;
+  gap: 1rem;
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+`;
+
+export const ReferenciaInfo = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 1rem;
+  flex: 0 0 auto;
+`;
+
+export const ReferenciaDetails = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.25rem;
+  
+`;
+
+export const ReferenciaIndicador = styled.span`
+  font-weight: ${({ theme }) => theme.font.bold};
+  font-size: ${({ theme }) => theme.font.sizes.small};
+  color: ${({ theme }) => theme.colors.text.primary};
+`;
+
+export const ReferenciaCargo = styled.span`
+  font-size: ${({ theme }) => theme.font.sizes.xsmall};
+  color: ${({ theme }) => theme.colors.text.secondary};
+  font-weight: ${({ theme }) => theme.font.medium};
+`;
+
+export const ReferenciaData = styled.span`
+  font-size: ${({ theme }) => theme.font.sizes.xsmall};
+  color: ${({ theme }) => theme.colors.text.secondary};
+`;
+
+export const ReferenciaContent = styled.div`
+  flex: 1;
+  padding: 0 1rem;
+  border-right: 1.5px solid ${({ theme }) => theme.colors.border};
+  border-left: 1.5px solid ${({ theme }) => theme.colors.border};
+
+  @media (max-width: 768px) {
+    padding: 0;
+  }
+`;
+
+export const ReferenciaJustificativa = styled.p`
+  margin: 0;
+  line-height: 1.5;
+  color: ${({ theme }) => theme.colors.text.secondary};
+  font-size: ${({ theme }) => theme.font.sizes.xsmall};
+  
+`;
+
+export const ReferenciaActions = styled.div`
+  display: flex;
+  align-items: center;
+  flex: 0 0 auto;
+`;
+
+export const TipoBadge = styled.span<{ $tipo: string }>`
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: ${({ theme }) => theme.font.sizes.small};
+  font-weight: ${({ theme }) => theme.font.bold};
+  background: ${({ $tipo, theme }) => 
+    $tipo === 'Técnica' 
+      ? theme.colors.primary.light 
+      : theme.colors.success.light 
+  };
+  color: ${({ $tipo, theme }) => 
+    $tipo === 'Técnica' 
+      ? theme.colors.primary.default 
+      : theme.colors.success.default 
+  };
+  border: 1px solid ${({ $tipo, theme }) =>
+    $tipo === 'Técnica' 
+      ? theme.colors.primary.default 
+      : theme.colors.success.default 
+  };
+`;

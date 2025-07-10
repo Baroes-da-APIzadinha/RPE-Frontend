@@ -8,6 +8,7 @@ import TextArea from "@/components/Textarea";
 import { StarRating } from "@/components/StarRating";
 import EvaluationFrame from "@/components/EvaluationFrame";
 import { Select } from "@/components/Select";
+import { TableBase } from "@/components/TableBase";
 import { IoSparklesOutline } from "react-icons/io5";
 import { FaUser, FaUsers, FaClipboardCheck } from "react-icons/fa";
 import { MdKeyboardArrowDown, MdKeyboardArrowUp, MdAccountCircle } from "react-icons/md";
@@ -98,6 +99,42 @@ const avaliacoes360Mock = [
     motivadoTrabalharNovamente: "Concordo Totalmente",
     pontosFortes: "Trabalha muito bem em equipe e sempre entrega código de qualidade. Facilita muito nosso trabalho de QA com suas entregas bem documentadas.",
     pontosFracos: "Poderia melhorar a cobertura de testes unitários e a documentação técnica dos componentes desenvolvidos."
+  }
+];
+
+// Mock data para referencias
+const referenciasMock = [
+  {
+    id: "1",
+    justificativa: "Excelente profissional com grande conhecimento técnico em React e Node.js. Sempre entrega projetos de alta qualidade dentro do prazo estabelecido.",
+    tipo: "Técnica",
+    indicadoPor: "Maria Silva",
+    cargo: "Tech Lead",
+    dataIndicacao: "2024-01-15"
+  },
+  {
+    id: "2",
+    justificativa: "Pessoa muito colaborativa e que sempre ajuda os colegas. Tem uma postura muito positiva e contribui para um ambiente de trabalho saudável.",
+    tipo: "Cultural",
+    indicadoPor: "João Santos",
+    cargo: "Product Manager",
+    dataIndicacao: "2024-01-20"
+  },
+  {
+    id: "3",
+    justificativa: "Demonstra liderança natural e capacidade de resolver conflitos. Sempre busca soluções criativas para os desafios do projeto.",
+    tipo: "Cultural",
+    indicadoPor: "Ana Costa",
+    cargo: "Scrum Master",
+    dataIndicacao: "2024-02-01"
+  },
+  {
+    id: "4",
+    justificativa: "Possui conhecimento avançado em arquitetura de software e melhores práticas de desenvolvimento. Contribui significativamente para a qualidade do código.",
+    tipo: "Técnica",
+    indicadoPor: "Carlos Mendes",
+    cargo: "Senior Developer",
+    dataIndicacao: "2024-02-10"
   }
 ];
 
@@ -292,13 +329,34 @@ export function CollaboratorDiscrepancy() {
   );
 
   const renderReferencesTab = () => (
-    <S.EvaluationSection>
-      <S.SectionTitle>
-        <FaClipboardCheck />
-        Referencias - A implementar
-      </S.SectionTitle>
-      <p>Conteúdo da aba de referencias - A implementar</p>
-    </S.EvaluationSection>
+    <TableBase
+      title="Referencias"
+      subtitle={`${referenciasMock.length} referências encontradas para este colaborador`}
+    >
+      {referenciasMock.map((referencia) => (
+        <S.ReferenciaRow key={referencia.id}>
+          <S.ReferenciaInfo>
+            <MdAccountCircle size={48} />
+            <S.ReferenciaDetails>
+              <S.ReferenciaIndicador>{referencia.indicadoPor}</S.ReferenciaIndicador>
+              <S.ReferenciaCargo>{referencia.cargo}</S.ReferenciaCargo>
+              <S.ReferenciaData>
+              </S.ReferenciaData>
+            </S.ReferenciaDetails>
+          </S.ReferenciaInfo>
+          
+          <S.ReferenciaContent>
+            <S.ReferenciaJustificativa>{referencia.justificativa}</S.ReferenciaJustificativa>
+          </S.ReferenciaContent>
+          
+          <S.ReferenciaActions>
+            <S.TipoBadge $tipo={referencia.tipo}>
+              {referencia.tipo}
+            </S.TipoBadge>
+          </S.ReferenciaActions>
+        </S.ReferenciaRow>
+      ))}
+    </TableBase>
   );
 
   const render360Tab = () => (
