@@ -53,3 +53,18 @@ export type RespostaExistente = {
   nota: string;
   justificativa: string;
 };
+
+export type AvaliacaoColaboradorMentor = {
+  idAvaliacao: string;
+  nota: number;
+  justificativa: string;
+};
+
+export type AvaliacaoMentor = {
+  idAvaliacao: string;
+  tipoAvaliacao: "COLABORADOR_MENTOR";
+  status: string;
+  idAvaliador: string;
+  idAvaliado: string;
+  avaliacaoColaboradorMentor: AvaliacaoColaboradorMentor | null;
+};

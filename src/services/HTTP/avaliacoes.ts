@@ -43,3 +43,12 @@ export async function getCriteriosAutoAvaliacao(idAvaliacao: string) {
 export async function preencherAvaliacaoPares(data: Record<string, any>) {
   return await postRequest(`${baseEndpoint}/preencher-avaliacao-pares`, data);
 }
+
+export async function preencherAvaliacaoMentor(payload: {
+  idAvaliacao: string;
+  nota: number;
+  justificativa: string;
+}) {
+  return await postRequest(`${baseEndpoint}/preencher-avaliacao-colaborador-mentor`, payload);
+}
+

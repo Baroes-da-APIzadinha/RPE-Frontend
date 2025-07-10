@@ -8,14 +8,27 @@ export function useColaboradorById(id: string) {
   const [error, setError] = useState<unknown>(null);
 
   useEffect(() => {
-    if (!id) return;
+  if (!id) {
+    console.warn("ID inválido para busca de colaborador:", id);
+    setLoading(false);
+    return;
+  }
 
-    setLoading(true);
-    getColaboradorById(id)
-      .then((res) => setColaborador(res.data))
-      .catch(setError)
-      .finally(() => setLoading(false));
-  }, [id]);
+  setLoading(true);
+  getColaboradorById(id)
+    .then((res) => {
+      console.log("response by id:", res);
+      setColaborador(res); // <- você esqueceu de setar isso!
+    })
+    .catch((err) => {
+      console.error("Erro ao buscar colaborador por ID:", err);
+      setError(err);
+    })
+    .finally(() => setLoading(false));
+}, [id]);
+
+
+  console.log("colaborador:", colaborador)
 
   return { colaborador, loading, error };
 }
