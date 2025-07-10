@@ -28,8 +28,8 @@ export function Login() {
         destination = "/rh/dashboard";
       } else if (roles.includes("GESTOR")) {
         destination = "/gestor/dashboard";
-      } else if (roles.includes("COMITE")) {
-        destination = "/comite/historico";
+      } else if (roles.includes("MEMBRO_COMITE")) {
+        destination = "/comite/equalization";
       }
       toast.success("Login realizado com sucesso!");
       navigate(destination);
