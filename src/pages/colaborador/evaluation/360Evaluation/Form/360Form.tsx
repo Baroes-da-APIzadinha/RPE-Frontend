@@ -87,17 +87,12 @@ const EvaluationDetails: React.FC<Props> = ({ id, onBack }) => {
       const payload = {
         idAvaliacao: avaliacao.idAvaliacao,
         nota: nota,
-        motivadoTrabalharNovamente: motivacao,
+        motivacao: motivacao,
         pontosFortes: forte,
         pontosFracos: melhoria,
       };
 
-      console.log("Payload enviado:", {
-        nota,
-        motivadoTrabalharNovamente: motivacao,
-        pontosFortes: forte,
-        pontosFracos: melhoria,
-      });
+      console.log("Payload enviado:", payload);
 
       await preencherAvaliacaoPares(payload);
       toast.success("Avaliação enviada com sucesso!");
