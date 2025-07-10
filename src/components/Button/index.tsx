@@ -6,10 +6,26 @@ type ButtonProps = {
   onClick?: React.MouseEventHandler<HTMLButtonElement>;
   variant?: "default" | "outline" | "primary" | "secondary" | "danger";
   disabled?: boolean;
+  type?: "button" | "submit" | "reset";
 };
 
-function Button({ children, onClick, variant = 'default', ...props }: ButtonProps) {
-  return <S.ButtonContainer onClick={onClick} variant={variant} {...props}>{children}</S.ButtonContainer>;
+function Button({
+  children,
+  onClick,
+  variant = "default",
+  type = "button",
+  ...props
+}: ButtonProps) {
+  return (
+    <S.ButtonContainer
+      onClick={onClick}
+      variant={variant}
+      type={type}
+      {...props}
+    >
+      {children}
+    </S.ButtonContainer>
+  );
 }
 
 export default Button;

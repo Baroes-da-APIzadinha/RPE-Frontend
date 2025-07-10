@@ -13,6 +13,7 @@ import { useAvaliacaoParesPorId } from "@/hooks/avaliacoes/useAvaliacaoParesPorI
 import type { PerfilData } from "@/types/PerfilData.tsx";
 import { preencherAvaliacaoPares } from "@/services/HTTP/avaliacoes.ts";
 import { useColaboradorById } from "@/hooks/colaboradores/useColaboradorById.ts";
+import { formatar } from "@/utils/formatters.ts";
 
 interface Props {
   id: string;
@@ -69,7 +70,7 @@ const EvaluationDetails: React.FC<Props> = ({ id, onBack }) => {
   const handleSubmit = async () => {
     const newErrors = {
       nota: nota === 0,
-      motivacao: !motivacao,
+      motivacao: !motivacao || motivacao.trim() === "",
       forte: forte.trim() === "",
       melhoria: melhoria.trim() === "",
     };
@@ -85,11 +86,18 @@ const EvaluationDetails: React.FC<Props> = ({ id, onBack }) => {
     try {
       const payload = {
         idAvaliacao: avaliacao.idAvaliacao,
-        nota: nota.toString(),
+        nota: nota,
         motivadoTrabalharNovamente: motivacao,
         pontosFortes: forte,
         pontosFracos: melhoria,
       };
+
+      console.log("Payload enviado:", {
+        nota,
+        motivadoTrabalharNovamente: motivacao,
+        pontosFortes: forte,
+        pontosFracos: melhoria,
+      });
 
       await preencherAvaliacaoPares(payload);
       toast.success("Avaliação enviada com sucesso!");
@@ -109,9 +117,12 @@ const EvaluationDetails: React.FC<Props> = ({ id, onBack }) => {
             Avaliando: <strong>{colaborador?.nomeCompleto}</strong>
           </S.ColabNome>
           <S.ColabCargo>
-            {colaboradorCompleto?.cargo || "Cargo desconhecido"} •{" "}
-            {colaboradorCompleto?.unidade || "Unidade desconhecida"} • Trabalhou
-            junto por 6 meses
+            {formatar(colaboradorCompleto?.cargo as string) ||
+              "Cargo desconhecido"}{" "}
+            •{" "}
+            {formatar(colaboradorCompleto?.unidade as string) ||
+              "Unidade desconhecida"}{" "}
+            • Trabalhou junto por 6 meses
           </S.ColabCargo>
         </S.ColabInfo>
         <S.RightContent>
@@ -147,6 +158,7 @@ const EvaluationDetails: React.FC<Props> = ({ id, onBack }) => {
                     onChange={(val) => setNota(val)}
                     readOnly={jaEnviado}
                   />
+                  <S.Score>{nota}</S.Score>
                 </S.StarsGroup>
               </S.FormBlock>
               <S.FormBlock>
@@ -157,9 +169,7 @@ const EvaluationDetails: React.FC<Props> = ({ id, onBack }) => {
                 <Select
                   placeholder="Selecione uma opção"
                   value={motivacao}
-                  onChange={(val) =>
-                    setMotivacao(typeof val === "string" ? val : val[0] || null)
-                  }
+                  onChange={(val) => setMotivacao(val as string)}
                   options={motivacoes}
                   error={errors.motivacao}
                   disabled={jaEnviado}
@@ -191,7 +201,7 @@ const EvaluationDetails: React.FC<Props> = ({ id, onBack }) => {
           </S.FormWrapper>
         </Card>
         <ButtonFrame text="Para submeter sua avaliação do colaborador, preencha todos os campos.">
-          <Button disabled={jaEnviado}>
+          <Button type="submit" disabled={jaEnviado}>
             <FaPaperPlane />
             Enviar
           </Button>

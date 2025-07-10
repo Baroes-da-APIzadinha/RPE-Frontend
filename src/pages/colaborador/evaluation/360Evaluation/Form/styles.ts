@@ -112,3 +112,10 @@ export const TextArea = styled.textarea<{ error?: boolean }>`
   font-family: inherit;
   min-height: 100px;
 `;
+
+export const Score = styled.span`
+  color: ${({ theme }) => theme.colors.text.primary};
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-left: 0.7rem;
+`;

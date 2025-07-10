@@ -88,8 +88,16 @@ export const Label = styled.label`
 
 export const StarsGroup = styled.div`
   display: flex;
-  flex-wrap: wrap;
-  gap: 1.2rem;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+`;
+
+export const Score = styled.span`
+  color: ${({ theme }) => theme.colors.text.primary};
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-left: 0.7rem;
 `;
 
 export const StarButton = styled.button<{ $active: boolean }>`
