@@ -52,7 +52,7 @@ export function usePerfil() {
           .filter(Boolean) as Role[];
 
         if (rolesFromApi.includes("ADMIN")) {
-          finalRoles = ["colaborador", "rh", "gestor", "comite", "lider"];
+          finalRoles = ["admin", "colaborador", "rh", "gestor", "comite", "lider"];
         }
 
         const perfilData: PerfilData = {

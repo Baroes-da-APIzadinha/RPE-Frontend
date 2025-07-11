@@ -20,6 +20,7 @@ import {
 import * as S from "./styles";
 import { useState, type ReactNode } from "react";
 import { useLogout } from "@/services/Auth/logout";
+import { LuLogs } from "react-icons/lu";
 import type { Role } from "@/types/PerfilData.tsx";
 
 type SidebarProps = {
@@ -109,7 +110,13 @@ export function Sidebar({ roles, mainRole, userName }: SidebarProps) {
       },
       
     ],
-    admin: []
+    admin: [
+      {
+        to: "/admin/auditoria",
+        label: "Logs de Auditoria",
+        icon: <LuLogs size={24} />,
+      },
+    ],
   };
 
   const combinedNavItems = Array.from(

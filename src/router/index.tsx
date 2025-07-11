@@ -13,8 +13,8 @@ import { Import } from "@/pages/rh/Import";
 import { EvaluationCriteria } from "@/pages/rh/EvaluationCriteria";
 import { RhDashboard } from "@/pages/rh/Dashboard";
 import { RhCollaborator } from "@/pages/rh/Collaborator";
-import RhCyclePage from '@/pages/rh/cycle';
-import CycleCriteriaPage from '@/pages/rh/cycleCriteria';
+import RhCyclePage from "@/pages/rh/cycle";
+import CycleCriteriaPage from "@/pages/rh/cycleCriteria";
 
 import { CollaboratorReview } from "@/pages/manager/CollaboratorReview";
 import { MananegerDashboard } from "@/pages/manager/Dashboard";
@@ -23,7 +23,7 @@ import { ManagerTeam } from "@/pages/manager/Team";
 import { CycleHistory } from "@/pages/comite/CycleHistory";
 import { CollaboratorEqualization } from "@/pages/comite/CollaboratorEqualization";
 import { CollaboratorDiscrepancy } from "@/pages/comite/collaboratorDiscrepancy";
-
+import AuditoriaPage from "@/pages/admin/Auditoria";
 
 function AppRoutes() {
   return (
@@ -41,26 +41,26 @@ function AppRoutes() {
 
         {/* Rotas protegidas */}
         <Route element={<ProtectedRoute />}>
-        
           <Route element={<BaseLayout />}>
-          
             {/* colaboradores */}
-            <Route path="/colaborador" >
+            <Route path="/colaborador">
               <Route path="home" element={<ColaboradorHome />} />
               <Route path="evolution" element={<ColaboradorEvolution />} />
               <Route path="evaluation" element={<EvaluationBasePage />} />
             </Route>
 
             {/* Gestor */}
-            <Route path="/gestor" >
+            <Route path="/gestor">
               <Route path="dashboard" element={<MananegerDashboard />} />
               <Route path="team" element={<ManagerTeam />} />
-              <Route path="collaborator/review" element={<CollaboratorReview />}
+              <Route
+                path="collaborator/review"
+                element={<CollaboratorReview />}
               />
             </Route>
 
             {/* RH */}
-            <Route path="/rh" >
+            <Route path="/rh">
               <Route path="dashboard" element={<RhDashboard />} />
               <Route path="collaborators" element={<RhCollaborator />} />
               <Route path="criteria" element={<EvaluationCriteria />} />
@@ -70,16 +70,24 @@ function AppRoutes() {
             </Route>
 
             {/* Comitê */}
-            <Route path="/comite" >
-              <Route path="equalization" element={<CollaboratorEqualization />} />
-              <Route path="collaborator-discrepancy/:id" element={<CollaboratorDiscrepancy />} />
+            <Route path="/comite">
+              <Route
+                path="equalization"
+                element={<CollaboratorEqualization />}
+              />
+              <Route
+                path="collaborator-discrepancy/:id"
+                element={<CollaboratorDiscrepancy />}
+              />
               <Route path="history" element={<CycleHistory />} />
             </Route>
 
+            {/* Admin */}
+            <Route path="/admin">
+              <Route path="auditoria" element={<AuditoriaPage />} />
+            </Route>
           </Route>
-
         </Route>
-
       </Routes>
     </BrowserRouter>
   );
