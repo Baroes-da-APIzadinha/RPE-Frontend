@@ -14,7 +14,8 @@ import { FaUser, FaUsers, FaClipboardCheck } from "react-icons/fa";
 import { MdKeyboardArrowDown, MdKeyboardArrowUp, MdAccountCircle } from "react-icons/md";
 import { collaboratorsMock } from "@/data/colaboradoresComite";
 import Button from "@/components/Button";
-
+import { useReferenciasPorIndicado } from "@/hooks/useReferenciasPorIndicado";
+import { useColaboradorById } from "@/hooks/colaboradores/useColaboradorById";
 type TabType = "autoavaliacao" | "referencias" | "360";
 
 // Mock data baseado na estrutura do CollaboratorReview
@@ -102,42 +103,6 @@ const avaliacoes360Mock = [
   }
 ];
 
-// Mock data para referencias
-const referenciasMock = [
-  {
-    id: "1",
-    justificativa: "Excelente profissional com grande conhecimento técnico em React e Node.js. Sempre entrega projetos de alta qualidade dentro do prazo estabelecido.",
-    tipo: "Técnica",
-    indicadoPor: "Maria Silva",
-    cargo: "Tech Lead",
-    dataIndicacao: "2024-01-15"
-  },
-  {
-    id: "2",
-    justificativa: "Pessoa muito colaborativa e que sempre ajuda os colegas. Tem uma postura muito positiva e contribui para um ambiente de trabalho saudável.",
-    tipo: "Cultural",
-    indicadoPor: "João Santos",
-    cargo: "Product Manager",
-    dataIndicacao: "2024-01-20"
-  },
-  {
-    id: "3",
-    justificativa: "Demonstra liderança natural e capacidade de resolver conflitos. Sempre busca soluções criativas para os desafios do projeto.",
-    tipo: "Cultural",
-    indicadoPor: "Ana Costa",
-    cargo: "Scrum Master",
-    dataIndicacao: "2024-02-01"
-  },
-  {
-    id: "4",
-    justificativa: "Possui conhecimento avançado em arquitetura de software e melhores práticas de desenvolvimento. Contribui significativamente para a qualidade do código.",
-    tipo: "Técnica",
-    indicadoPor: "Carlos Mendes",
-    cargo: "Senior Developer",
-    dataIndicacao: "2024-02-10"
-  }
-];
-
 const motivacoes = [
   { value: "Discordo Totalmente", label: "Discordo Totalmente" },
   { value: "Discordo Parcialmente", label: "Discordo Parcialmente" },
@@ -175,8 +140,13 @@ export function CollaboratorDiscrepancy() {
   const [loadingSummary, setLoadingSummary] = useState(false);
   const [open, setOpen] = useState<string[]>([criteriosMock[0].id]);
 
-  // Buscar dados do colaborador (mock)
-  const collaborator = collaboratorsMock.find(c => c.nome === id) || collaboratorsMock[0];
+  // Decodificar o ID do colaborador da URL
+  const colaboradorId = decodeURIComponent(id || "");
+  const { colaborador } = useColaboradorById(colaboradorId);
+  // Buscar dados do colaborador (mock - ainda usando para outros dados)
+
+  // Hook para buscar referências reais usando o ID do colaborador
+  const { referencias, loading: loadingReferencias, error: errorReferencias } = useReferenciasPorIndicado(colaboradorId);
 
 
   const handleAccordion = (id: string) => {
@@ -208,7 +178,7 @@ export function CollaboratorDiscrepancy() {
     // Simular chamada para API
     setTimeout(() => {
       setSummary(`
-        **Resumo Geral - ${collaborator.nome}**
+        **Resumo Geral - ${colaborador?.nomeCompleto}**
         
         **Pontos Fortes:**
         • Excelente pontualidade e assiduidade
@@ -223,7 +193,7 @@ export function CollaboratorDiscrepancy() {
         • Desenvolvimento de habilidades de liderança
         
         **Análise da Discrepância:**
-        A discrepância de ${collaborator.discrepancy} pontos sugere que há diferenças na percepção entre autoavaliação e avaliação do gestor. O colaborador tende a se avaliar ligeiramente mais alto em alguns critérios.
+        A discrepância de GAEL pontos sugere que há diferenças na percepção entre autoavaliação e avaliação do gestor. O colaborador tende a se avaliar ligeiramente mais alto em alguns critérios.
       `);
       setLoadingSummary(false);
     }, 2000);
@@ -328,36 +298,63 @@ export function CollaboratorDiscrepancy() {
     </>
   );
 
-  const renderReferencesTab = () => (
-    <TableBase
-      title="Referencias"
-      subtitle={`${referenciasMock.length} referências encontradas para este colaborador`}
-    >
-      {referenciasMock.map((referencia) => (
-        <S.ReferenciaRow key={referencia.id}>
-          <S.ReferenciaInfo>
-            <MdAccountCircle size={48} />
-            <S.ReferenciaDetails>
-              <S.ReferenciaIndicador>{referencia.indicadoPor}</S.ReferenciaIndicador>
-              <S.ReferenciaCargo>{referencia.cargo}</S.ReferenciaCargo>
-              <S.ReferenciaData>
-              </S.ReferenciaData>
-            </S.ReferenciaDetails>
-          </S.ReferenciaInfo>
-          
-          <S.ReferenciaContent>
-            <S.ReferenciaJustificativa>{referencia.justificativa}</S.ReferenciaJustificativa>
-          </S.ReferenciaContent>
-          
-          <S.ReferenciaActions>
-            <S.TipoBadge $tipo={referencia.tipo}>
-              {referencia.tipo}
-            </S.TipoBadge>
-          </S.ReferenciaActions>
-        </S.ReferenciaRow>
-      ))}
-    </TableBase>
-  );
+  const renderReferencesTab = () => {
+    if (loadingReferencias) {
+      return (
+        <div style={{ padding: "2rem", textAlign: "center" }}>
+          <p>Carregando referências...</p>
+        </div>
+      );
+    }
+
+    if (errorReferencias) {
+      return (
+        <div style={{ padding: "2rem", textAlign: "center" }}>
+          <p>Erro ao carregar referências: {errorReferencias}</p>
+        </div>
+      );
+    }
+
+    if (!referencias || referencias.length === 0) {
+      return (
+        <div style={{ padding: "2rem", textAlign: "center" }}>
+          <p>Nenhuma referência encontrada para este colaborador.</p>
+        </div>
+      );
+    }
+
+    return (
+      <TableBase
+        title="Referencias"
+        subtitle={`${referencias.length} referências encontradas para este colaborador`}
+      >
+        {referencias.map((referencia) => (
+          <S.ReferenciaRow key={referencia.idIndicacao}>
+            <S.ReferenciaInfo>
+              <MdAccountCircle size={48} />
+              <S.ReferenciaDetails>
+                <S.ReferenciaIndicador>{referencia.indicador.nomeCompleto}</S.ReferenciaIndicador>
+                <S.ReferenciaCargo>{referencia.indicador.cargo}</S.ReferenciaCargo>
+                <S.ReferenciaData>
+                  {referencia.indicador.unidade}
+                </S.ReferenciaData>
+              </S.ReferenciaDetails>
+            </S.ReferenciaInfo>
+            
+            <S.ReferenciaContent>
+              <S.ReferenciaJustificativa>{referencia.justificativa}</S.ReferenciaJustificativa>
+            </S.ReferenciaContent>
+            
+            <S.ReferenciaActions>
+              <S.TipoBadge $tipo={referencia.tipo === 'TECNICA' ? 'Técnica' : 'Cultural'}>
+                {referencia.tipo === 'TECNICA' ? 'Técnica' : 'Cultural'}
+              </S.TipoBadge>
+            </S.ReferenciaActions>
+          </S.ReferenciaRow>
+        ))}
+      </TableBase>
+    );
+  };
 
   const render360Tab = () => (
     <S.Evaluation360Container>
@@ -445,10 +442,12 @@ export function CollaboratorDiscrepancy() {
     }
   };
 
+  // Buscar nome do colaborador pelos dados das referências ou usar o ID
+
   return (
     <>
       <S.Header>
-        <Title>Análise de Discrepância - {collaborator.nome}</Title>
+        <Title>Análise de Discrepância - {colaborador?.nomeCompleto || "GAEL"}</Title>
         <Button onClick={handleGenerateSummary} variant="primary">
           <IoSparklesOutline size={24}/>
           Gerar Resumo IA

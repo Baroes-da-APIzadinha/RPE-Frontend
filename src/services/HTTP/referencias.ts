@@ -23,3 +23,7 @@ export async function deletarReferencia(id: string) {
 export async function listarReferenciasIndicadas(idIndicador: string) {
   return await getRequest(`${baseEndpoint}/indicador/${idIndicador}`);
 }
+
+export async function listarReferenciasPorIndicado(idIndicado: string) {
+  return await getRequest(`${baseEndpoint}/indicado/${idIndicado}`);
+}

@@ -1,4 +1,4 @@
-import { getRequest, postRequest } from './requests';
+import { getRequest } from './requests';
 
 const baseEndpoint1 = '/avaliacoes/';
 
