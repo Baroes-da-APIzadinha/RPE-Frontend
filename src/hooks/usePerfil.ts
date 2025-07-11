@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import { getPerfil } from "@/services/HTTP/perfil";
 
-type Role = "colaborador" | "rh" | "gestor" | "comite" | "lider";
+type Role = "colaborador" | "rh" | "gestor" | "comite" | "lider" | "admin";
 
 type PerfilData = {
   userId: string;
@@ -17,6 +17,7 @@ const roleMap: Record<string, Role> = {
   MEMBRO_COMITE: "comite",
   COLABORADOR_COMUM: "colaborador",
   LIDER: "lider",
+  ADMIN: "admin",
 };
 
 function formatUserName(email: string): string {
@@ -58,7 +59,7 @@ export function usePerfil() {
           .filter(Boolean) as Role[];
 
         if (rolesFromApi.includes("ADMIN")) {
-          finalRoles = ["colaborador", "rh", "gestor", "comite", "lider"];
+          finalRoles = ["admin", "colaborador", "rh", "gestor", "comite", "lider"];
         }
 
         const perfilData: PerfilData = {
