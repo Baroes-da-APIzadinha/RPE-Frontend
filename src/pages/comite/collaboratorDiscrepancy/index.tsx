@@ -457,7 +457,7 @@ export function CollaboratorDiscrepancy() {
   return (
     <>
       <S.Header>
-        <Title>Análise de Discrepância - {colaborador?.nomeCompleto || "GAEL"}</Title>
+        <Title>Análise de Discrepância: <br/> {colaborador?.nomeCompleto || "GAEL"}</Title>
         <Button onClick={handleGenerateSummary} variant="primary">
           <IoSparklesOutline size={24}/>
           Gerar Resumo IA

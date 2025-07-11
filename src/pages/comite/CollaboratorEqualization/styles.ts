@@ -1,4 +1,3 @@
-import { Card } from '@/components/Card'
 import theme from '@/styles/theme'
 import styled, { css } from 'styled-components'
 
