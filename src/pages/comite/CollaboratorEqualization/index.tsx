@@ -13,6 +13,7 @@ import { ExpandableCard } from "@/components/ExpandableCard";
 import { useNotasCiclo } from "@/hooks/comite/useNotasCiclo";
 import { useCicloAtual } from "@/hooks/useCicloAtual";
 import { IoMdPerson } from "react-icons/io";
+import { StarRating } from "@/components/StarRating";
 
 
 export function CollaboratorEqualization() {
@@ -133,17 +134,11 @@ export function CollaboratorEqualization() {
             <S.InfoGrid>
               <S.RatingRow>
                 <S.Label>Nota:</S.Label>
-                {[1.0, 2.0, 3.0, 4.0, 5.0].map((star) => (
-                  <S.StarButton
-                    key={star}
-                    onClick={() => setNotas({ ...notas, [index]: star })}
-                    onMouseEnter={() => setHover(star)}
-                    onMouseLeave={() => setHover(null)}
-                    $active={star <= (hover ?? notas[index] ?? 0)}
-                  >
-                    <FaStar />
-                  </S.StarButton>
-                ))}
+                <StarRating
+                  value={notas[index] ?? 0}
+                  onChange={(star) => setNotas({ ...notas, [index]: star })}
+                  readOnly={false}
+                />
                 <S.Score>{notas[index] ?? 0}</S.Score>
               </S.RatingRow>
               <Textarea
