@@ -1,3 +1,4 @@
+import { Card } from '@/components/Card'
 import theme from '@/styles/theme'
 import styled, { css } from 'styled-components'
 
@@ -41,7 +42,7 @@ export const FiltersWrapper = styled.div`
   flex-wrap: wrap;
   gap: 1.2rem;
   margin-top: 1.2rem;
-
+  flex-direction: column;
   @media (max-width: 768px) {
     flex-direction: column;
   }

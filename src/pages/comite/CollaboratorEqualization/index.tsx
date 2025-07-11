@@ -161,7 +161,7 @@ export function CollaboratorEqualization() {
                 <S.ScoreContainer>
                   <S.ScoreLabel>Discrepância</S.ScoreLabel>
                   <S.DiscrepancyValue $value={colab.notas.discrepancia}>
-                    {colab.notas.discrepancia ?? "-"}
+                    {colab.notas.discrepancia.toFixed(2) ?? "-"}
                   </S.DiscrepancyValue>
                 </S.ScoreContainer>
               </S.UserHeader>
