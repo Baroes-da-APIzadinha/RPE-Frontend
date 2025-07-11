@@ -132,13 +132,25 @@ export const Footer = styled.div`
   gap: 0.8rem;
 `
 
-export const User = styled.div`
+export const User = styled.button`
   display: flex;
   align-items: center;
   gap: 1.2rem;
   font-size: ${theme.font.sizes.xsmall};
   color: ${theme.colors.text.primary};
-`
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color 0.2s, background-color 0.2s;
+  border-radius: ${theme.border.radius.medium};
+  padding: 0.6rem;
+
+  &:hover {
+    background-color: ${theme.colors.primary.light};
+    color: ${theme.colors.primary.default};
+  }
+`;
+
 
 export const Logout = styled.button`
   display: flex;
