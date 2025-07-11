@@ -9,56 +9,48 @@ import Button from "@/components/Button";
 import Textarea from "@/components/Textarea";
 import { IoSparklesOutline } from "react-icons/io5";
 import { FaStar } from "react-icons/fa";
-import { Select } from "@/components/Select";
 import { ExpandableCard } from "@/components/ExpandableCard";
-import { collaboratorsMock } from "@/data/colaboradoresComite";
+import { useNotasCiclo } from "@/hooks/comite/useNotasCiclo";
+import { useCicloAtual } from "@/hooks/useCicloAtual";
+import { IoMdPerson } from "react-icons/io";
 
-type Status = "concluida" | "andamento" | "pendente";
-
-type Colaborador = {
-  nome: string;
-  cargo: string;
-  desde: string;
-  autoavaliacao: number | null;
-  avaliacao360: number | null;
-  discrepancy: number | null;
-  notaGestor: number | null;
-  equalization: Status;
-};
 
 export function CollaboratorEqualization() {
   const navigate = useNavigate();
   const [notas, setNotas] = useState<Record<number, number>>({});
   const [hover, setHover] = useState<number | null>(null);
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
-  const [justifications, setJustifications] = useState<Record<number, string>>(
-    {}
-  );
+  const [justifications, setJustifications] = useState<Record<number, string>>({});
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("todos");
 
-  const filteredCollaborators = collaboratorsMock.filter((colab) => {
-    const matchesSearch = `${colab.nome} ${colab.cargo}`
+  // Obtém ciclo atual
+  const { cicloAtual } = useCicloAtual();
+  const idCiclo = cicloAtual?.id ?? "";
+
+  // Hook de notas do ciclo
+  const { data: colaboradores, loading, error } = useNotasCiclo(idCiclo);
+
+  const filteredCollaborators = colaboradores.filter((colab) => {
+    const matchesSearch = `${colab.nomeColaborador} ${colab.cargoColaborador}`
       .toLowerCase()
       .includes(searchTerm.toLowerCase());
 
-    const matchesStatus =
-      statusFilter === "todos" || colab.equalization === statusFilter;
-
-    return matchesSearch && matchesStatus;
+    return matchesSearch;
   });
 
   const sortedCollaborators = [...filteredCollaborators].sort((a, b) => {
-    const discrepancyA = a.discrepancy ?? -Infinity;
-    const discrepancyB = b.discrepancy ?? -Infinity;
+    const discrepancyA = a.notas.discrepancia ?? -Infinity;
+    const discrepancyB = b.notas.discrepancia ?? -Infinity;
     return discrepancyB - discrepancyA;
   });
 
-  const handleReview = (collaboratorName: string) => {
-    navigate(
-      `/comite/collaborator-discrepancy/${encodeURIComponent(collaboratorName)}`
-    );
+  const handleReview = (colaboradorId: string) => {
+    navigate(`/comite/collaborator-discrepancy/${encodeURIComponent(colaboradorId)}`);
   };
+
+  if (loading) return <p>Carregando...</p>;
+  if (error) return <p>{error}</p>;
 
   return (
     <>
@@ -77,28 +69,13 @@ export function CollaboratorEqualization() {
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </S.FilterItem>
-
-          <S.FilterItem>
-            <label>Status da equalização</label>
-            <Select
-              placeholder="Todos os status"
-              value={statusFilter}
-              onChange={(val) => setStatusFilter(val)}
-              options={[
-                { label: "Todos", value: "todos" },
-                { label: "Pendente", value: "pendente" },
-                { label: "Andamento", value: "andamento" },
-                { label: "Concluída", value: "concluida" },
-              ]}
-            />
-          </S.FilterItem>
         </S.FiltersWrapper>
       </Card>
 
       <Card>
         {sortedCollaborators.map((colab, index) => (
           <ExpandableCard
-            key={index}
+            key={colab.idColaborador}
             expanded={expandedIndex === index}
             onToggle={() =>
               setExpandedIndex((prev) => (prev === index ? null : index))
@@ -106,33 +83,32 @@ export function CollaboratorEqualization() {
             header={
               <S.UserHeader>
                 <S.UserInfo>
-                  <S.Avatar />
+                  <S.Avatar>
+                    <IoMdPerson size={32} />
+                  </S.Avatar>
                   <div>
                     <S.Name>
-                      {colab.nome}
-                      <S.EqualizationBadge $status={colab.equalization}>
-                        {colab.equalization}
-                      </S.EqualizationBadge>
+                      {colab.nomeColaborador}
                     </S.Name>
-                    <S.Role>{colab.cargo}</S.Role>
+                    <S.Role>{colab.cargoColaborador}</S.Role>
                   </div>
                 </S.UserInfo>
                 <S.ScoreContainer>
                   <S.ScoreLabel>Autoavaliação</S.ScoreLabel>
-                  <S.ScoreValue>{colab.autoavaliacao ?? "-"}</S.ScoreValue>
+                  <S.ScoreValue>{colab.notas.notaAuto ?? "-"}</S.ScoreValue>
                 </S.ScoreContainer>
                 <S.ScoreContainer>
                   <S.ScoreLabel>Avaliação 360</S.ScoreLabel>
-                  <S.ScoreValue>{colab.avaliacao360 ?? "-"}</S.ScoreValue>
+                  <S.ScoreValue>{colab.notas.nota360media ?? "-"}</S.ScoreValue>
                 </S.ScoreContainer>
                 <S.ScoreContainer>
                   <S.ScoreLabel>Nota gestor</S.ScoreLabel>
-                  <S.ScoreValue>{colab.notaGestor ?? "-"}</S.ScoreValue>
+                  <S.ScoreValue>{colab.notas.notaGestor ?? "-"}</S.ScoreValue>
                 </S.ScoreContainer>
                 <S.ScoreContainer>
                   <S.ScoreLabel>Discrepância</S.ScoreLabel>
-                  <S.DiscrepancyValue $value={colab.discrepancy}>
-                    {colab.discrepancy ?? "-"}
+                  <S.DiscrepancyValue $value={colab.notas.discrepancia}>
+                    {colab.notas.discrepancia ?? "-"}
                   </S.DiscrepancyValue>
                 </S.ScoreContainer>
               </S.UserHeader>
@@ -185,7 +161,7 @@ export function CollaboratorEqualization() {
             <S.FooterButtons>
               <Button
                 variant="outline"
-                onClick={() => handleReview(colab.nome)}
+                onClick={() => handleReview(colab.idColaborador)}
               >
                 Revisar
               </Button>

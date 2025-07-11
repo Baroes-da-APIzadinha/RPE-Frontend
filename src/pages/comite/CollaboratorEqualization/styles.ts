@@ -121,7 +121,10 @@ export const Avatar = styled.div`
   width: 56px;
   height: 56px;
   border-radius: 50%;
-  background-color: ${theme.colors.border};
+  background-color: ${theme.colors.lightGray};
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 
 export const Name = styled.h3`
