@@ -18,6 +18,7 @@ import { useColaboradorById } from "@/hooks/colaboradores/useColaboradorById";
 import { useAvaliacaoColaborador, clearAvaliacaoColaboradorIACache, type AvaliacaoColaboradorIA } from "@/hooks/IA/useAvaliacaoColaborador";
 import { useCicloAtual } from "@/hooks/useCicloAtual";
 import { useEffect } from "react";
+import { formatar } from "@/utils/formatters";
 type TabType = "autoavaliacao" | "referencias" | "360";
 
 // Mock data baseado na estrutura do CollaboratorReview
@@ -343,9 +344,9 @@ export function CollaboratorDiscrepancy() {
               <MdAccountCircle size={48} />
               <S.ReferenciaDetails>
                 <S.ReferenciaIndicador>{referencia.indicador.nomeCompleto}</S.ReferenciaIndicador>
-                <S.ReferenciaCargo>{referencia.indicador.cargo}</S.ReferenciaCargo>
+                <S.ReferenciaCargo>{formatar(referencia.indicador.cargo)}</S.ReferenciaCargo>
                 <S.ReferenciaData>
-                  {referencia.indicador.unidade}
+                  {formatar(referencia.indicador.unidade)}
                 </S.ReferenciaData>
               </S.ReferenciaDetails>
             </S.ReferenciaInfo>
@@ -374,7 +375,7 @@ export function CollaboratorDiscrepancy() {
               <MdAccountCircle size={24} />
               {avaliacao.avaliador.nome}
               <S.ColleagueRole>
-                ({avaliacao.avaliador.cargo} • {avaliacao.avaliador.unidade})
+                ({formatar(avaliacao.avaliador.cargo)} • {formatar(avaliacao.avaliador.unidade)})
               </S.ColleagueRole>
             </S.ColleagueName>
             <S.NotaBadge>

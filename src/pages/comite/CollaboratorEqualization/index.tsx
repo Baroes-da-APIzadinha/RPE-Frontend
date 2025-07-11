@@ -14,6 +14,7 @@ import { useCicloAtual } from "@/hooks/useCicloAtual";
 import { IoMdPerson } from "react-icons/io";
 import { StarRating } from "@/components/StarRating";
 import { useMiniAvaliacaoIA, clearMiniAvaliacaoIACache } from "@/hooks/IA/useMiniAvaliacaoIA";
+import { formatar } from "@/utils/formatters";
 
 // Componente memoizado para exibir resumo da IA
 const CollaboratorAISummary = memo(({ idColaborador, idCiclo }: { idColaborador: string; idCiclo: string }) => {
@@ -143,7 +144,7 @@ export function CollaboratorEqualization() {
                     <S.Name>
                       {colab.nomeColaborador}
                     </S.Name>
-                    <S.Role>{colab.cargoColaborador}</S.Role>
+                    <S.Role>{formatar(colab.cargoColaborador)}</S.Role>
                   </div>
                 </S.UserInfo>
                 <S.ScoreContainer>
