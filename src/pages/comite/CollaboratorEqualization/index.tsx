@@ -1,5 +1,5 @@
 import * as S from "./styles";
-import { useState } from "react";
+import { useState, useEffect, useCallback, memo } from "react";
 import { useNavigate } from "react-router-dom";
 import { Title } from "@/components/Title";
 import { Card } from "@/components/Card";
@@ -8,23 +8,52 @@ import { MdOutlineCheckCircleOutline } from "react-icons/md";
 import Button from "@/components/Button";
 import Textarea from "@/components/Textarea";
 import { IoSparklesOutline } from "react-icons/io5";
-import { FaStar } from "react-icons/fa";
 import { ExpandableCard } from "@/components/ExpandableCard";
 import { useNotasCiclo } from "@/hooks/comite/useNotasCiclo";
 import { useCicloAtual } from "@/hooks/useCicloAtual";
 import { IoMdPerson } from "react-icons/io";
 import { StarRating } from "@/components/StarRating";
-import { useMiniAvaliacaoIA } from "@/hooks/IA/useMiniAvaliacaoIA";
+import { useMiniAvaliacaoIA, clearMiniAvaliacaoIACache } from "@/hooks/IA/useMiniAvaliacaoIA";
+
+// Componente memoizado para exibir resumo da IA
+const CollaboratorAISummary = memo(({ idColaborador, idCiclo }: { idColaborador: string; idCiclo: string }) => {
+  const { data, loading, error } = useMiniAvaliacaoIA(idColaborador, idCiclo);
+
+  if (loading) {
+    return (
+      <S.SummaryContent>
+        <strong>Resumo</strong>
+        <span>Aguarde o resumo gerado pela IA...</span>
+      </S.SummaryContent>
+    );
+  }
+
+  if (error || !data) {
+    return (
+      <S.SummaryContent>
+        <strong>Resumo</strong>
+        <span>Erro ao carregar resumo da IA</span>
+      </S.SummaryContent>
+    );
+  }
+
+  return (
+    <S.SummaryContent>
+      <strong>Nota Final Sugerida: {data.notaFinalSugerida}/5</strong>
+      <span>{data.justificativa}</span>
+    </S.SummaryContent>
+  );
+});
+
+CollaboratorAISummary.displayName = 'CollaboratorAISummary';
 
 
 export function CollaboratorEqualization() {
   const navigate = useNavigate();
   const [notas, setNotas] = useState<Record<number, number>>({});
-  const [hover, setHover] = useState<number | null>(null);
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
   const [justifications, setJustifications] = useState<Record<number, string>>({});
   const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState("todos");
 
   // Obtém ciclo atual
   const { cicloAtual } = useCicloAtual();
@@ -32,6 +61,34 @@ export function CollaboratorEqualization() {
 
   // Hook de notas do ciclo
   const { data: colaboradores, loading, error } = useNotasCiclo(idCiclo);
+
+  // Limpa o cache ao sair da página
+  useEffect(() => {
+    return () => {
+      clearMiniAvaliacaoIACache();
+    };
+  }, []);
+
+  // Memoização das funções para evitar re-renders
+  const handleReview = useCallback((colaboradorId: string) => {
+    navigate(`/comite/collaborator-discrepancy/${encodeURIComponent(colaboradorId)}`);
+  }, [navigate]);
+
+  const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+  }, []);
+
+  const handleToggleExpanded = useCallback((index: number) => {
+    setExpandedIndex((prev) => (prev === index ? null : index));
+  }, []);
+
+  const handleNotaChange = useCallback((index: number, star: number) => {
+    setNotas((prev) => ({ ...prev, [index]: star }));
+  }, []);
+
+  const handleJustificationChange = useCallback((index: number, value: string) => {
+    setJustifications((prev) => ({ ...prev, [index]: value }));
+  }, []);
 
   const filteredCollaborators = colaboradores.filter((colab) => {
     const matchesSearch = `${colab.nomeColaborador} ${colab.cargoColaborador}`
@@ -47,42 +104,8 @@ export function CollaboratorEqualization() {
     return discrepancyB - discrepancyA;
   });
 
-  const handleReview = (colaboradorId: string) => {
-    navigate(`/comite/collaborator-discrepancy/${encodeURIComponent(colaboradorId)}`);
-  };
-
   if (loading) return <p>Carregando...</p>;
   if (error) return <p>{error}</p>;
-
-  // Componente interno para exibir resumo da IA
-  const CollaboratorAISummary = ({ idColaborador, idCiclo }: { idColaborador: string; idCiclo: string }) => {
-    const { data, loading, error } = useMiniAvaliacaoIA(idColaborador, idCiclo);
-
-    if (loading) {
-      return (
-        <S.SummaryContent>
-          <strong>Resumo</strong>
-          <span>Aguarde o resumo gerado pela IA...</span>
-        </S.SummaryContent>
-      );
-    }
-
-    if (error || !data) {
-      return (
-        <S.SummaryContent>
-          <strong>Resumo</strong>
-          <span>Erro ao carregar resumo da IA</span>
-        </S.SummaryContent>
-      );
-    }
-
-    return (
-      <S.SummaryContent>
-        <strong>Nota Final Sugerida: {data.notaFinalSugerida}/5</strong>
-        <span>{data.justificativa}</span>
-      </S.SummaryContent>
-    );
-  };
 
   return (
     <>
@@ -98,7 +121,7 @@ export function CollaboratorEqualization() {
             <SearchInput
               placeholder="Buscar colaborador..."
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={handleSearchChange}
             />
           </S.FilterItem>
         </S.FiltersWrapper>
@@ -109,9 +132,7 @@ export function CollaboratorEqualization() {
           <ExpandableCard
             key={colab.idColaborador}
             expanded={expandedIndex === index}
-            onToggle={() =>
-              setExpandedIndex((prev) => (prev === index ? null : index))
-            }
+            onToggle={() => handleToggleExpanded(index)}
             header={
               <S.UserHeader>
                 <S.UserInfo>
@@ -164,7 +185,7 @@ export function CollaboratorEqualization() {
                 <S.Label>Nota:</S.Label>
                 <StarRating
                   value={notas[index] ?? 0}
-                  onChange={(star) => setNotas({ ...notas, [index]: star })}
+                  onChange={(star) => handleNotaChange(index, star)}
                   readOnly={false}
                 />
                 <S.Score>{notas[index] ?? 0}</S.Score>
@@ -172,12 +193,7 @@ export function CollaboratorEqualization() {
               <Textarea
                 placeholder="Descreva os motivos para a decisão do comitê…"
                 value={justifications[index] ?? ""}
-                onChange={(e) =>
-                  setJustifications({
-                    ...justifications,
-                    [index]: e.target.value,
-                  })
-                }
+                onChange={(e) => handleJustificationChange(index, e.target.value)}
               />
             </S.InfoGrid>
 
