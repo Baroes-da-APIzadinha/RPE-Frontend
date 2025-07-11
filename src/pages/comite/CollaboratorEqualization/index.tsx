@@ -14,6 +14,7 @@ import { useNotasCiclo } from "@/hooks/comite/useNotasCiclo";
 import { useCicloAtual } from "@/hooks/useCicloAtual";
 import { IoMdPerson } from "react-icons/io";
 import { StarRating } from "@/components/StarRating";
+import { useMiniAvaliacaoIA } from "@/hooks/IA/useMiniAvaliacaoIA";
 
 
 export function CollaboratorEqualization() {
@@ -52,6 +53,36 @@ export function CollaboratorEqualization() {
 
   if (loading) return <p>Carregando...</p>;
   if (error) return <p>{error}</p>;
+
+  // Componente interno para exibir resumo da IA
+  const CollaboratorAISummary = ({ idColaborador, idCiclo }: { idColaborador: string; idCiclo: string }) => {
+    const { data, loading, error } = useMiniAvaliacaoIA(idColaborador, idCiclo);
+
+    if (loading) {
+      return (
+        <S.SummaryContent>
+          <strong>Resumo</strong>
+          <span>Aguarde o resumo gerado pela IA...</span>
+        </S.SummaryContent>
+      );
+    }
+
+    if (error || !data) {
+      return (
+        <S.SummaryContent>
+          <strong>Resumo</strong>
+          <span>Erro ao carregar resumo da IA</span>
+        </S.SummaryContent>
+      );
+    }
+
+    return (
+      <S.SummaryContent>
+        <strong>Nota Final Sugerida: {data.notaFinalSugerida}/5</strong>
+        <span>{data.justificativa}</span>
+      </S.SummaryContent>
+    );
+  };
 
   return (
     <>
@@ -122,10 +153,7 @@ export function CollaboratorEqualization() {
                   <S.IconSpan>
                     <IoSparklesOutline size={24} />
                   </S.IconSpan>
-                  <S.SummaryContent>
-                    <strong>Resumo</strong>
-                    <span>Aguarde o resumo gerado pela IA...</span>
-                  </S.SummaryContent>
+                  <CollaboratorAISummary idColaborador={colab.idColaborador} idCiclo={idCiclo} />
                 </S.SummaryBox>
               </div>
             </S.InfoGrid>
