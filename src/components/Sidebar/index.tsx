@@ -18,21 +18,20 @@ import {
   MdOutlineBalance,
 } from "react-icons/md";
 import * as S from "./styles";
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { useLogout } from "@/services/Auth/logout";
-
-type Role = "colaborador" | "rh" | "gestor" | "comite" | "lider";
+import type { Role } from "@/types/PerfilData.tsx";
 
 type SidebarProps = {
   roles: Role[]; // papéis ativos
   mainRole: Role; // título mostrado
   userName: string;
 };
-
+type NavItem = { to: string; label: string; icon: ReactNode };
 export function Sidebar({ roles, mainRole, userName }: SidebarProps) {
   const [open, setOpen] = useState(false);
 
-  const allNavItems = {
+  const allNavItems: Record<Role, NavItem[]> = {
     colaborador: [
       {
         to: "/colaborador/home",
@@ -61,7 +60,7 @@ export function Sidebar({ roles, mainRole, userName }: SidebarProps) {
         label: "Colaboradores (RH)",
         icon: <MdGroup size={24} />,
       },
-            {
+      {
         to: "/rh/cycle",
         label: "Gestão de Ciclos",
         icon: <MdHistory size={24} />,
@@ -76,7 +75,6 @@ export function Sidebar({ roles, mainRole, userName }: SidebarProps) {
         label: "Importação de dados",
         icon: <MdFileUpload size={24} />,
       },
-
     ],
     gestor: [
       {
@@ -103,6 +101,15 @@ export function Sidebar({ roles, mainRole, userName }: SidebarProps) {
       },
     ],
     lider: [],
+    mentor: [
+      {
+        to: "/mentor/mentorados",
+        label: "Mentorados",
+        icon: <MdSpaceDashboard size={24} />,
+      },
+      
+    ],
+    admin: []
   };
 
   const combinedNavItems = Array.from(
@@ -117,6 +124,8 @@ export function Sidebar({ roles, mainRole, userName }: SidebarProps) {
     gestor: "Painel do Gestor",
     comite: "Painel do Comitê",
     lider: "Painel do Líder",
+    mentor: "Painel do Mentor",
+    admin: "Painel do Administrador",
   };
 
   return (

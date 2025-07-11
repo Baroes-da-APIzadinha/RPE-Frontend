@@ -1,14 +1,6 @@
 import { createContext, useContext } from "react";
 import { usePerfil } from "@/hooks/usePerfil";
-
-type Role = "colaborador" | "rh" | "gestor" | "comite" | "lider";
-
-type PerfilData = {
-  userId: string;
-  userName: string;
-  roles: Role[];
-  mainRole: Role;
-};
+import type { PerfilData } from "@/types/PerfilData.tsx";
 
 type PerfilContextType = {
   perfil: PerfilData | null;

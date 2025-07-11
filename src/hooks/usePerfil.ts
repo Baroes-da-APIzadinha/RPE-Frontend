@@ -1,15 +1,7 @@
 import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import { getPerfil } from "@/services/HTTP/perfil";
-
-type Role = "colaborador" | "rh" | "gestor" | "comite" | "lider";
-
-type PerfilData = {
-  userId: string;
-  userName: string;
-  roles: Role[];
-  mainRole: Role;
-};
+import type { PerfilData, Role } from "@/types/PerfilData.tsx";
 
 const roleMap: Record<string, Role> = {
   RH: "rh",
@@ -17,6 +9,8 @@ const roleMap: Record<string, Role> = {
   MEMBRO_COMITE: "comite",
   COLABORADOR_COMUM: "colaborador",
   LIDER: "lider",
+  MENTOR: "mentor",
+  ADMIN: "admin"
 };
 
 function formatUserName(email: string): string {

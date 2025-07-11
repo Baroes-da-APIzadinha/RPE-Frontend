@@ -1,4 +1,4 @@
-export type Role = "colaborador" | "rh" | "gestor" | "comite" | "lider";
+export type Role = "colaborador" | "rh" | "gestor" | "comite" | "lider" | "mentor" | "admin";
 
 export type PerfilData = {
   userId: string;
