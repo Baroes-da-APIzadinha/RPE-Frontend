@@ -19,6 +19,8 @@ import CycleCriteriaPage from "@/pages/rh/cycleCriteria";
 import { CollaboratorReview } from "@/pages/manager/CollaboratorReview";
 import { MananegerDashboard } from "@/pages/manager/Dashboard";
 import { ManagerTeam } from "@/pages/manager/Team";
+import { MentoradosPage } from "@/pages/mentor/mentorados";
+import { BrutalFactsPage } from "@/pages/mentor/brutal-facts";
 
 import { CycleHistory } from "@/pages/comite/CycleHistory";
 import { CollaboratorEqualization } from "@/pages/comite/CollaboratorEqualization";
@@ -57,6 +59,12 @@ function AppRoutes() {
                 path="collaborator/review"
                 element={<CollaboratorReview />}
               />
+            </Route>
+
+            {/* Mentor */}
+            <Route path="/mentor">
+              <Route path="mentorados" element={<MentoradosPage />} />
+              <Route path="brutal-facts/:id" element={<BrutalFactsPage />} />
             </Route>
 
             {/* RH */}
