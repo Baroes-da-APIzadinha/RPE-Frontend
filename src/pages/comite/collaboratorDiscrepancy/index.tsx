@@ -12,10 +12,12 @@ import { TableBase } from "@/components/TableBase";
 import { IoSparklesOutline } from "react-icons/io5";
 import { FaUser, FaUsers, FaClipboardCheck } from "react-icons/fa";
 import { MdKeyboardArrowDown, MdKeyboardArrowUp, MdAccountCircle } from "react-icons/md";
-import { collaboratorsMock } from "@/data/colaboradoresComite";
 import Button from "@/components/Button";
 import { useReferenciasPorIndicado } from "@/hooks/useReferenciasPorIndicado";
 import { useColaboradorById } from "@/hooks/colaboradores/useColaboradorById";
+import { useAvaliacaoColaborador, clearAvaliacaoColaboradorIACache, type AvaliacaoColaboradorIA } from "@/hooks/IA/useAvaliacaoColaborador";
+import { useCicloAtual } from "@/hooks/useCicloAtual";
+import { useEffect } from "react";
 type TabType = "autoavaliacao" | "referencias" | "360";
 
 // Mock data baseado na estrutura do CollaboratorReview
@@ -136,17 +138,42 @@ const criteriosPorPilar = [
 export function CollaboratorDiscrepancy() {
   const { id } = useParams<{ id: string }>();
   const [activeTab, setActiveTab] = useState<TabType>("autoavaliacao");
-  const [summary, setSummary] = useState<string | null>(null);
-  const [loadingSummary, setLoadingSummary] = useState(false);
+  const [summary, setSummary] = useState<AvaliacaoColaboradorIA | null>(null);
   const [open, setOpen] = useState<string[]>([criteriosMock[0].id]);
+  const [shouldLoadIA, setShouldLoadIA] = useState(false);
 
   // Decodificar o ID do colaborador da URL
   const colaboradorId = decodeURIComponent(id || "");
   const { colaborador } = useColaboradorById(colaboradorId);
-  // Buscar dados do colaborador (mock - ainda usando para outros dados)
+  
+  // Obtém ciclo atual
+  const { cicloAtual } = useCicloAtual();
+  const idCiclo = cicloAtual?.id ?? "";
 
   // Hook para buscar referências reais usando o ID do colaborador
   const { referencias, loading: loadingReferencias, error: errorReferencias } = useReferenciasPorIndicado(colaboradorId);
+
+  // Hook para buscar avaliação da IA - só carrega quando shouldLoadIA for true
+  const { data: avaliacaoIA, loading: loadingIA, error: errorIA } = useAvaliacaoColaborador(
+    shouldLoadIA ? colaboradorId : "", 
+    shouldLoadIA ? idCiclo : ""
+  );
+
+  // Atualizar summary quando dados da IA chegarem
+  useEffect(() => {
+    if (avaliacaoIA && shouldLoadIA) {
+      setSummary(avaliacaoIA);
+    } else if (errorIA && shouldLoadIA) {
+      setSummary(null);
+    }
+  }, [avaliacaoIA, shouldLoadIA, errorIA]);
+
+  // Limpar cache ao sair da página
+  useEffect(() => {
+    return () => {
+      clearAvaliacaoColaboradorIACache();
+    };
+  }, []);
 
 
   const handleAccordion = (id: string) => {
@@ -174,29 +201,11 @@ export function CollaboratorDiscrepancy() {
   ];
 
   const handleGenerateSummary = async () => {
-    setLoadingSummary(true);
-    // Simular chamada para API
-    setTimeout(() => {
-      setSummary(`
-        **Resumo Geral - ${colaborador?.nomeCompleto}**
-        
-        **Pontos Fortes:**
-        • Excelente pontualidade e assiduidade
-        • Boa comunicação e colaboração em equipe
-        • Qualidade técnica sólida
-        • Uso de ferramentas organizacionais
-        
-        **Pontos de Melhoria:**
-        • Planejamento de longo prazo
-        • Proatividade em liderança
-        • Revisão de código dos colegas
-        • Desenvolvimento de habilidades de liderança
-        
-        **Análise da Discrepância:**
-        A discrepância de GAEL pontos sugere que há diferenças na percepção entre autoavaliação e avaliação do gestor. O colaborador tende a se avaliar ligeiramente mais alto em alguns critérios.
-      `);
-      setLoadingSummary(false);
-    }, 2000);
+    if (!colaboradorId || !idCiclo) return;
+    
+    // Ativar carregamento da IA
+    setShouldLoadIA(true);
+    setSummary(null);
   };
 
   const renderAutoavaliacaoTab = () => (
@@ -454,7 +463,7 @@ export function CollaboratorDiscrepancy() {
         </Button>
       </S.Header>
 
-      {(summary || loadingSummary) && (
+      {(summary || loadingIA) && (
         <div>
           <S.SummaryCard>
             <S.SummaryTitle>
@@ -462,16 +471,34 @@ export function CollaboratorDiscrepancy() {
               Resumo Gerado por IA
             </S.SummaryTitle>
             <S.SummaryContent>
-              {loadingSummary ? (
+              {loadingIA ? (
                 <div className="loading">
                   <IoSparklesOutline />
                   Gerando resumo...
                 </div>
-              ) : (
-                <pre style={{ whiteSpace: "pre-wrap", fontFamily: "inherit" }}>
-                  {summary}
-                </pre>
-              )}
+              ) : errorIA ? (
+                <>
+                  <strong>Erro ao carregar avaliação da IA</strong>
+                  <span>Não foi possível gerar o resumo automaticamente. Tente novamente mais tarde.</span>
+                </>
+              ) : summary ? (
+                <S.SummaryDetailsWrapper>
+                  <S.SummaryScoreBox>
+                    <S.SummaryScoreLabel>Nota Final Sugerida</S.SummaryScoreLabel>
+                    <S.SummaryScoreValue>{summary.notaFinalSugerida}/5</S.SummaryScoreValue>
+                  </S.SummaryScoreBox>
+                  
+                  <S.SummarySection>
+                    <S.SummarySectionTitle>Análise Detalhada</S.SummarySectionTitle>
+                    <S.SummarySectionContent>{summary.analiseDetalhada}</S.SummarySectionContent>
+                  </S.SummarySection>
+                  
+                  <S.SummarySection>
+                    <S.SummarySectionTitle>Resumo Executivo</S.SummarySectionTitle>
+                    <S.SummarySectionContent>{summary.resumoExecutivo}</S.SummarySectionContent>
+                  </S.SummarySection>
+                </S.SummaryDetailsWrapper>
+              ) : null}
             </S.SummaryContent>
           </S.SummaryCard>
         </div>

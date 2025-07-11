@@ -10,24 +10,30 @@ export const Header = styled.div`
 export const SummaryCard = styled.div`
   background: ${({ theme }) => theme.colors.surface.default};
   border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: 12px;
-  padding: 2rem;
+  border-radius: ${({ theme }) => theme.border.radius.medium};
+  padding: 1.5rem;
   margin-bottom: 2rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 `;
 
 export const SummaryTitle = styled.h3`
-  color: ${({ theme }) => theme.colors.text.primary};
-  font-size: 1.5rem;
-  margin-bottom: 1rem;
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  font-size: ${({ theme }) => theme.font.sizes.medium};
+  font-weight: ${({ theme }) => theme.font.semibold};
+  color: ${({ theme }) => theme.colors.primary.default};
+  margin-bottom: 1rem;
+
+  svg {
+    color: ${({ theme }) => theme.colors.primary.default};
+  }
 `;
 
 export const SummaryContent = styled.div`
-  color: ${({ theme }) => theme.colors.text.secondary};
-  line-height: 1.6;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
 
   .loading {
     display: flex;
@@ -35,108 +41,88 @@ export const SummaryContent = styled.div`
     gap: 0.5rem;
     color: ${({ theme }) => theme.colors.text.secondary};
     font-style: italic;
-  }
-`;
 
-export const SummarySection = styled.div`
-  margin-bottom: 1.5rem;
+    svg {
+      animation: spin 1s linear infinite;
+    }
 
-  h4 {
-    color: ${({ theme }) => theme.colors.text.primary};
-    font-size: 1.2rem;
-    margin-bottom: 0.5rem;
-  }
-
-  ul {
-    list-style: none;
-    padding: 0;
-
-    li {
-      padding: 0.5rem 0;
-      border-bottom: 1px solid ${({ theme }) => theme.colors.border};
-
-      &:last-child {
-        border-bottom: none;
+    @keyframes spin {
+      from {
+        transform: rotate(0deg);
       }
-
-      &:before {
-        content: "•";
-        color: ${({ theme }) => theme.colors.primary.default};
-        margin-right: 0.5rem;
+      to {
+        transform: rotate(360deg);
       }
+    }
+  }
+
+  strong {
+    font-size: ${({ theme }) => theme.font.sizes.small};
+    font-weight: ${({ theme }) => theme.font.semibold};
+    color: ${({ theme }) => theme.colors.primary.default};
+    margin-bottom: 0.2rem;
+  }
+
+  span {
+    font-size: ${({ theme }) => theme.font.sizes.xsmall};
+    color: ${({ theme }) => theme.colors.text.secondary};
+    line-height: 1.4;
+
+    &[style*="fontWeight"] {
+      font-weight: ${({ theme }) => theme.font.semibold};
+      color: ${({ theme }) => theme.colors.text.primary};
+      margin-top: 0.5rem;
     }
   }
 `;
 
-export const TabContainer = styled.div`
-  margin-bottom: 2rem;
+export const SummaryDetailsWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
 `;
 
-export const TabContent = styled.div`
-  margin-top: 2rem;
-`;
-
-export const EvaluationGrid = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 2rem;
-  margin-bottom: 2rem;
-`;
-
-export const EvaluationSection = styled.div`
-  background: ${({ theme }) => theme.colors.surface.default};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: 12px;
-  padding: 2rem;
-`;
-
-export const SectionTitle = styled.h3`
-  color: ${({ theme }) => theme.colors.text.primary};
-  font-size: 1.3rem;
-  margin-bottom: 1.5rem;
+export const SummaryScoreBox = styled.div`
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-`;
-
-export const QuestionItem = styled.div`
-  margin-bottom: 1.5rem;
-  padding-bottom: 1.5rem;
-  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
-
-  &:last-child {
-    border-bottom: none;
-    margin-bottom: 0;
-    padding-bottom: 0;
-  }
-`;
-
-export const Question = styled.div`
-  color: ${({ theme }) => theme.colors.text.primary};
-  font-weight: 600;
-  margin-bottom: 0.5rem;
-`;
-
-export const Answer = styled.div`
-  color: ${({ theme }) => theme.colors.text.secondary};
-  line-height: 1.6;
+  justify-content: space-between;
+  background: ${({ theme }) => theme.colors.surface.hover};
+  border-radius: ${({ theme }) => theme.border.radius.medium};
   padding: 1rem;
-  background: ${({ theme }) => theme.colors.surface.alt};
-  border-radius: 8px;
-  margin-top: 0.5rem;
+  border-left: 4px solid ${({ theme }) => theme.colors.primary.default};
 `;
 
-export const Rating = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin-bottom: 0.5rem;
+export const SummaryScoreLabel = styled.span`
+  font-size: ${({ theme }) => theme.font.sizes.small};
+  font-weight: ${({ theme }) => theme.font.semibold};
+  color: ${({ theme }) => theme.colors.text.primary};
 `;
 
-export const RatingValue = styled.span`
+export const SummaryScoreValue = styled.span`
+  font-size: ${({ theme }) => theme.font.sizes.large};
+  font-weight: ${({ theme }) => theme.font.bold};
   color: ${({ theme }) => theme.colors.primary.default};
-  font-weight: 600;
-  font-size: 1.1rem;
+`;
+
+export const SummarySection = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+`;
+
+export const SummarySectionTitle = styled.h4`
+  font-size: ${({ theme }) => theme.font.sizes.small};
+  font-weight: ${({ theme }) => theme.font.semibold};
+  color: ${({ theme }) => theme.colors.text.primary};
+  margin: 0;
+`;
+
+export const SummarySectionContent = styled.p`
+  font-size: ${({ theme }) => theme.font.sizes.xsmall};
+  color: ${({ theme }) => theme.colors.text.secondary};
+  line-height: 1.5;
+  margin: 0;
+  padding: 0.5rem 0;
 `;
 
 // 360 evaluation
@@ -356,4 +342,21 @@ export const TipoBadge = styled.span<{ $tipo: string }>`
       ? theme.colors.primary.default 
       : theme.colors.success.default 
   };
+`;
+
+export const SectionTitle = styled.h3`
+  font-size: ${({ theme }) => theme.font.sizes.medium};
+  font-weight: ${({ theme }) => theme.font.semibold};
+  color: ${({ theme }) => theme.colors.text.primary};
+  margin-bottom: 1rem;
+`;
+
+export const TabContainer = styled.div`
+  margin-bottom: 2rem;
+`;
+
+export const TabContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
 `;
