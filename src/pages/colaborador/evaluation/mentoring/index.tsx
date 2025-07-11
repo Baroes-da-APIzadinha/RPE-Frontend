@@ -105,7 +105,8 @@ export function MentoringPage() {
         </Card>
 
         <ButtonFrame text="Para submeter sua avaliação, preencha os campos obrigatórios.">
-          <Button disabled={isReadonly}>
+          <Button disabled={isReadonly} type="submit">
+            
             <FaPaperPlane /> Enviar
           </Button>
         </ButtonFrame>

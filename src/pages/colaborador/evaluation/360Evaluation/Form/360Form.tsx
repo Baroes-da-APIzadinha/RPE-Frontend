@@ -150,11 +150,11 @@ const EvaluationDetails: React.FC<Props> = ({ id, onBack }) => {
                 <S.Label>Dê uma avaliação de 1 a 5 ao colaborador</S.Label>
                 <S.StarsGroup>
                   <StarRating
-                    value={nota}
+                    value={nota || 0}
                     onChange={(val) => setNota(val)}
                     // readOnly={jaEnviado}
                   />
-                  <S.Score>{nota}</S.Score>
+                  <S.Score>{nota || 0}</S.Score>
                 </S.StarsGroup>
               </S.FormBlock>
               <S.FormBlock>

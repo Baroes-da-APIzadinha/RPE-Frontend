@@ -45,6 +45,7 @@ export const StarRating: React.FC<StarRatingProps> = ({
           <S.StarWrapper key={i}>
             {/* Área clicável esquerda (0.5) */}
             <S.HalfButton
+              type="button"
               disabled={readOnly}
               onClick={() => onChange?.(starBase - 0.5)}
               onMouseEnter={() => setHoverValue(starBase - 0.5)}
@@ -53,6 +54,7 @@ export const StarRating: React.FC<StarRatingProps> = ({
             />
             {/* Área clicável direita (1.0) */}
             <S.HalfButton
+              type="button"
               right
               disabled={readOnly}
               onClick={() => onChange?.(starBase)}
