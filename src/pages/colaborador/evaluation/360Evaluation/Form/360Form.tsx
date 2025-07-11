@@ -152,7 +152,7 @@ const EvaluationDetails: React.FC<Props> = ({ id, onBack }) => {
                   <StarRating
                     value={nota}
                     onChange={(val) => setNota(val)}
-                    readOnly={jaEnviado}
+                    // readOnly={jaEnviado}
                   />
                   <S.Score>{nota}</S.Score>
                 </S.StarsGroup>
@@ -168,7 +168,7 @@ const EvaluationDetails: React.FC<Props> = ({ id, onBack }) => {
                   onChange={(val) => setMotivacao(val as string)}
                   options={motivacoes}
                   error={errors.motivacao}
-                  disabled={jaEnviado}
+                  // disabled={jaEnviado}
                 />
               </S.FormBlock>
             </S.FormRow>
@@ -180,7 +180,7 @@ const EvaluationDetails: React.FC<Props> = ({ id, onBack }) => {
                   value={forte}
                   onChange={(e) => setForte(e.target.value)}
                   error={errors.forte}
-                  disabled={jaEnviado}
+                  // disabled={jaEnviado}
                 />
               </S.FormBlock>
               <S.FormBlock>
@@ -190,14 +190,16 @@ const EvaluationDetails: React.FC<Props> = ({ id, onBack }) => {
                   value={melhoria}
                   onChange={(e) => setMelhoria(e.target.value)}
                   error={errors.melhoria}
-                  disabled={jaEnviado}
+                  // disabled={jaEnviado}
                 />
               </S.FormBlock>
             </S.FormRow>
           </S.FormWrapper>
         </Card>
         <ButtonFrame text="Para submeter sua avaliação do colaborador, preencha todos os campos.">
-          <Button type="submit" disabled={jaEnviado}>
+          <Button type="submit" 
+          // disabled={jaEnviado}
+          >
             <FaPaperPlane />
             Enviar
           </Button>
