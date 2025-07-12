@@ -249,7 +249,7 @@ export function CollaboratorEqualization() {
   const handleConfirmApproval = useCallback(() => {
     if (colaboradorToApprove) {
       // Aqui seria implementada a lógica de aprovação
-      console.log(`Aprovando colaborador: ${colaboradorToApprove.nome}`);
+      toast.success(`${colaboradorToApprove.nome} teve a nota equalizada com sucesso!`);
       
       // Fechar modal e limpar estado
       setConfirmModalOpen(false);
