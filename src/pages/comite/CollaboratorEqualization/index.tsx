@@ -4,7 +4,8 @@ import { useNavigate } from "react-router-dom";
 import { Title } from "@/components/Title";
 import { Card } from "@/components/Card";
 import { SearchInput } from "@/components/SearchInput";
-import { MdOutlineCheckCircleOutline } from "react-icons/md";
+import { Modal } from "@/components/Modal";
+import { MdOutlineCheckCircleOutline, MdWarning } from "react-icons/md";
 import Button from "@/components/Button";
 import Textarea from "@/components/Textarea";
 import { IoSparklesOutline } from "react-icons/io5";
@@ -15,6 +16,7 @@ import { IoMdPerson } from "react-icons/io";
 import { StarRating } from "@/components/StarRating";
 import { useMiniAvaliacaoIA, clearMiniAvaliacaoIACache } from "@/hooks/IA/useMiniAvaliacaoIA";
 import { formatar } from "@/utils/formatters";
+import { toast } from "sonner";
 
 // Componente memoizado para exibir resumo da IA
 const CollaboratorAISummary = memo(({ idColaborador, idCiclo }: { idColaborador: string; idCiclo: string }) => {
@@ -55,6 +57,12 @@ export function CollaboratorEqualization() {
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
   const [justifications, setJustifications] = useState<Record<number, string>>({});
   const [searchTerm, setSearchTerm] = useState("");
+  const [confirmModalOpen, setConfirmModalOpen] = useState(false);
+  const [colaboradorToApprove, setColaboradorToApprove] = useState<{
+    id: string;
+    nome: string;
+    index: number;
+  } | null>(null);
 
   // Obtém ciclo atual
   const { cicloAtual } = useCicloAtual();
@@ -89,6 +97,40 @@ export function CollaboratorEqualization() {
 
   const handleJustificationChange = useCallback((index: number, value: string) => {
     setJustifications((prev) => ({ ...prev, [index]: value }));
+  }, []);
+
+  const handleApproveClick = useCallback((colaboradorId: string, colaboradorNome: string, index: number) => {
+    // Verificar se a nota e a justificativa foram definidas
+    if (!notas[index] || notas[index] === 0) {
+      toast.error("defina uma nota antes de aprovar a avaliação.");
+      return;
+    }
+
+    if (!justifications[index] || justifications[index].trim() === "") {
+      toast.error("preencha a justificativa antes de aprovar a avaliação.");
+      return;
+    }
+
+    setColaboradorToApprove({ id: colaboradorId, nome: colaboradorNome, index });
+    setConfirmModalOpen(true);
+  }, [notas, justifications]);
+
+  const handleConfirmApproval = useCallback(() => {
+    if (colaboradorToApprove) {
+      // Aqui seria implementada a lógica de aprovação
+      console.log(`Aprovando colaborador: ${colaboradorToApprove.nome}`);
+      console.log(`Nota: ${notas[colaboradorToApprove.index] || 0}`);
+      console.log(`Justificativa: ${justifications[colaboradorToApprove.index] || ""}`);
+      
+      // Fechar modal e limpar estado
+      setConfirmModalOpen(false);
+      setColaboradorToApprove(null);
+    }
+  }, [colaboradorToApprove, notas, justifications]);
+
+  const handleCancelApproval = useCallback(() => {
+    setConfirmModalOpen(false);
+    setColaboradorToApprove(null);
   }, []);
 
   const filteredCollaborators = colaboradores.filter((colab) => {
@@ -205,7 +247,10 @@ export function CollaboratorEqualization() {
               >
                 Revisar
               </Button>
-              <Button variant="primary">
+              <Button 
+                variant="primary"
+                onClick={() => handleApproveClick(colab.idColaborador, colab.nomeColaborador, index)}
+              >
                 <MdOutlineCheckCircleOutline />
                 Aprovar
               </Button>
@@ -213,6 +258,49 @@ export function CollaboratorEqualization() {
           </ExpandableCard>
         ))}
       </Card>
+
+      <Modal
+        open={confirmModalOpen}
+        onClose={handleCancelApproval}
+        title="Confirmar Aprovação"
+        description="Esta ação é irreversível e não poderá ser desfeita."
+        icon={<MdWarning />}
+        iconColor="warning"
+        iconSize="large"
+      >
+        <S.ModalContent>
+          <S.ModalDescription>
+            Tem certeza que deseja aprovar a avaliação de <strong>{colaboradorToApprove?.nome}</strong>?
+          </S.ModalDescription>
+          {colaboradorToApprove && (
+            <S.ModalSummary>
+              <S.ModalSummaryTitle>
+                Nota Final: {notas[colaboradorToApprove.index] || 0}/5
+              </S.ModalSummaryTitle>
+              {justifications[colaboradorToApprove.index] && (
+                <S.ModalSummaryText>
+                  Justificativa: {justifications[colaboradorToApprove.index]}
+                </S.ModalSummaryText>
+              )}
+            </S.ModalSummary>
+          )}
+        </S.ModalContent>
+        
+        <S.ModalActions>
+          <Button 
+            variant="outline" 
+            onClick={handleCancelApproval}
+          >
+            Cancelar
+          </Button>
+          <Button 
+            variant="primary" 
+            onClick={handleConfirmApproval}
+          >
+            Confirmar Aprovação
+          </Button>
+        </S.ModalActions>
+      </Modal>
     </>
   );
 }
