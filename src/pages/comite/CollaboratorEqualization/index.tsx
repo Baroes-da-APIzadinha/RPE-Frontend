@@ -12,13 +12,14 @@ import { IoSparklesOutline } from "react-icons/io5";
 import { ExpandableCard } from "@/components/ExpandableCard";
 import { useNotasCiclo } from "@/hooks/comite/useNotasCiclo";
 import { useEqualizacaoColaborador } from "@/hooks/comite/useEqualizacaoColaborador";
+import { useSendEqualizacao } from "@/hooks/comite/useSendEqualizacao";
 import { useCicloAtual } from "@/hooks/useCicloAtual";
 import { IoMdPerson } from "react-icons/io";
 import { StarRating } from "@/components/StarRating";
 import { useMiniAvaliacaoIA, clearMiniAvaliacaoIACache } from "@/hooks/IA/useMiniAvaliacaoIA";
 import { formatar } from "@/utils/formatters";
 import { toast } from "sonner";
-
+import type { SendEqualizacaoParams } from "@/types/equalizacao";
 // Componente memoizado para exibir resumo da IA
 const CollaboratorAISummary = memo(({ idColaborador, idCiclo }: { idColaborador: string; idCiclo: string }) => {
   const { data, loading, error } = useMiniAvaliacaoIA(idColaborador, idCiclo);
@@ -67,8 +68,9 @@ const CollaboratorEqualizationItem = memo(({
   expandedIndex: number | null;
   onToggleExpanded: (index: number) => void;
   onReview: (colaboradorId: string) => void;
-  onApproveClick: (colaboradorId: string, colaboradorNome: string, index: number) => void;
+  onApproveClick: (colaboradorId: string, colaboradorNome: string, index: number, nota: number, justificativa: string, status: string, equalizacaoId: string | null) => void;
 }) => {
+  const [equalizacaoId, setEqualizacaoId] = useState<string | null>(null);
   const [nota, setNota] = useState<number>(0);
   const [justificativa, setJustificativa] = useState<string>("");
   const [isCompleted, setIsCompleted] = useState<boolean>(false);
@@ -78,6 +80,7 @@ const CollaboratorEqualizationItem = memo(({
   useEffect(() => {
     if (equalizacaoData && equalizacaoData.length > 0) {
       const equalizacao = equalizacaoData[0];
+      setEqualizacaoId(equalizacao.idEqualizacao);
       setNota(equalizacao.notaAjustada);
       setJustificativa(equalizacao.justificativa);
       setIsCompleted(equalizacao.status === "CONCLUIDA");
@@ -107,7 +110,7 @@ const CollaboratorEqualizationItem = memo(({
       return;
     }
 
-    onApproveClick(colab.idColaborador, colab.nomeColaborador, index);
+    onApproveClick(colab.idColaborador, colab.nomeColaborador, index, nota, justificativa, "CONCLUIDA", equalizacaoId);
   }, [nota, justificativa, colab.idColaborador, colab.nomeColaborador, index, onApproveClick]);
 
   return (
@@ -212,6 +215,10 @@ export function CollaboratorEqualization() {
     id: string;
     nome: string;
     index: number;
+    nota: number;
+    justificativa: string;
+    status: string;
+    equalizacaoId: string | null;
   } | null>(null);
 
   // Obtém ciclo atual
@@ -241,21 +248,41 @@ export function CollaboratorEqualization() {
     setExpandedIndex((prev) => (prev === index ? null : index));
   }, []);
 
-  const handleApproveClick = useCallback((colaboradorId: string, colaboradorNome: string, index: number) => {
-    setColaboradorToApprove({ id: colaboradorId, nome: colaboradorNome, index });
+  const handleApproveClick = useCallback((colaboradorId: string, colaboradorNome: string, index: number, nota : number, justificativa : string, status : string, equalizacaoId: string | null) => {
+    setColaboradorToApprove({ id: colaboradorId, nome: colaboradorNome, index, nota, justificativa, status, equalizacaoId });
     setConfirmModalOpen(true);
   }, []);
 
-  const handleConfirmApproval = useCallback(() => {
+  const { sendEqualizacaoData } = useSendEqualizacao();
+  
+  const handleConfirmApproval = useCallback(async () => {
     if (colaboradorToApprove) {
-      // Aqui seria implementada a lógica de aprovação
+      if (!colaboradorToApprove.equalizacaoId) {
+        toast.error("ID de equalização não encontrado.");
+        return;
+      }
+
+      const colab : SendEqualizacaoParams = {
+        idEqualizacao: colaboradorToApprove.equalizacaoId,
+        notaAjustada: colaboradorToApprove.nota,
+        justificativa: colaboradorToApprove.justificativa,
+        status: colaboradorToApprove.status
+      };
+      try {
+      await sendEqualizacaoData(colab)
       toast.success(`${colaboradorToApprove.nome} teve a nota equalizada com sucesso!`);
+
+      } catch (error) {
+        console.error("Erro ao enviar equalização:", error);
+        toast.error("Erro ao enviar equalização.");
+        return;
+      }
       
       // Fechar modal e limpar estado
       setConfirmModalOpen(false);
       setColaboradorToApprove(null);
     }
-  }, [colaboradorToApprove]);
+  }, [colaboradorToApprove, sendEqualizacaoData]);
 
   const handleCancelApproval = useCallback(() => {
     setConfirmModalOpen(false);

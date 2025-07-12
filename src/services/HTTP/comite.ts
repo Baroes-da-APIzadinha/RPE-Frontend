@@ -17,12 +17,12 @@ export async function getEqualizacaoColaborador(idColaborador: string, idCiclo: 
 
 export async function sendEqualizacao(
   idEqualizacao: string,
-  notaAjustada: number,
+  notaAjustada: string,
   justificativa: string,
   status: string
 ) 
 {
-  return await patchRequest(`${baseEndpoint2}/${idEqualizacao}`, 
+  return await patchRequest(`${baseEndpoint2}${idEqualizacao}`, 
     {
       notaAjustada: notaAjustada, 
       justificativa: justificativa, 
