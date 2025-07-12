@@ -9,3 +9,7 @@ export async function getMiniAvaliarColaborador(idColaborador: string, idCiclo: 
 export async function getAvaliarColaborador(idColaborador: string, idCiclo: string) {
   return await getRequest(`${baseEndpoint}/avaliar/${idColaborador}/${idCiclo}`);
 }
+
+export async function getAvaliações(idColaborador: string, idCiclo: string) {
+  return await getRequest(`${baseEndpoint}/avaliacoes/${idColaborador}/${idCiclo}`);
+}

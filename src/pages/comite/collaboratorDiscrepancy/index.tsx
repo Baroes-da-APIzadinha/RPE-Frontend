@@ -16,95 +16,11 @@ import Button from "@/components/Button";
 import { useReferenciasPorIndicado } from "@/hooks/useReferenciasPorIndicado";
 import { useColaboradorById } from "@/hooks/colaboradores/useColaboradorById";
 import { useAvaliacaoColaborador, clearAvaliacaoColaboradorIACache, type AvaliacaoColaboradorIA } from "@/hooks/IA/useAvaliacaoColaborador";
+import { useGetAvaliacoes } from "@/hooks/comite/useGetAvaliacoes";
 import { useCicloAtual } from "@/hooks/useCicloAtual";
 import { useEffect } from "react";
 import { formatar } from "@/utils/formatters";
 type TabType = "autoavaliacao" | "referencias" | "360";
-
-// Mock data baseado na estrutura do CollaboratorReview
-const criteriosMock = [
-  {
-    id: "1",
-    nome: "Qualidade do trabalho",
-    pilar: "Postura"
-  },
-  {
-    id: "2", 
-    nome: "Pontualidade e assiduidade",
-    pilar: "Postura"
-  },
-  {
-    id: "3",
-    nome: "Organização e planejamento",
-    pilar: "Logistica"
-  },
-  {
-    id: "4",
-    nome: "Comunicação efetiva",
-    pilar: "Logistica"
-  },
-  {
-    id: "5",
-    nome: "Liderança e tomada de decisão",
-    pilar: "Gestão e Liderança"
-  }
-];
-
-const autoavaliacaoMock = [
-  { id: "1", nota: 4.2, justificativa: "Considero que mantenho um alto padrão de qualidade em minhas entregas, sempre revisando meu trabalho antes de finalizar." },
-  { id: "2", nota: 4.5, justificativa: "Sempre chego no horário e raramente falto. Acredito ser um ponto forte meu." },
-  { id: "3", nota: 3.8, justificativa: "Tenho me esforçado para melhorar minha organização, usando ferramentas como Trello para organizar tarefas." },
-  { id: "4", nota: 4.0, justificativa: "Procuro ser claro e objetivo em minhas comunicações, tanto verbal quanto escrita." },
-  { id: "5", nota: 3.5, justificativa: "Ainda estou desenvolvendo minhas habilidades de liderança, mas tenho tomado iniciativas em projetos menores." }
-];
-
-const avaliacaoGestorMock = [
-  { id: "1", nota: 4.0, justificativa: "Demonstra excelente qualidade técnica, mas pode melhorar na revisão de código dos colegas." },
-  { id: "2", nota: 4.8, justificativa: "Exemplar em pontualidade. Nunca teve problemas de atraso ou falta injustificada." },
-  { id: "3", nota: 3.5, justificativa: "Melhorou significativamente sua organização, mas ainda pode aprimorar o planejamento de longo prazo." },
-  { id: "4", nota: 4.2, justificativa: "Comunicação clara e efetiva. Boa participação em reuniões e apresentações." },
-  { id: "5", nota: 3.2, justificativa: "Mostra potencial de liderança, mas precisa ser mais proativo em assumir responsabilidades." }
-];
-
-// Mock data para avaliações 360°
-const avaliacoes360Mock = [
-  {
-    id: "1",
-    avaliador: {
-      nome: "Ana Costa",
-      cargo: "Product Owner",
-      unidade: "Tech"
-    },
-    nota: 4.1,
-    motivadoTrabalharNovamente: "Concordo Parcialmente",
-    pontosFortes: "Excelente colaborador, sempre disposto a ajudar e com grande conhecimento técnico. Comunicação clara e objetiva durante os projetos.",
-    pontosFracos: "Poderia ser mais proativo em reuniões e sugerir melhorias nos processos da equipe com mais frequência."
-  },
-  {
-    id: "2", 
-    avaliador: {
-      nome: "Pedro Santos",
-      cargo: "Desenvolvedor Backend",
-      unidade: "Tech"
-    },
-    nota: 3.8,
-    motivadoTrabalharNovamente: "Concordo Totalmente",
-    pontosFortes: "Bom colega de trabalho, me ajudou muito durante meu onboarding. Tem paciência para explicar conceitos técnicos complexos.",
-    pontosFracos: "Poderia ser mais assertivo nas discussões técnicas e participar mais ativamente das decisões arquiteturais."
-  },
-  {
-    id: "3",
-    avaliador: {
-      nome: "Carla Mendes", 
-      cargo: "QA Analyst",
-      unidade: "Tech"
-    },
-    nota: 4.2,
-    motivadoTrabalharNovamente: "Concordo Totalmente",
-    pontosFortes: "Trabalha muito bem em equipe e sempre entrega código de qualidade. Facilita muito nosso trabalho de QA com suas entregas bem documentadas.",
-    pontosFracos: "Poderia melhorar a cobertura de testes unitários e a documentação técnica dos componentes desenvolvidos."
-  }
-];
 
 const motivacoes = [
   { value: "Discordo Totalmente", label: "Discordo Totalmente" },
@@ -114,33 +30,22 @@ const motivacoes = [
   { value: "Concordo Totalmente", label: "Concordo Totalmente" },
 ];
 
-// Agrupamento dos critérios por pilar
-const criteriosPorPilar = [
-  {
-    titulo: "Postura",
-    criterios: criteriosMock.filter((c) => ["1", "2"].includes(c.id)),
-    autoavaliacao: autoavaliacaoMock.filter((c) => ["1", "2"].includes(c.id)),
-    avaliacaoGestor: avaliacaoGestorMock.filter((c) => ["1", "2"].includes(c.id)),
-  },
-  {
-    titulo: "Logistica",
-    criterios: criteriosMock.filter((c) => ["3", "4"].includes(c.id)),
-    autoavaliacao: autoavaliacaoMock.filter((c) => ["3", "4"].includes(c.id)),
-    avaliacaoGestor: avaliacaoGestorMock.filter((c) => ["3", "4"].includes(c.id)),
-  },
-  {
-    titulo: "Gestão e Liderança",
-    criterios: criteriosMock.filter((c) => ["5"].includes(c.id)),
-    autoavaliacao: autoavaliacaoMock.filter((c) => ["5"].includes(c.id)),
-    avaliacaoGestor: avaliacaoGestorMock.filter((c) => ["5"].includes(c.id)),
-  },
-];
+// Componente helper para buscar nome do avaliador
+function AvaliadorName({ idAvaliador }: { idAvaliador: string }) {
+  const { colaborador, loading } = useColaboradorById(idAvaliador);
+  
+  if (loading) {
+    return <>Carregando...</>;
+  }
+  
+  return <>{colaborador?.nomeCompleto || `Avaliador ${idAvaliador}`}</>;
+}
 
 export function CollaboratorDiscrepancy() {
   const { id } = useParams<{ id: string }>();
   const [activeTab, setActiveTab] = useState<TabType>("autoavaliacao");
   const [summary, setSummary] = useState<AvaliacaoColaboradorIA | null>(null);
-  const [open, setOpen] = useState<string[]>([criteriosMock[0].id]);
+  const [open, setOpen] = useState<string[]>([]);
   const [shouldLoadIA, setShouldLoadIA] = useState(false);
 
   // Decodificar o ID do colaborador da URL
@@ -154,11 +59,29 @@ export function CollaboratorDiscrepancy() {
   // Hook para buscar referências reais usando o ID do colaborador
   const { referencias, loading: loadingReferencias, error: errorReferencias } = useReferenciasPorIndicado(colaboradorId);
 
+  // Hook para buscar avaliações reais
+  const { data: avaliacoes, loading: loadingAvaliacoes, error: errorAvaliacoes } = useGetAvaliacoes(colaboradorId, idCiclo);
+  console.log("Avaliações carregadas:", errorAvaliacoes);
   // Hook para buscar avaliação da IA - só carrega quando shouldLoadIA for true
   const { data: avaliacaoIA, loading: loadingIA, error: errorIA } = useAvaliacaoColaborador(
     shouldLoadIA ? colaboradorId : "", 
     shouldLoadIA ? idCiclo : ""
   );
+
+  // Definir primeiro item aberto quando avaliacoes carregarem
+  useEffect(() => {
+    if (avaliacoes && avaliacoes.length > 0 && open.length === 0) {
+      const autoAvaliacao = avaliacoes.find(av => av.tipoAvaliacao === "AUTOAVALIACAO");
+      const liderColaborador = avaliacoes.find(av => av.tipoAvaliacao === "LIDER_COLABORADOR");
+
+      const primeiroCard = autoAvaliacao?.autoAvaliacao?.cardAutoAvaliacoes?.[0] || 
+                          liderColaborador?.avaliacaoLiderColaborador?.cardAvaliacaoLiderColaborador?.[0];
+      
+      if (primeiroCard) {
+        setOpen(prev => [...prev, primeiroCard.idCardAvaliacao]);
+      }
+    }
+  }, [avaliacoes]);
 
   // Atualizar summary quando dados da IA chegarem
   useEffect(() => {
@@ -209,29 +132,70 @@ export function CollaboratorDiscrepancy() {
     setSummary(null);
   };
 
-  const renderAutoavaliacaoTab = () => (
-    <>
-      {criteriosPorPilar.map((pilar) => (
-        <EvaluationFrame key={pilar.titulo} title={pilar.titulo}>
-          {pilar.criterios.map((criterio) => {
-            const isOpen = open.includes(criterio.id);
-            const autoavaliacao = pilar.autoavaliacao.find((a) => a.id === criterio.id);
-            const avaliacaoGestor = pilar.avaliacaoGestor.find((a) => a.id === criterio.id);
+  const renderAutoavaliacaoTab = () => {
+    if (loadingAvaliacoes) {
+      return (
+        <div style={{ padding: "2rem", textAlign: "center" }}>
+          <p>Carregando avaliações...</p>
+        </div>
+      );
+    }
+
+    if (errorAvaliacoes) {
+      return (
+        <div style={{ padding: "2rem", textAlign: "center" }}>
+          <p>Erro ao carregar avaliações: {errorAvaliacoes}</p>
+        </div>
+      );
+    }
+
+    if (!avaliacoes || avaliacoes.length === 0) {
+      return (
+        <div style={{ padding: "2rem", textAlign: "center" }}>
+          <p>Nenhuma avaliação encontrada para este colaborador.</p>
+        </div>
+      );
+    }
+
+    // Separar avaliações por tipo
+    const autoAvaliacao = avaliacoes.find(av => av.tipoAvaliacao === "AUTOAVALIACAO");
+    const liderColaborador = avaliacoes.find(av => av.tipoAvaliacao === "LIDER_COLABORADOR");
+
+    if (!autoAvaliacao?.autoAvaliacao && !liderColaborador?.avaliacaoLiderColaborador) {
+      return (
+        <div style={{ padding: "2rem", textAlign: "center" }}>
+          <p>Dados de autoavaliação e avaliação do gestor não encontrados.</p>
+        </div>
+      );
+    }
+
+    // Obter critérios da autoavaliação ou da avaliação do gestor
+    const criterios = autoAvaliacao?.autoAvaliacao?.cardAutoAvaliacoes || 
+                     liderColaborador?.avaliacaoLiderColaborador?.cardAvaliacaoLiderColaborador || 
+                     [];
+
+    return (
+      <>
+        <EvaluationFrame title="Critérios de Avaliação">
+          {criterios.map((criterio) => {
+            const isOpen = open.includes(criterio.idCardAvaliacao);
+            const autoCard = autoAvaliacao?.autoAvaliacao?.cardAutoAvaliacoes?.find(c => c.nomeCriterio === criterio.nomeCriterio);
+            const gestorCard = liderColaborador?.avaliacaoLiderColaborador?.cardAvaliacaoLiderColaborador?.find(c => c.nomeCriterio === criterio.nomeCriterio);
             
             return (
-              <Card key={criterio.id}>
+              <Card key={criterio.idCardAvaliacao}>
                 <S.CriterioHeader>
-                  <S.SectionTitle>{criterio.nome}</S.SectionTitle>
+                  <S.SectionTitle>{criterio.nomeCriterio}</S.SectionTitle>
                   <div style={{ display: "flex", alignItems: "center" }}>
                     <S.NotaBadge $visible={!isOpen}>
-                      {(autoavaliacao?.nota ?? 0).toFixed(1)}
+                      {autoCard?.nota || "-"}
                     </S.NotaBadge>
                     <S.NotaBadge $visible={!isOpen}>
-                      {(avaliacaoGestor?.nota ?? 0).toFixed(1)}
+                      {gestorCard?.nota || "-"}
                     </S.NotaBadge>
                     <S.ToggleIcon
                       $open={isOpen}
-                      onClick={() => handleAccordion(criterio.id)}
+                      onClick={() => handleAccordion(criterio.idCardAvaliacao)}
                       tabIndex={0}
                       role="button"
                       aria-label={
@@ -249,64 +213,68 @@ export function CollaboratorDiscrepancy() {
                 {isOpen && (
                   <S.CriteriaContent>
                     {/* Autoavaliação */}
-                    <S.CriteriaSection>
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          width: "100%",
-                        }}
-                      >
-                        <S.Subtitle>Autoavaliação</S.Subtitle>
-                        <S.NotaBadge style={{ marginLeft: "auto" }}>
-                          {(autoavaliacao?.nota ?? 0).toFixed(1)}
-                        </S.NotaBadge>
-                      </div>
-                      <StarRating
-                        value={autoavaliacao?.nota ?? 0}
-                        readOnly
-                      />
-                      <TextArea
-                        value={autoavaliacao?.justificativa || ""}
-                        readOnly
-                        placeholder="Justificativa da autoavaliação"
-                        rows={4}
-                      />
-                    </S.CriteriaSection>
+                    {autoCard && (
+                      <S.CriteriaSection>
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            width: "100%",
+                          }}
+                        >
+                          <S.Subtitle>Autoavaliação</S.Subtitle>
+                          <S.NotaBadge style={{ marginLeft: "auto" }}>
+                            {autoCard.nota}
+                          </S.NotaBadge>
+                        </div>
+                        <StarRating
+                          value={parseFloat(autoCard.nota)}
+                          readOnly
+                        />
+                        <TextArea
+                          value={autoCard.justificativa || ""}
+                          readOnly
+                          placeholder="Justificativa da autoavaliação"
+                          rows={4}
+                        />
+                      </S.CriteriaSection>
+                    )}
                     {/* Avaliação do Gestor */}
-                    <S.CriteriaSection>
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          width: "100%",
-                        }}
-                      >
-                        <S.Subtitle>Avaliação do Gestor</S.Subtitle>
-                        <S.NotaBadge style={{ marginLeft: "auto" }}>
-                          {(avaliacaoGestor?.nota ?? 0).toFixed(1)}
-                        </S.NotaBadge>
-                      </div>
-                      <StarRating
-                        value={avaliacaoGestor?.nota ?? 0}
-                        readOnly
-                      />
-                      <TextArea
-                        value={avaliacaoGestor?.justificativa || ""}
-                        readOnly
-                        placeholder="Justificativa do gestor"
-                        rows={4}
-                      />
-                    </S.CriteriaSection>
+                    {gestorCard && (
+                      <S.CriteriaSection>
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            width: "100%",
+                          }}
+                        >
+                          <S.Subtitle>Avaliação do Gestor</S.Subtitle>
+                          <S.NotaBadge style={{ marginLeft: "auto" }}>
+                            {gestorCard.nota}
+                          </S.NotaBadge>
+                        </div>
+                        <StarRating
+                          value={parseFloat(gestorCard.nota)}
+                          readOnly
+                        />
+                        <TextArea
+                          value={gestorCard.justificativa || ""}
+                          readOnly
+                          placeholder="Justificativa do gestor"
+                          rows={4}
+                        />
+                      </S.CriteriaSection>
+                    )}
                   </S.CriteriaContent>
                 )}
               </Card>
             );
           })}
         </EvaluationFrame>
-      ))}
-    </>
-  );
+      </>
+    );
+  };
 
   const renderReferencesTab = () => {
     if (loadingReferencias) {
@@ -366,78 +334,106 @@ export function CollaboratorDiscrepancy() {
     );
   };
 
-  const render360Tab = () => (
-    <S.Evaluation360Container>
-      {avaliacoes360Mock.map((avaliacao) => (
-        <Card key={avaliacao.id}>
-          <S.CriterioHeader>
-            <S.ColleagueName>
-              <MdAccountCircle size={24} />
-              {avaliacao.avaliador.nome}
-              <S.ColleagueRole>
-                ({formatar(avaliacao.avaliador.cargo)} • {formatar(avaliacao.avaliador.unidade)})
-              </S.ColleagueRole>
-            </S.ColleagueName>
-            <S.NotaBadge>
-              {avaliacao.nota.toFixed(1)}
-            </S.NotaBadge>
-          </S.CriterioHeader>
-          
-          <S.CriteriaContent>
-            {/* Avaliação Geral */}
-            <S.CriteriaSection>
+  const render360Tab = () => {
+    if (loadingAvaliacoes) {
+      return (
+        <div style={{ padding: "2rem", textAlign: "center" }}>
+          <p>Carregando avaliações 360°...</p>
+        </div>
+      );
+    }
 
-              <S.Subtitle>Nota de 1 a 5 dada ao colaborador: </S.Subtitle>
-              <div style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: "0.5rem" }}>
-              <StarRating
-                value={avaliacao.nota}
-                readOnly
-                />
+    if (errorAvaliacoes) {
+      return (
+        <div style={{ padding: "2rem", textAlign: "center" }}>
+          <p>Erro ao carregar avaliações 360°: {errorAvaliacoes}</p>
+        </div>
+      );
+    }
+
+    // Filtrar apenas avaliações de pares (360°)
+    const avaliacoes360 = avaliacoes?.filter(av => av.tipoAvaliacao === "AVALIACAO_PARES") || [];
+
+    if (avaliacoes360.length === 0) {
+      return (
+        <div style={{ padding: "2rem", textAlign: "center" }}>
+          <p>Nenhuma avaliação 360° encontrada para este colaborador.</p>
+        </div>
+      );
+    }
+
+    return (
+      <S.Evaluation360Container>
+        {avaliacoes360.map((avaliacao) => (
+          <Card key={avaliacao.idAvaliacao}>
+            <S.CriterioHeader>
+              <S.ColleagueName>
+                <MdAccountCircle size={24} />
+                <AvaliadorName idAvaliador={avaliacao.idAvaliador} />
+                <S.ColleagueRole>
+                  (Avaliação de Pares)
+                </S.ColleagueRole>
+              </S.ColleagueName>
               <S.NotaBadge>
-              {avaliacao.nota.toFixed(1)}
-            </S.NotaBadge>
+                {avaliacao.avaliacaoPares?.nota || "-"}
+              </S.NotaBadge>
+            </S.CriterioHeader>
+            
+            <S.CriteriaContent>
+              {/* Avaliação Geral */}
+              <S.CriteriaSection>
+                <S.Subtitle>Nota de 1 a 5 dada ao colaborador: </S.Subtitle>
+                <div style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: "0.5rem" }}>
+                  <StarRating
+                    value={parseFloat(avaliacao.avaliacaoPares?.nota || "0")}
+                    readOnly
+                  />
+                  <S.NotaBadge>
+                    {avaliacao.avaliacaoPares?.nota || "-"}
+                  </S.NotaBadge>
                 </div>
-            </S.CriteriaSection>
+              </S.CriteriaSection>
+              
+              {/* Motivação para trabalhar novamente */}
+              <S.CriteriaSection>
+                <S.Subtitle>Ficaria motivado em trabalhar novamente?</S.Subtitle>
+                <Select
+                  onChange={() => {}}
+                  value={avaliacao.avaliacaoPares?.motivadoTrabalharNovamente || ""}
+                  options={motivacoes}
+                  disabled
+                />
+              </S.CriteriaSection>
+            </S.CriteriaContent>
             
-            {/* Motivação para trabalhar novamente */}
-            <S.CriteriaSection>
-              <S.Subtitle>Ficaria motivado em trabalhar novamente?</S.Subtitle>
-              <Select
-                onChange={() => {}}
-                value={avaliacao.motivadoTrabalharNovamente}
-                options={motivacoes}
-                disabled
-              />
-            </S.CriteriaSection>
-          </S.CriteriaContent>
-          
-          <S.Divider />
-          
-          <S.CriteriaContent>
-            {/* Pontos Fortes */}
-            <S.CriteriaSection>
-              <S.Subtitle>Pontos que faz bem e deve explorar</S.Subtitle>
-              <TextArea
-                value={avaliacao.pontosFortes}
-                readOnly
-                rows={4}
-              />
-            </S.CriteriaSection>
+            <S.Divider />
             
-            {/* Pontos de Melhoria */}
-            <S.CriteriaSection>
-              <S.Subtitle>Pontos de melhoria</S.Subtitle>
-              <TextArea
-                value={avaliacao.pontosFracos}
-                readOnly
-                rows={4}
-              />
-            </S.CriteriaSection>
-          </S.CriteriaContent>
-        </Card>
-      ))}
-    </S.Evaluation360Container>
-  );
+            <S.CriteriaContent>
+              {/* Pontos Fortes */}
+              <S.CriteriaSection>
+                <S.Subtitle>Pontos que faz bem e deve explorar</S.Subtitle>
+                <TextArea
+                  value={avaliacao.avaliacaoPares?.pontosFortes || ""}
+                  readOnly
+                  rows={4}
+                />
+              </S.CriteriaSection>
+              
+              {/* Pontos de Melhoria */}
+              <S.CriteriaSection>
+                <S.Subtitle>Pontos de melhoria</S.Subtitle>
+                <TextArea
+                  value={avaliacao.avaliacaoPares?.pontosFracos || ""}
+                  readOnly
+                  rows={4}
+                />
+              </S.CriteriaSection>
+            </S.CriteriaContent>
+          </Card>
+        ))}
+      </S.Evaluation360Container>
+    );
+  };
 
   const renderTabContent = () => {
     switch (activeTab) {
