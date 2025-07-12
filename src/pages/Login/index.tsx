@@ -6,7 +6,8 @@ import Button from "@/components/Button/index.tsx";
 import { useNavigate } from "react-router-dom";
 import { handleLogin } from "@/services/Auth/login.ts";
 import { getPerfil } from "@/services/HTTP/perfil";
-import { toast } from "sonner"; 
+import { getColaboradorById } from "@/services/HTTP/colaboradores";
+import { toast } from "sonner";
 
 export function Login() {
   const [email, setEmail] = useState("");
@@ -21,6 +22,15 @@ export function Login() {
 
       const res = await getPerfil();
       const roles: string[] = res.roles || [];
+      const colaborador = await getColaboradorById(res.userId);
+
+      if (colaborador.primeiroLogin) {
+        toast.success(
+          "Login realizado com sucesso! Por favor, altere sua senha."
+        );
+        navigate("/primeiro-login");
+        return;
+      }
 
       let destination = "/colaborador/home";
 
@@ -34,7 +44,9 @@ export function Login() {
       toast.success("Login realizado com sucesso!");
       navigate(destination);
     } catch (error) {
-      toast.error("Erro ao fazer login. Verifique suas credenciais e tente novamente.");
+      toast.error(
+        "Erro ao fazer login. Verifique suas credenciais e tente novamente."
+      );
     }
   };
 
@@ -68,7 +80,9 @@ export function Login() {
           placeholder="Digite sua senha"
           label="Senha"
         />
-        <Button variant="default" type="submit">Entrar</Button>
+        <Button variant="default" type="submit">
+          Entrar
+        </Button>
       </S.Form>
     </S.Container>
   );

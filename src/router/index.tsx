@@ -26,6 +26,8 @@ import { CycleHistory } from "@/pages/comite/CycleHistory";
 import { CollaboratorEqualization } from "@/pages/comite/CollaboratorEqualization";
 import { CollaboratorDiscrepancy } from "@/pages/comite/collaboratorDiscrepancy";
 import AuditoriaPage from "@/pages/admin/Auditoria";
+import PerfilPage from "@/pages/perfil";
+import { FirstLogin } from "@/pages/FirstLogin";
 
 function AppRoutes() {
   return (
@@ -43,7 +45,14 @@ function AppRoutes() {
 
         {/* Rotas protegidas */}
         <Route element={<ProtectedRoute />}>
+
+        {/* Rota de primeiro login */}
+        <Route path="/primeiro-login" element={<FirstLogin />} />
+          
           <Route element={<BaseLayout />}>
+            {/* Perfil - acessível para todos os usuários */}
+            <Route path="/perfil" element={<PerfilPage />} />
+
             {/* colaboradores */}
             <Route path="/colaborador">
               <Route path="home" element={<ColaboradorHome />} />

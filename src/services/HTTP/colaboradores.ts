@@ -1,4 +1,13 @@
-import { getRequest, postRequest, deleteRequest } from './requests';
+import { getRequest, postRequest, deleteRequest, putRequest, patchRequest } from './requests';
+
+type UpdateColaboradorDto = {
+  nomeCompleto?: string;
+  email?: string;
+  senha?: string;
+  cargo?: string;
+  trilhaCarreira?: string;
+  unidade?: string;
+};
 // TODO: falar com eles sobre os endpoints
 
 type CreateColaboradorDTO = {
@@ -14,6 +23,12 @@ type AssociatePerfilDTO = {
   idColaborador: string;
   tipoPerfil: "COLABORADOR_COMUM" | "GESTOR" | "RH" | "MEMBRO_COMITE" | "ADMIN";
 };
+
+type TrocarSenhaDto = {
+  senhaAtual: string;
+  novaSenha: string;
+};
+
 
 
 const baseEndpoint = '/colaborador';
@@ -57,6 +72,14 @@ export async function getColaboradorPilarNotas(id: string) {
 
 export async function getCountAvaliacoesByColaborador(id: string) {
   return await getRequest(`${baseEndpoint}/avaliacoes-recebidas/${id}`);
+}
+
+export async function trocarSenhaPrimeiroLogin(id: string, data: TrocarSenhaDto) {
+  return await patchRequest(`${baseEndpoint}/${id}/trocar-senha`, data);
+}
+
+export async function atualizarColaborador(id: string, data: UpdateColaboradorDto) {
+  return await putRequest(`${baseEndpoint}/${id}`, data);
 }
 
 
