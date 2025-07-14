@@ -294,7 +294,7 @@ export function CollaboratorEqualization() {
         console.error("Erro ao gerar brutal facts:", brutalFactsError);
         // Não exibir erro para o usuário, apenas logar
       }
-
+      window.location.reload(); // Recarrega a página para atualizar os dados
     }
   }, [colaboradorToApprove, sendEqualizacaoData]);
 
