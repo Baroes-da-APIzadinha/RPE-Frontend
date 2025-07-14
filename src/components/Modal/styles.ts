@@ -12,6 +12,7 @@ export const Overlay = styled.div`
 
   @media (max-width: 768px) {
     align-items: flex-start;
+    padding: 2rem 1.6rem;
     padding-top: 4.4rem;
     overflow-y: auto;
   }
@@ -19,19 +20,20 @@ export const Overlay = styled.div`
 
 export const Container = styled.div`
   width: 100%;
-  max-width: 100vh;
+  max-width: 48rem;
   min-width: 0;
-  max-height: 90vh;
+  max-height: 60rem;
 
   background: ${({ theme }) => theme.colors.surface.default};
   border-radius: ${({ theme }) => theme.border.radius.medium};
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 0.8rem 2.4rem rgba(0, 0, 0, 0.15);
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
 
   @media (max-width: 768px) {
-    max-width: 100%;
+    height: 100%;
+    max-height: none;
   }
 `;
 
@@ -53,7 +55,7 @@ export const Header = styled.div`
 
   @media (max-width: 768px) {
     align-items: flex-start;
-    padding: 1.2rem 1.2rem 1rem 1.2rem;
+    padding: 1.2rem;
   }
 `;
 
@@ -89,10 +91,10 @@ export const Content = styled.div`
   min-width: 0;
   word-break: break-word;
   overflow-y: auto;
-  padding: 1rem 2rem 2rem 2rem;
+  padding: 2rem;
 
   @media (max-width: 768px) {
-    padding: 1rem 1.2rem 1.2rem 1.2rem;
+    padding: 1.6rem;
   }
 `;
 

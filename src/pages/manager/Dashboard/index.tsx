@@ -21,7 +21,6 @@ import Button from "@/components/Button/index.tsx";
 import { AlertList } from "@/components/AlertList/index.tsx";
 
 export function MananegerDashboard() {
-
   const theme = useTheme();
   const chartOptions: ApexCharts.ApexOptions = {
     chart: {
@@ -82,7 +81,6 @@ export function MananegerDashboard() {
     },
   ];
 
-
   return (
     <>
       <>
@@ -120,7 +118,7 @@ export function MananegerDashboard() {
           />
         </CardContainer>
 
-        <Card>
+        {/* <Card>
           <S.PendingWrapper>
             <S.LeftWrapper>
               <S.CircleWrapper>
@@ -144,99 +142,110 @@ export function MananegerDashboard() {
               </S.Description>
             </S.InfoWrapper>
           </S.PendingWrapper>
-        </Card>
+        </Card> */}
 
-        <Card>
-          <S.HeaderRow>
-            <div>
-              <S.SectionTitle>Status da Equipe</S.SectionTitle>
-              <S.SectionSubtitle>
-                Progresso individual das avaliações
-              </S.SectionSubtitle>
-            </div>
-            <Button variant="outline">
-              Ver Todos <MdArrowForward />
-            </Button>
-          </S.HeaderRow>
-
-          <S.CollaboratorList>
-            {colaboradores.map((colab, index) => (
-              <S.CollaboratorCard key={index}>
-                <S.UserInfo>
-                  <MdAccountCircle size={64} />
-                  <S.TextDiv>
-                    <S.Name>{colab.nome}</S.Name>
-                    <S.Role>{colab.cargo}</S.Role>
-                  </S.TextDiv>
-                </S.UserInfo>
-
-                <S.UserStatus>
-                  <div>
-                    <S.StatusLabel>Progresso</S.StatusLabel>
-                    <S.StatusBadge $status={colab.status}>
-                      {colab.status === "concluida" && (
-                        <>
-                          <MdOutlineCheckCircle size={20} color={theme.colors.success.text} />
-                          Concluída
-                        </>
-                      )}
-                      {colab.status === "andamento" && (
-                        <>
-                          <MdOutlineAccessTime size={20} color={theme.colors.secondary.default} />
-                          Em andamento
-                        </>
-                      )}
-                      {colab.status === "pendente" && (
-                        <>
-                          <MdErrorOutline size={20} color={theme.colors.error.text} />
-                          Pendente
-                        </>
-                      )}
-                    </S.StatusBadge>
-                  </div>
-                  <div>
-                    <S.StatusLabel>Desempenho</S.StatusLabel>
-                    <S.Score>{colab.nota}</S.Score>
-                  </div>
-                  <div>
-                    <S.StatusLabel>Última Avaliação</S.StatusLabel>
-                    <S.Date>{colab.data}</S.Date>
-                  </div>
-                </S.UserStatus>
-              </S.CollaboratorCard>
-            ))}
-          </S.CollaboratorList>
-        </Card>
-
-        <AlertList title="Alertas e Ações Necessárias"
-                  subtitle="Itens que requerem sua atenção"
-                  items={[
-                    {
-                      type: "red",
-                      icon: <MdErrorOutline />,
-                      title: "Carla Mendes não iniciou avaliação",
-                      description: "Sem progresso há 3 semanas",
-                      buttonLabel: "Enviar Lembrete",
-                      onClick: () => console.log("Enviar Lembrete"),
-                    },
-                    {
-                      type: "yellow",
-                      icon: <MdOutlineAccessTime />,
-                      title: "Pedro Santos precisa de suporte",
-                      description: "Progresso lento na autoavaliação",
-                      buttonLabel: "Agendar 1:1",
-                      onClick: () => console.log("Agendar 1:1"),
-                    },
-                    {
-                      type: "green",
-                      icon: <MdOutlineCheckCircle />,
-                      title: "João Silva completou todas as avaliações",
-                      description: "Primeiro da equipe a finalizar o ciclo",
-                      buttonLabel: "Parabenizar",
-                      onClick: () => console.log("Parabenizar"),
-                    },
-                  ]}/>
+        <AlertList
+          title="Alertas e Ações Necessárias"
+          subtitle="Itens que requerem sua atenção"
+          items={[
+            {
+              type: "red",
+              icon: <MdErrorOutline />,
+              title: "Carla Mendes não iniciou avaliação",
+              description: "Sem progresso há 3 semanas",
+              buttonLabel: "Enviar Lembrete",
+              onClick: () => console.log("Enviar Lembrete"),
+            },
+            {
+              type: "yellow",
+              icon: <MdOutlineAccessTime />,
+              title: "Pedro Santos precisa de suporte",
+              description: "Progresso lento na autoavaliação",
+              buttonLabel: "Agendar 1:1",
+              onClick: () => console.log("Agendar 1:1"),
+            },
+            {
+              type: "green",
+              icon: <MdOutlineCheckCircle />,
+              title: "João Silva completou todas as avaliações",
+              description: "Primeiro da equipe a finalizar o ciclo",
+              buttonLabel: "Parabenizar",
+              onClick: () => console.log("Parabenizar"),
+            },
+          ]}
+        />
       </>
+
+      <Card>
+        <S.HeaderRow>
+          <div>
+            <S.SectionTitle>Status da Equipe</S.SectionTitle>
+            <S.SectionSubtitle>
+              Progresso individual das avaliações
+            </S.SectionSubtitle>
+          </div>
+          <Button variant="outline">
+            Ver Todos <MdArrowForward />
+          </Button>
+        </S.HeaderRow>
+
+        <S.CollaboratorList>
+          {colaboradores.map((colab, index) => (
+            <S.CollaboratorCard key={index}>
+              <S.UserInfo>
+                <MdAccountCircle size={64} />
+                <S.TextDiv>
+                  <S.Name>{colab.nome}</S.Name>
+                  <S.Role>{colab.cargo}</S.Role>
+                </S.TextDiv>
+              </S.UserInfo>
+
+              <S.UserStatus>
+                <div>
+                  <S.StatusLabel>Progresso</S.StatusLabel>
+                  <S.StatusBadge $status={colab.status}>
+                    {colab.status === "concluida" && (
+                      <>
+                        <MdOutlineCheckCircle
+                          size={20}
+                          color={theme.colors.success.text}
+                        />
+                        Concluída
+                      </>
+                    )}
+                    {colab.status === "andamento" && (
+                      <>
+                        <MdOutlineAccessTime
+                          size={20}
+                          color={theme.colors.secondary.default}
+                        />
+                        Em andamento
+                      </>
+                    )}
+                    {colab.status === "pendente" && (
+                      <>
+                        <MdErrorOutline
+                          size={20}
+                          color={theme.colors.error.text}
+                        />
+                        Pendente
+                      </>
+                    )}
+                  </S.StatusBadge>
+                </div>
+                <div>
+                  <S.StatusLabel>Desempenho</S.StatusLabel>
+                  <S.Score>{colab.nota}</S.Score>
+                </div>
+                <div>
+                  <S.StatusLabel>Última Avaliação</S.StatusLabel>
+                  <S.Date>{colab.data}</S.Date>
+                </div>
+              </S.UserStatus>
+            </S.CollaboratorCard>
+          ))}
+        </S.CollaboratorList>
+      </Card>
     </>
   );
 }
