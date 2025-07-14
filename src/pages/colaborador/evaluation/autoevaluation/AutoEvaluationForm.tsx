@@ -186,6 +186,7 @@ export function AutoEvaluationForm() {
 
       <ButtonFrame text="Para submeter sua autoavaliação, preencha todos os critérios.">
         <Button
+        type="submit"
           onClick={() => {
             submitClickedRef.current = true;
           }}
