@@ -9,8 +9,7 @@ export const Wrapper = styled.div`
 
 export const Main = styled.main`
   flex: 1;
-  padding: ${theme.spacings.large};
+  padding: ${theme.spacings.small} ${theme.spacings.large};
   background-color: ${theme.colors.background};
   overflow-y: auto;
-  padding-top: ${theme.spacings.small}; 
 `
