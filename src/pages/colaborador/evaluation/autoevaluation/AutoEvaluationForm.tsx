@@ -1,3 +1,6 @@
+import * as S from "./styles";
+import { EmptyMessage } from "@/components/EmptyMensage";
+import { LoadingMessage } from "@/components/LoadingMessage";
 import EvaluationFrame from "@/components/EvaluationFrame";
 import CriteryBox from "@/components/CriteryBox";
 import { Title } from "@/components/Title";
@@ -9,6 +12,8 @@ import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { useOutletContext } from "react-router-dom";
+import { Modal } from "@/components/Modal";
+import { MdOutlineAssignmentTurnedIn, MdWarning } from "react-icons/md";
 
 import { useAutoAvaliacaoId } from "@/hooks/avaliacoes/useAutoAvaliacaoId";
 import { useCriteriosAutoAvaliacao } from "@/hooks/avaliacoes/useCriteriosAutoAvaliacao";
@@ -16,19 +21,24 @@ import type { PerfilData } from "@/types/PerfilData";
 import { preencherAutoAvaliacao } from "@/services/HTTP/avaliacoes";
 
 export function AutoEvaluationForm() {
+  const [confirmModalOpen, setConfirmModalOpen] = useState(false);
+
   const { perfil } = useOutletContext<{ perfil: PerfilData }>();
   const {
     idAvaliacao,
     respostas,
+    status,
     loading: loadingId,
   } = useAutoAvaliacaoId(perfil.userId);
-  const { criterios, loading: loadingCriterios } = useCriteriosAutoAvaliacao( idAvaliacao ?? undefined );
+  const { criterios, loading: loadingCriterios } = useCriteriosAutoAvaliacao(
+    idAvaliacao ? idAvaliacao : undefined
+  );
+
   const { handleSubmit, control, getValues, watch, reset } = useForm();
   const [progress, setProgress] = useState(0);
   const [camposComErro, setCamposComErro] = useState<string[]>([]);
   const submitClickedRef = useRef(false);
-  const modoVisualizacao = !!respostas?.length;
-
+  const modoVisualizacao = status === "CONCLUIDA";
 
   useEffect(() => {
     if (!criterios || !respostas) return;
@@ -137,9 +147,19 @@ export function AutoEvaluationForm() {
     }
   };
 
-  if (loadingId || loadingCriterios) return <p>Carregando...</p>;
-  if (!idAvaliacao || Object.keys(criterios).length === 0)
-    return <p>Avaliação não encontrada.</p>;
+  if (!idAvaliacao || Object.keys(criterios).length === 0) {
+    return (
+      <EmptyMessage
+        icon={<MdOutlineAssignmentTurnedIn size={32} />}
+        title="Nenhuma autoavaliação encontrada"
+        description="Verifique com sua liderança se você foi incluído no ciclo atual."
+      />
+    );
+  }
+
+  if (loadingId || loadingCriterios) {
+    return <LoadingMessage message="Carregando autoavaliação..." />;
+  }
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -176,6 +196,7 @@ export function AutoEvaluationForm() {
                     value={field.value}
                     onChange={field.onChange}
                     error={camposComErro.includes(fieldName)}
+                    readOnly={modoVisualizacao}
                   />
                 )}
               />
@@ -186,15 +207,47 @@ export function AutoEvaluationForm() {
 
       <ButtonFrame text="Para submeter sua autoavaliação, preencha todos os critérios.">
         <Button
-        type="submit"
+          type="button"
           onClick={() => {
             submitClickedRef.current = true;
+            setConfirmModalOpen(true);
           }}
+          disabled={modoVisualizacao}
         >
           <FaPaperPlane />
           Enviar
         </Button>
       </ButtonFrame>
+
+      <Modal
+        open={confirmModalOpen}
+        onClose={() => setConfirmModalOpen(false)}
+        title="Confirmar envio"
+        description="Essa ação é irreversível e não poderá ser desfeita."
+        icon={<MdWarning />}
+        iconColor="warning"
+        iconSize="large"
+      >
+        <S.ModalContent>
+          <S.ModalDescription>
+            Tem certeza que deseja enviar sua autoavaliação? Após o envio, você
+            não poderá alterá-la.
+          </S.ModalDescription>
+        </S.ModalContent>
+
+        <S.ModalActions>
+          <Button variant="outline" onClick={() => setConfirmModalOpen(false)}>
+            Cancelar
+          </Button>
+          <Button
+            variant="primary"
+            type="submit"
+            onClick={handleSubmit(onSubmit)}
+          >
+            Confirmar envio
+          </Button>
+        </S.ModalActions>
+      </Modal>
     </form>
   );
 }

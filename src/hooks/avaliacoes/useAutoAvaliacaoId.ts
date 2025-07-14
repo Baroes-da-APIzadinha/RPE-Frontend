@@ -1,3 +1,4 @@
+// hooks/avaliacoes/useAutoAvaliacaoId.ts
 import { useEffect, useState } from "react";
 import { getAutoAvaliacaoByUserId } from "@/services/HTTP/avaliacoes";
 import type {
@@ -9,6 +10,7 @@ import type {
 export function useAutoAvaliacaoId(userId: string | undefined): UseAutoAvaliacaoIdReturn {
   const [idAvaliacao, setIdAvaliacao] = useState<string | null>(null);
   const [respostas, setRespostas] = useState<RespostaAutoAvaliacao[] | null>(null);
+  const [status, setStatus] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -20,6 +22,7 @@ export function useAutoAvaliacaoId(userId: string | undefined): UseAutoAvaliacao
       .then((data: AutoAvaliacaoApiResponse) => {
         const avaliacao = data.avaliacoes?.[0];
         setIdAvaliacao(avaliacao?.idAvaliacao ?? null);
+        setStatus(avaliacao?.status ?? null);
 
         const respostasConvertidas = avaliacao?.autoAvaliacao?.cardAutoAvaliacoes?.map((card) => ({
           nomeCriterio: card.nomeCriterio,
@@ -32,5 +35,5 @@ export function useAutoAvaliacaoId(userId: string | undefined): UseAutoAvaliacao
       .finally(() => setLoading(false));
   }, [userId]);
 
-  return { idAvaliacao, respostas, loading };
+  return { idAvaliacao, respostas, status, loading };
 }
