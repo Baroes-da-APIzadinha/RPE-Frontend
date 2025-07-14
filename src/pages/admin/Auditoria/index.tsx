@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import * as S from "./styles";
 import { Card } from "@/components/Card";
 import { MdArrowBackIosNew, MdArrowForwardIos, MdInfo } from "react-icons/md";
@@ -6,8 +6,11 @@ import { Title } from "@/components/Title";
 import { SearchInput } from "@/components/SearchInput";
 import { formatDateTime } from "@/utils/formatters";
 import Button from "@/components/Button";
+import { getLogsAuditoria, type LogAuditoria } from "@/services/HTTP/auditoria";
+import { getColaboradorById } from "@/services/HTTP/colaboradores";
+import type { Colaborador } from "@/types/Colaborador";
 
-interface LogEntry {
+interface LogView {
   dataHora: string;
   usuario: string;
   acao: string;
@@ -15,139 +18,130 @@ interface LogEntry {
   ip: string;
 }
 
-const mockLogs: LogEntry[] = [
-  {
-    dataHora: "2025-07-11 14:32:10",
-    usuario: "João Silva",
-    acao: "Atualizou permissões",
-    recurso: "Usuário #1023",
-    ip: "192.168.0.1",
-  },
-  {
-    dataHora: "2025-07-11 13:54:22",
-    usuario: "Ana Costa",
-    acao: "Exportou dados sensíveis",
-    recurso: "Relatório RH",
-    ip: "192.168.0.15",
-  },
-  {
-    dataHora: "2025-07-11 11:30:45",
-    usuario: "Carlos Mendes",
-    acao: "Criou novo ciclo",
-    recurso: "Ciclo 2025.1",
-    ip: "192.168.0.22",
-  },
-  {
-    dataHora: "2025-07-11 10:15:33",
-    usuario: "Maria Santos",
-    acao: "Excluiu avaliação",
-    recurso: "Avaliação #458",
-    ip: "192.168.0.8",
-  },
-  {
-    dataHora: "2025-07-11 09:45:17",
-    usuario: "Pedro Costa",
-    acao: "Modificou critérios",
-    recurso: "Ciclo 2024.2",
-    ip: "192.168.0.30",
-  },
-  {
-    dataHora: "2025-07-10 17:01:12",
-    usuario: "Bruna Lima",
-    acao: "Criou novo usuário",
-    recurso: "Usuário #1045",
-    ip: "192.168.0.2",
-  },
-  {
-    dataHora: "2025-07-10 16:23:47",
-    usuario: "Tiago Rocha",
-    acao: "Resetou senha",
-    recurso: "Usuário #1029",
-    ip: "192.168.0.10",
-  },
-  {
-    dataHora: "2025-07-10 15:05:33",
-    usuario: "Gabriela Nunes",
-    acao: "Atualizou ciclo",
-    recurso: "Ciclo 2025.1",
-    ip: "192.168.0.33",
-  },
-  {
-    dataHora: "2025-07-10 14:45:00",
-    usuario: "Vinícius Reis",
-    acao: "Gerou relatório",
-    recurso: "Desempenho Geral",
-    ip: "192.168.0.9",
-  },
-  {
-    dataHora: "2025-07-10 14:01:11",
-    usuario: "Lucas Almeida",
-    acao: "Alterou permissões",
-    recurso: "Usuário #1007",
-    ip: "192.168.0.6",
-  },
-  {
-    dataHora: "2025-07-10 13:35:25",
-    usuario: "Fernanda Dias",
-    acao: "Excluiu ciclo",
-    recurso: "Ciclo 2023.2",
-    ip: "192.168.0.11",
-  },
-  {
-    dataHora: "2025-07-10 13:10:09",
-    usuario: "Henrique Lopes",
-    acao: "Visualizou dados sensíveis",
-    recurso: "Relatório Confidencial",
-    ip: "192.168.0.21",
-  },
-  {
-    dataHora: "2025-07-10 12:22:48",
-    usuario: "Patrícia Ribeiro",
-    acao: "Exportou ciclo",
-    recurso: "Ciclo 2022.2",
-    ip: "192.168.0.12",
-  },
-  {
-    dataHora: "2025-07-10 11:45:17",
-    usuario: "Rafael Cunha",
-    acao: "Fez backup",
-    recurso: "Base de Dados",
-    ip: "192.168.0.14",
-  },
-  {
-    dataHora: "2025-07-10 10:55:33",
-    usuario: "Juliana Campos",
-    acao: "Criou avaliação",
-    recurso: "Avaliação #501",
-    ip: "192.168.0.18",
-  },
-  {
-    dataHora: "2025-07-10 10:05:27",
-    usuario: "Eduardo Meireles",
-    acao: "Atualizou critérios",
-    recurso: "Ciclo 2025.2",
-    ip: "192.168.0.19",
-  },
-  {
-    dataHora: "2025-07-10 09:45:33",
-    usuario: "Isabela Castro",
-    acao: "Criou grupo de usuários",
-    recurso: "Grupo Admin",
-    ip: "192.168.0.23",
-  },
-  {
-    dataHora: "2025-07-10 09:12:59",
-    usuario: "Rodrigo Peixoto",
-    acao: "Desativou usuário",
-    recurso: "Usuário #1050",
-    ip: "192.168.0.25",
-  },
-];
-
 const AuditoriaPage: React.FC = () => {
+  const [logs, setLogs] = useState<LogView[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [loading, setLoading] = useState(true);
 
-  const filteredLogs = mockLogs.filter((log) => {
+  const logsPerPage = 10;
+
+  useEffect(() => {
+    async function fetchLogs() {
+      try {
+        setLoading(true);
+        const logsData: LogAuditoria[] = await getLogsAuditoria();
+
+        // Buscar nomes dos usuários
+        const userIds = [...new Set(logsData.map((log) => log.userId))];
+        const colaboradoresMap: Record<string, string> = {};
+
+        await Promise.all(
+          userIds.map(async (id) => {
+            try {
+              const colaborador = (await getColaboradorById(id)) as Colaborador;
+              console.log("informacoes do colaborador", colaborador);
+              colaboradoresMap[id] = colaborador.nomeCompleto;
+            } catch (e) {
+              colaboradoresMap[id] = "Usuário desconhecido";
+            }
+          })
+        );
+
+        const viewLogs: LogView[] = logsData.map((log) => ({
+          dataHora: log.timestamp,
+          usuario: colaboradoresMap[log.userId] || "Usuário desconhecido",
+          acao: traduzirAcao(log.action),
+          recurso: traduzirRecurso(log.resource, log.details),
+          ip: log.ip,
+        }));
+
+        setLogs(viewLogs);
+      } catch (error) {
+        console.error("Erro ao buscar logs:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchLogs();
+  }, []);
+
+  const traduzirAcao = (action: string): string => {
+    const mapa: Record<string, string> = {
+      // Auth
+      login_success: "Login realizado com sucesso",
+      login_failed: "Tentativa de login realizada",
+
+      // Avaliações
+      preencher_auto_avaliacao: "Preencheu autoavaliação",
+      preencher_avaliacao_pares: "Preencheu avaliação dos pares",
+      preencher_avaliacao_colaborador_mentor: "Preencheu avaliação do mentor",
+      preencher_lider_colaborador: "Preencheu avaliação do líder",
+      lancar_avaliacoes: "Lançou avaliações",
+      lancar_auto_avaliacoes: "Lançou autoavaliações",
+      lancar_avaliacao_pares: "Lançou avaliações dos pares",
+      lancar_lider_colaborador: "Lançou avaliações do líder",
+      lancar_colaborador_mentor: "Lançou avaliações do mentor",
+
+      // Ciclo
+      criar_ciclo: "Criou ciclo",
+      remover_ciclo: "Removeu ciclo",
+      atualizar_ciclo: "Atualizou ciclo",
+
+      // Colaborador
+      delete: "Excluiu colaborador",
+
+      // Critérios
+      criar_criterio: "Criou critério",
+      atualizar_criterio: "Atualizou critério",
+      deletar_criterio: "Deletou critério",
+
+      // Equalização
+      "Lançamento de equalizações": "Lançou equalizações",
+      atualizar_equalizacao: "Atualizou equalização",
+      remover_equalizacao: "Removeu equalização",
+
+      // Importação
+      importar_avaliacoes: "Importou avaliações",
+    };
+
+    return mapa[action] ?? action;
+  };
+
+  const traduzirRecurso = (resource: string, details: any): string => {
+    switch (resource) {
+      case "Avaliacao":
+        return details?.idAvaliacao
+          ? `Avaliação #${details.idAvaliacao.slice(0, 8)}`
+          : "Avaliação";
+
+      case "Auth":
+        return details?.email ? `Login (${details.email})` : "Autenticação";
+
+      case "Ciclo":
+        return details?.id ? `Ciclo #${details.id.slice(0, 8)}` : "Ciclo";
+
+      case "Colaborador":
+        return details?.id
+          ? `Colaborador #${details.id.slice(0, 8)}`
+          : "Colaborador";
+
+      case "Criterio":
+        return details?.nome ? `Critério (${details.nome})` : "Critério";
+
+      case "Equalizacao":
+        return "Equalização";
+
+      case "Importacao":
+        return "Importação de Avaliações";
+
+      default:
+        return resource;
+    }
+  };
+
+  const filteredLogs = logs.filter((log) => {
     const term = searchTerm.toLowerCase();
     return (
       log.usuario.toLowerCase().includes(term) ||
@@ -157,15 +151,10 @@ const AuditoriaPage: React.FC = () => {
     );
   });
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const logsPerPage = 10;
-
-  // Cálculo da paginação
+  const totalPages = Math.ceil(filteredLogs.length / logsPerPage);
   const startIndex = (currentPage - 1) * logsPerPage;
   const endIndex = startIndex + logsPerPage;
   const paginatedLogs = filteredLogs.slice(startIndex, endIndex);
-
-  const totalPages = Math.ceil(filteredLogs.length / logsPerPage);
 
   const handlePageChange = (newPage: number) => {
     if (newPage >= 1 && newPage <= totalPages) {
@@ -181,6 +170,8 @@ const AuditoriaPage: React.FC = () => {
     []
   );
 
+  if (loading) return <p>Carregando...</p>;
+
   return (
     <>
       <S.Header>
@@ -188,12 +179,15 @@ const AuditoriaPage: React.FC = () => {
       </S.Header>
 
       <Card>
-        <S.Title>Filtros</S.Title>
+        <S.TitleCard>Buscar nos registros</S.TitleCard>
         <S.FiltersWrapper>
           <S.FilterItem>
-            <label>Buscar por nome ou cargo</label>
+            <label htmlFor="log-search">
+              Filtrar por usuário, ação, recurso ou IP
+            </label>
             <SearchInput
-              placeholder="Buscar colaborador..."
+              id="log-search"
+              placeholder="Digite nome, ação, IP ou recurso…"
               value={searchTerm}
               onChange={handleSearchChange}
             />
@@ -237,21 +231,21 @@ const AuditoriaPage: React.FC = () => {
                 const datetime = formatDateTime(log.dataHora);
                 return (
                   <S.Tr key={index} $highlight={index % 2 === 0}>
-                    <S.Td>
+                    <S.Td data-label="Data/Hora">
                       <S.TimestampCell>
                         <span>{datetime.date}</span>
                         <span>{datetime.time}</span>
                       </S.TimestampCell>
                     </S.Td>
-                    <S.Td>{log.usuario}</S.Td>
-                    <S.Td>
+                    <S.Td data-label="Usuário">{log.usuario}</S.Td>
+                    <S.Td data-label="Ação">
                       <S.ActionCell>
                         <MdInfo size={16} />
                         {log.acao}
                       </S.ActionCell>
                     </S.Td>
-                    <S.Td>{log.recurso}</S.Td>
-                    <S.Td>{log.ip}</S.Td>
+                    <S.Td data-label="Recurso">{log.recurso}</S.Td>
+                    <S.Td data-label="IP de Origem">{log.ip}</S.Td>
                   </S.Tr>
                 );
               })}
