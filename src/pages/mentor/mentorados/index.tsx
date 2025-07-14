@@ -9,78 +9,77 @@ import { DropdownActions } from "@/components/DropdownActions";
 import { MdAccountCircle, MdMoreVert } from "react-icons/md";
 import { IoPersonOutline } from "react-icons/io5";
 import { formatar } from "@/utils/formatters";
-
-// Mock data para mentorados
-const mentoradosMock = [
-  {
-    id: "1",
-    nome: "Ana Silva Costa",
-    cargo: "Desenvolvedor Frontend Junior",
-    unidade: "Tecnologia",
-    desempenho: 4.2,
-    dataInicio: "2024-01-15",
-    ultimaAvaliacao: "2024-06-15"
-  },
-  {
-    id: "2", 
-    nome: "Pedro Santos Oliveira",
-    cargo: "Analista de QA",
-    unidade: "Tecnologia",
-    desempenho: 3.8,
-    dataInicio: "2024-02-01",
-    ultimaAvaliacao: "2024-06-10"
-  },
-  {
-    id: "3",
-    nome: "Carla Mendes",
-    cargo: "Desenvolvedor Backend Pleno",
-    unidade: "Tecnologia", 
-    desempenho: 4.5,
-    dataInicio: "2023-11-20",
-    ultimaAvaliacao: "2024-06-20"
-  },
-  {
-    id: "4",
-    nome: "Lucas Fernando",
-    cargo: "Product Owner Junior",
-    unidade: "Produto",
-    desempenho: 3.9,
-    dataInicio: "2024-03-10",
-    ultimaAvaliacao: "2024-06-05"
-  },
-  {
-    id: "5",
-    nome: "Mariana Souza",
-    cargo: "UX Designer",
-    unidade: "Design",
-    desempenho: 4.1,
-    dataInicio: "2024-01-08",
-    ultimaAvaliacao: "2024-06-12"
-  }
-];
+import { useMentorados } from "@/hooks/mentor/useMentorados";
+import { useCicloAtual } from "@/hooks/useCicloAtual";
+import { usePerfil } from "@/hooks/usePerfil";
 
 export function MentoradosPage() {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
+  
+  // Hooks para buscar dados reais
+  const { perfil } = usePerfil();
+  const { cicloAtual } = useCicloAtual();
+  const { data: mentorados, loading, error } = useMentorados(
+    perfil?.userId || "", 
+    cicloAtual?.id || ""
+  );
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
   };
 
-  const sortedMentorados = [...mentoradosMock].sort((a, b) => b.desempenho - a.desempenho);
+  // Função para determinar o status baseado na média final
+  const getStatusInfo = (mediaFinal: number | null) => {
+    if (mediaFinal === null) {
+      return { label: "Pendente", color: "neutral" as const };
+    }
+    
+    if (mediaFinal < 2) {
+      return { label: "Atenção", color: "error" as const };
+    }
+    if (mediaFinal >= 2.1 && mediaFinal <= 3.9) {
+      return { label: "Atenção", color: "warning" as const };
+    }
+    if (mediaFinal >= 4) {
+      return { label: "OK", color: "success" as const };
+    }
+    
+    return { label: "Pendente", color: "neutral" as const };
+  };
+
+  const sortedMentorados = mentorados ? [...mentorados].sort((a, b) => {
+    const mediaA = a.mediaFinal || 0;
+    const mediaB = b.mediaFinal || 0;
+    return mediaB - mediaA;
+  }) : [];
 
   const filteredMentorados = sortedMentorados.filter((mentorado) => {
-    const matchesSearch = `${mentorado.nome} ${mentorado.cargo}`
+    const matchesSearch = `${mentorado.nomeMentorado} ${mentorado.cargoMentorado}`
       .toLowerCase()
       .includes(searchTerm.toLowerCase());
     return matchesSearch;
   });
 
-  const getDesempenhoColor = (desempenho: number) => {
-    if (desempenho >= 4.0) return "success";
-    if (desempenho >= 3.5) return "warning";
-    return "error";
-  };
+  if (loading) {
+    return (
+      <S.Container>
+        <div style={{ padding: "2rem", textAlign: "center" }}>
+          <p>Carregando mentorados...</p>
+        </div>
+      </S.Container>
+    );
+  }
+
+  if (error) {
+    return (
+      <S.Container>
+        <div style={{ padding: "2rem", textAlign: "center" }}>
+          <p>Erro ao carregar mentorados: {error}</p>
+        </div>
+      </S.Container>
+    );
+  }
 
   const handleBrutalFacts = (mentoradoId: string) => {
     navigate(`/mentor/brutal-facts/${encodeURIComponent(mentoradoId)}`);
@@ -94,12 +93,12 @@ export function MentoradosPage() {
     {
       label: "Ver Perfil",
       icon: <IoPersonOutline />,
-      onClick: () => handleViewProfile(mentorado.id)
+      onClick: () => handleViewProfile(mentorado.idMentorado)
     },
     {
       label: "Brutal Facts",
       icon: <MdMoreVert />,
-      onClick: () => handleBrutalFacts(mentorado.id)
+      onClick: () => handleBrutalFacts(mentorado.idMentorado)
     }
   ];
 
@@ -109,11 +108,11 @@ export function MentoradosPage() {
         <Title>Meus Mentorados</Title>
         <S.StatsContainer>
           <S.StatCard>
-            <S.StatNumber>{mentoradosMock.length}</S.StatNumber>
+            <S.StatNumber>{mentorados?.length || 0}</S.StatNumber>
             <S.StatLabel>Total de Mentorados</S.StatLabel>
           </S.StatCard>
           <S.StatCard>
-            <S.StatNumber>{mentoradosMock.filter(m => m.desempenho >= 4.0).length}</S.StatNumber>
+            <S.StatNumber>{mentorados?.filter(m => (m.mediaFinal || 0) >= 4.0).length || 0}</S.StatNumber>
             <S.StatLabel>Alto Desempenho</S.StatLabel>
           </S.StatCard>
         </S.StatsContainer>
@@ -148,41 +147,44 @@ export function MentoradosPage() {
             </S.EmptySubtitle>
           </S.EmptyState>
         ) : (
-          filteredMentorados.map((mentorado) => (
-            <S.MentoradoRow key={mentorado.id}>
-              <S.MentoradoInfo>
-                <S.Avatar>
-                  <MdAccountCircle size={48} />
-                </S.Avatar>
-                <S.MentoradoDetails>
-                  <S.MentoradoNome>{mentorado.nome}</S.MentoradoNome>
-                  <S.MentoradoCargo>{formatar(mentorado.cargo)}</S.MentoradoCargo>
-                  <S.MentoradoUnidade>{formatar(mentorado.unidade)}</S.MentoradoUnidade>
-                </S.MentoradoDetails>
-              </S.MentoradoInfo>
-              
-              <S.DesempenhoSection>
-                <S.DesempenhoLabel>Desempenho</S.DesempenhoLabel>
-                <S.DesempenhoValue $color={getDesempenhoColor(mentorado.desempenho)}>
-                  {mentorado.desempenho.toFixed(1)}
-                </S.DesempenhoValue>
-              </S.DesempenhoSection>
+          filteredMentorados.map((mentorado) => {
+            const statusInfo = getStatusInfo(mentorado.mediaFinal);
+            
+            return (
+              <S.MentoradoRow key={mentorado.idMentorado}>
+                <S.MentoradoInfo>
+                  <S.Avatar>
+                    <MdAccountCircle size={48} />
+                  </S.Avatar>
+                  <S.MentoradoDetails>
+                    <S.MentoradoNome>{mentorado.nomeMentorado}</S.MentoradoNome>
+                    <S.MentoradoCargo>{formatar(mentorado.cargoMentorado)}</S.MentoradoCargo>
+                    <S.MentoradoUnidade>{formatar(mentorado.trilhaMentorado)}</S.MentoradoUnidade>
+                  </S.MentoradoDetails>
+                </S.MentoradoInfo>
+                
+                <S.DesempenhoSection>
+                  <S.DesempenhoLabel>Média Final</S.DesempenhoLabel>
+                  <S.DesempenhoValue $color={statusInfo.color}>
+                    {mentorado.mediaFinal || "N/A"}
+                  </S.DesempenhoValue>
+                </S.DesempenhoSection>
 
-              <S.StatusSection>
-               
-                <S.UltimaAvaliacao>
-                  Última avaliação: {new Date(mentorado.ultimaAvaliacao).toLocaleDateString('pt-BR')}
-                </S.UltimaAvaliacao>
-              </S.StatusSection>
+                <S.StatusSection>
+                  <S.UltimaAvaliacao>
+                    Status: <S.StatusBadge $color={statusInfo.color}>{statusInfo.label}</S.StatusBadge>
+                  </S.UltimaAvaliacao>
+                </S.StatusSection>
 
-              <S.ActionsSection>
-                <DropdownActions
-                  actions={getActionOptions(mentorado)}
-                  orientation="vertical"
-                />
-              </S.ActionsSection>
-            </S.MentoradoRow>
-          ))
+                <S.ActionsSection>
+                  <DropdownActions
+                    actions={getActionOptions(mentorado)}
+                    orientation="vertical"
+                  />
+                </S.ActionsSection>
+              </S.MentoradoRow>
+            );
+          })
         )}
       </TableBase>
     </S.Container>

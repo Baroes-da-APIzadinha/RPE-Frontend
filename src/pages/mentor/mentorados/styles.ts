@@ -151,7 +151,7 @@ export const DesempenhoLabel = styled.span`
   color: ${({ theme }) => theme.colors.text.secondary};
 `;
 
-export const DesempenhoValue = styled.span<{ $color: 'success' | 'warning' | 'error' }>`
+export const DesempenhoValue = styled.span<{ $color: 'success' | 'warning' | 'error' | 'neutral' }>`
   font-size: ${({ theme }) => theme.font.sizes.medium};
   font-weight: ${({ theme }) => theme.font.bold};
   color: ${({ $color, theme }) => {
@@ -162,6 +162,8 @@ export const DesempenhoValue = styled.span<{ $color: 'success' | 'warning' | 'er
         return theme.colors.secondary.default;
       case 'error':
         return theme.colors.error.default;
+      case 'neutral':
+        return theme.colors.text.secondary;
       default:
         return theme.colors.text.primary;
     }
@@ -176,22 +178,36 @@ export const StatusSection = styled.div`
   flex: 1;
 `;
 
-export const StatusBadge = styled.span<{ $status: string }>`
+export const StatusBadge = styled.span<{ $color: 'success' | 'warning' | 'error' | 'neutral' }>`
   padding: 0.25rem 0.75rem;
   border-radius: ${({ theme }) => theme.border.radius.full};
   font-size: ${({ theme }) => theme.font.sizes.xsmall};
   font-weight: ${({ theme }) => theme.font.semibold};
   text-transform: capitalize;
-  background: ${({ $status, theme }) => 
-    $status === 'ativo' 
-      ? theme.colors.success.light 
-      : theme.colors.secondary.light
-  };
-  color: ${({ $status, theme }) => 
-    $status === 'ativo' 
-      ? theme.colors.success.default 
-      : theme.colors.secondary.default
-  };
+  background: ${({ $color, theme }) => {
+    switch ($color) {
+      case 'success':
+        return theme.colors.success.light;
+      case 'warning':
+        return theme.colors.secondary.light;
+      case 'error':
+        return theme.colors.error.light;
+      default:
+        return theme.colors.surface.alt;
+    }
+  }};
+  color: ${({ $color, theme }) => {
+    switch ($color) {
+      case 'success':
+        return theme.colors.success.default;
+      case 'warning':
+        return theme.colors.secondary.default;
+      case 'error':
+        return theme.colors.error.default;
+      default:
+        return theme.colors.text.secondary;
+    }
+  }};
 `;
 
 export const UltimaAvaliacao = styled.span`
