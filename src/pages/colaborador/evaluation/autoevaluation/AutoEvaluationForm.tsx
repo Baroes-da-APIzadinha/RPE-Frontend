@@ -141,6 +141,7 @@ export function AutoEvaluationForm() {
       });
 
       toast.success("Autoavaliação enviada com sucesso!");
+      window.location.reload();
     } catch (err) {
       console.error(err);
       toast.error("Erro ao enviar sua autoavaliação.");

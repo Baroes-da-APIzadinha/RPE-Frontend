@@ -2,7 +2,12 @@ import styled from 'styled-components';
 import theme from '@/styles/theme';
 
 export const Container = styled.div`
+  padding: 1rem;
+  @media (max-width: 768px) {
+    padding: 1rem 0.5rem;
+  }
 `;
+
 
 export const HeaderCard = styled.div`
   display: flex;
@@ -74,11 +79,14 @@ export const FormBlock = styled.div`
 `;
 
 export const FormRow = styled.div`
-  display: flex;
-  flex-direction: row;
+  flex-direction: column;
   gap: 1.6rem;
-  width: 100%;
+
+  @media (min-width: 768px) {
+    flex-direction: row;
+  }
 `;
+
 
 export const Label = styled.label`
   font-size: ${theme.font.sizes.small};
@@ -89,7 +97,7 @@ export const Label = styled.label`
 export const StarsGroup = styled.div`
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.8rem;
   margin-bottom: 1rem;
 `;
 
@@ -111,12 +119,28 @@ export const StarButton = styled.button<{ $active: boolean }>`
   padding: 0;
 `;
 
-export const TextArea = styled.textarea`
+export const TextArea = styled.textarea<{ error?: boolean }>`
   resize: none;
   padding: 1rem;
   font-size: 1rem;
-  border: 1px solid ${theme.colors.border};
+  border: 1px solid ${({ error, theme }) =>  error ? theme.colors.error.default : theme.colors.border};
   border-radius: 8px;
   font-family: inherit;
   min-height: 100px;
+`;
+
+
+export const ModalContent = styled.div`
+  margin-bottom: 1.6rem;
+`;
+
+export const ModalDescription = styled.p`
+  font-size: ${({ theme }) => theme.font.sizes.small};
+  color: ${({ theme }) => theme.colors.text.primary};
+`;
+
+export const ModalActions = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
 `;

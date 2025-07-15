@@ -101,6 +101,7 @@ const EvaluationDetails: React.FC<Props> = ({ id, onBack }) => {
 
       await preencherAvaliacaoPares(payload);
       toast.success("Avaliação enviada com sucesso!");
+      window.location.reload();
     } catch (err) {
       console.error(err);
       toast.error("Erro ao enviar a avaliação.");
