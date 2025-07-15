@@ -1,4 +1,4 @@
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import {
   MdChecklist,
   MdFileUpload,
@@ -32,6 +32,8 @@ type NavItem = { to: string; label: string; icon: ReactNode };
 export function Sidebar({ roles, mainRole, userName }: SidebarProps) {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+  const isPerfilActive = location.pathname === "/perfil";
 
   const allNavItems: Record<Role, NavItem[]> = {
     colaborador: [
@@ -177,7 +179,11 @@ export function Sidebar({ roles, mainRole, userName }: SidebarProps) {
           </S.Nav>
         </S.ScrollArea>
         <S.Footer>
-          <S.User onClick={() => navigate("/perfil")} aria-label="Perfil">
+          <S.User
+            onClick={() => navigate("/perfil")}
+            aria-label="Perfil"
+            data-active={isPerfilActive}
+          >
             <MdAccountBox />
             {userName}
           </S.User>
