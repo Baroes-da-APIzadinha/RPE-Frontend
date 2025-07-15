@@ -28,8 +28,8 @@ import { useEvaluationStatusCount } from "@/hooks/rh/useEvaluationStatusCount.ts
 import { useState } from "react";
 import { usePerfil } from "@/hooks/usePerfil.ts";
 import { useConclusionProgressByUnit } from "@/hooks/rh/useConclusionProgressByUnit";
+import { useConclusionProgressByBoard } from "@/hooks/rh/useConclusionProgressByBoard";
 import { formatar } from "@/utils/formatters.ts";
-import type { AlertItem } from "@/components/AlertList";
 
 function getStatusPercentage(statusCount: number, total: number) : number {
   if (total === 0) return 0;
@@ -50,10 +50,12 @@ export function RhDashboard() {
   const concludedPercentage = getStatusPercentage((quantConcluidas), total);
   const { perfil } = usePerfil();
   const dadosUnidade = useConclusionProgressByUnit(cicloAtual?.id ?? "")
+  const dadosTrilha = useConclusionProgressByBoard(cicloAtual?.id ?? "")
   const toggleOptions = [
     { value: 'overview', label: 'Visão Geral', icon: <MdDashboard /> },
     { value: 'analytics', label: 'Análises', icon: <MdBarChart /> }
   ];
+  const [detailedTab, setDetailedTab] = useState<'unidade' | 'trilha'>('unidade');
 
   const getLowestParticipationAlert = () => {
     const unidadesData = dadosUnidade.data.map((item) => ({
@@ -91,6 +93,58 @@ export function RhDashboard() {
       buttonLabel: "Ver Detalhes",
       onClick: () => {
         setActiveTab("analytics");
+        setDetailedTab("unidade");
+      },
+    };
+  };
+
+  const getLowestTrackParticipationAlert = () => {
+    const trilhasData = dadosTrilha.data.map((item) => ({
+      nome: item.nomeTrilha,
+      participacao: Math.round((item.quantConcluidas / item.total) * 100),
+    }));
+
+    if (trilhasData.length === 0) {
+      return {
+        type: "blue" as const,
+        icon: <MdGroups />,
+        title: "Nenhuma trilha encontrada",
+        description: "Não há dados de participação por trilha disponíveis",
+        buttonLabel: "Ver Detalhes",
+        onClick: () => {
+          setActiveTab("analytics");
+        },
+      };
+    }
+
+    const allAboveThreshold = trilhasData.every((trilha) => trilha.participacao > 80);
+    if (allAboveThreshold) {
+      return null;
+    }
+
+    const lowestTrack = trilhasData.reduce((lowest, current) =>
+      current.participacao < lowest.participacao ? current : lowest
+    );
+
+    // Determina a cor baseada na participação
+    let alertType: "red" | "yellow" | "blue" = "blue";
+    if (lowestTrack.participacao < 50) {
+      alertType = "red";
+    } else if (lowestTrack.participacao < 80) {
+      alertType = "yellow";
+    } else {
+      alertType = "blue";
+    }
+
+    return {
+      type: alertType,
+      icon: <MdGroups />,
+      title: `Baixa participação na trilha ${formatar(lowestTrack.nome)}`,
+      description: `Apenas ${lowestTrack.participacao}% das avaliações foram concluídas nesta trilha`,
+      buttonLabel: "Ver Detalhes",
+      onClick: () => {
+        setActiveTab("analytics");
+        setDetailedTab("trilha");
       },
     };
   };
@@ -175,15 +229,8 @@ export function RhDashboard() {
         items={[
           ...(cicloAtual ? [getTimeRemainingAlert()!] : []),
           getLowestParticipationAlert(),
-          {
-            type: "blue",
-            icon: <MdGroups />,
-            title: "Novos colaboradores adicionados",
-            description: "5 novos colaboradores foram adicionados ao ciclo",
-            buttonLabel: "Revisar",
-            onClick: () => console.log("Revisar"),
-          },
-        ].filter((item): item is AlertItem => item !== null && item.icon !== undefined)}
+          getLowestTrackParticipationAlert(),
+        ].filter((item) => item !== null)}
       />
     </S.MainContent>
   );
@@ -263,7 +310,7 @@ export function RhDashboard() {
         </ChartBox>
       </CardContainer>
 
-      <DetailedProgress title="Progresso Detalhado" />
+      <DetailedProgress title="Progresso Detalhado" value={detailedTab}/>
     </S.MainContent>
   );
 
