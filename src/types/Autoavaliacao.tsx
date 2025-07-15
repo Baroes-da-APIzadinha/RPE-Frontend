@@ -30,9 +30,9 @@ export type RespostaAutoAvaliacao = {
 export type UseAutoAvaliacaoIdReturn = {
   idAvaliacao: string | null;
   respostas: RespostaAutoAvaliacao[] | null;
+  status: string | null;
   loading: boolean;
 };
-
 
 export type AutoAvaliacaoApiResponse = {
   success: boolean;
@@ -46,7 +46,7 @@ export type Criterio = {
   descricao: string;
 };
 
-export type PilarCriterios = Record<string, Criterio[]>; 
+export type PilarCriterios = Record<string, Criterio[]>;
 
 export type RespostaExistente = {
   nomeCriterio: string;

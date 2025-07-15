@@ -4,11 +4,17 @@ export const Container = styled.div<{ error?: boolean }>`
   position: relative;
   background: ${({ theme }) => theme.colors.surface.default};
   border-radius: 1rem;
-  border: 1px solid ${({ error, theme }) =>  error ? theme.colors.error.default : theme.colors.border};
+  border: 1px solid ${({ error, theme }) =>
+    error ? theme.colors.error.default : theme.colors.border};
   padding: 1.5rem 2rem;
   margin-bottom: 1.5rem;
   width: 100%;
+
+  @media (max-width: 768px) {
+    padding: 1.2rem 1.4rem;
+  }
 `;
+
 
 export const Header = styled.div`
   margin-bottom: 1rem;
@@ -28,10 +34,17 @@ export const Subtitle = styled.span`
 
 export const RatingRow = styled.div`
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.8rem;
   margin-bottom: 1rem;
+
+  @media (max-width: 480px) {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 `;
+
 
 export const Label = styled.span`
   color: ${({ theme }) => theme.colors.text.primary};
@@ -54,14 +67,30 @@ export const JustificationArea = styled.textarea`
   padding: 0.7rem;
   font-size: ${({ theme }) => theme.font.sizes.small};
   margin-bottom: 1rem;
-  resize: None;
+  resize: none;
   color: ${({ theme }) => theme.colors.text.primary};
   background: ${({ theme }) => theme.colors.surface.alt};
+
+  &:disabled {
+    background: ${({ theme }) => theme.colors.lightGray};
+    color: ${({ theme }) => theme.colors.text.secondary};
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+`;
+
+
+
+export const HeaderDiv = styled.div`
+
+  display: flex;
+  flex: 1;
+  justify-content: space-between;
+
 `;
 
 export const CollapseButton = styled.button<{ collapsed: boolean }>`
   position: absolute;
-  top: 1rem;
   right: 1rem;
   background: none;
   border: none;
@@ -75,6 +104,22 @@ export const CollapseButton = styled.button<{ collapsed: boolean }>`
         color: ${({ theme }) => theme.colors.text.primary};
     }
 `;
+
+export const NotaBadge = styled.span<{ $visible?: boolean }>`
+  display: ${({ $visible }) => ($visible === false ? 'none' : 'inline-flex')};
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  height: 32px;
+  padding: 0 .5rem;
+  border-radius: 8px;
+  background: ${({ theme }) => theme.colors.primary.light};
+  color: ${({ theme }) => theme.colors.primary.default};
+  font-weight: ${({ theme }) => theme.font.bold};
+  font-size: 1rem;
+  margin-right: 2rem;
+`;
+
 
 export const JustificationLabel = styled.span`
   display: block;
