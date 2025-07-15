@@ -10,8 +10,8 @@ import { formatar } from "@/utils/formatters";
 
 type TipoProgresso = "unidade" | "trilha";
 
-export function DetailedProgress({ title }: { title: string }) {
-  const [tipo, setTipo] = useState<TipoProgresso>("unidade");
+export function DetailedProgress({ title, value }: { title: string, value : TipoProgresso }) {
+  const [tipo, setTipo] = useState<TipoProgresso>(value as TipoProgresso);
 
   const dadosUnidade = useConclusionProgressByUnit(useCicloAtual().cicloAtual?.id ?? "")
   .data.map((item) => ({
