@@ -1,9 +1,9 @@
 import * as S from "./styles";
 import Button from "@/components/Button";
 
-interface AlertItem {
+export interface AlertItem {
   type: "red" | "yellow" | "blue" | "green";
-  icon: React.ReactNode;
+  icon: React.ReactElement;
   title: string;
   description: string;
   buttonLabel: string;

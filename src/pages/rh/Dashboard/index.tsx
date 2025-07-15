@@ -29,6 +29,7 @@ import { useState } from "react";
 import { usePerfil } from "@/hooks/usePerfil.ts";
 import { useConclusionProgressByUnit } from "@/hooks/rh/useConclusionProgressByUnit";
 import { formatar } from "@/utils/formatters.ts";
+import type { AlertItem } from "@/components/AlertList";
 
 function getStatusPercentage(statusCount: number, total: number) : number {
   if (total === 0) return 0;
@@ -71,6 +72,11 @@ export function RhDashboard() {
           setActiveTab("analytics");
         },
       };
+    }
+
+    const allAboveThreshold = unidadesData.every((unit) => unit.participacao > 80);
+    if (allAboveThreshold) {
+      return null;
     }
 
     const lowestUnit = unidadesData.reduce((lowest, current) =>
@@ -177,7 +183,7 @@ export function RhDashboard() {
             buttonLabel: "Revisar",
             onClick: () => console.log("Revisar"),
           },
-        ]}
+        ].filter((item): item is AlertItem => item !== null && item.icon !== undefined)}
       />
     </S.MainContent>
   );
