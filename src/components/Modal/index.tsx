@@ -42,7 +42,10 @@ export function Modal({
           </S.CloseButton>
         </S.Header>
 
-        <S.Content>{children}</S.Content>
+        <S.Content>
+          
+          
+          {children}</S.Content>
       </S.Container>
     </S.Overlay>
   );

@@ -116,6 +116,11 @@ export function Sidebar({ roles, mainRole, userName }: SidebarProps) {
         label: "Logs de Auditoria",
         icon: <LuLogs size={24} />,
       },
+      {
+        to: "/admin/auditoria-roles",
+        label: "Gerenciar Perfis",
+        icon: <MdSupervisorAccount size={24} />,
+      },
     ],
   };
 
