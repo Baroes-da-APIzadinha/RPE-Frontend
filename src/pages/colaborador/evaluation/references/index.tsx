@@ -1,6 +1,7 @@
 import Button from "@/components/Button";
 import * as S from "./styles.ts";
 import {
+  MdAccountCircle,
   MdAdd,
   MdOutlineAdd,
   MdOutlineCode,
@@ -23,6 +24,8 @@ import {
 } from "@/services/HTTP/referencias.ts";
 import { toast } from "sonner";
 import { useReferenciasIndicadas } from "@/hooks/referencias/useReferenciasIndicadas.ts";
+import { Card } from "@/components/Card/index.tsx";
+import { EmptyMessage } from "@/components/EmptyMensage/index.tsx";
 
 type Referencia = {
   id?: string;
@@ -212,24 +215,37 @@ export function ReferencesPage() {
     setIdAvaliadoSelecionado(null);
   };
 
+  if (avaliados.length <= 0) {
+    return (
+      <EmptyMessage
+        icon={<MdAccountCircle size={32} />}
+        title="Acesso restrito"
+        description="Esta funcionalidade está disponível apenas para colaboradores."
+      />
+    );
+  }
+
   return (
     <>
-      <S.CardContainer>
+      <Card>
         <S.Title>Indicação de Referências</S.Title>
-        <S.Subtitle>
-          Indique pessoas que são referências técnicas e culturais para você na
-          empresa
-        </S.Subtitle>
-      </S.CardContainer>
-
-      <S.CardContainer>
-        <S.CardText>
-          <strong>Instruções:</strong> Indique colegas da Rocket Corp que você
-          considera referências em aspectos técnicos e culturais. Suas
-          indicações ajudarão no processo de equalização e desenvolvimento da
-          empresa.
-        </S.CardText>
-      </S.CardContainer>
+        <S.CardSeparator>
+          <S.Subtitle>
+            Indique pessoas que são referências técnicas e culturais para você
+            na empresa
+          </S.Subtitle>
+          <S.CardText>
+            <strong>Instruções:</strong> Indique colegas da Rocket Corp que você
+            considera referências em aspectos técnicos e culturais. Suas
+            indicações ajudarão no processo de equalização e desenvolvimento da
+            empresa.
+          </S.CardText>
+          <S.CardText>
+            As indicações são enviadas automaticamente, remova e faça edições
+            enquanto o ciclo continua na fase de Avaliação
+          </S.CardText>
+        </S.CardSeparator>
+      </Card>
 
       <S.Header>
         <S.HeaderButtons>
@@ -239,78 +255,77 @@ export function ReferencesPage() {
         </S.HeaderButtons>
       </S.Header>
 
-      <S.ReferTitle>
-        <MdOutlineCode color={theme.colors.chart.blue} />
-        Referências Técnicas <span>{referenciasTecnicas}</span>
-      </S.ReferTitle>
-      {referencias
-        .filter((r) => r.tipo === "TECNICA")
-        .map((r, i) => {
-          const index = referencias.findIndex(
-            (ref) => ref.nome === r.nome && ref.tipo === "TECNICA"
-          );
-          return (
-            <S.ReferenceCard key={i}>
-              <S.Avatar />
-              <S.UserData>
-                <strong>{r.nome}</strong>
-                {/* <span>{avaliados.find((a) => a.idAvaliado === r.idAvaliado)?.cargo || "Cargo não informado"}</span> */}
-                {/* <small>Trabalhou junto por x meses</small> */}
-              </S.UserData>
-              <S.TypeBadge $tipo="tecnica">
-                <MdOutlineCode />
-                Técnica
-              </S.TypeBadge>
-              <S.EditIcon onClick={() => handleEdit(index)}>
-                <MdOutlineEdit />
-              </S.EditIcon>
-              <S.DeleteIcon onClick={() => handleDelete(index)}>
-                <MdOutlineDelete />
-              </S.DeleteIcon>
-            </S.ReferenceCard>
-          );
-        })}
+      {referenciasTecnicas > 0 && (
+        <>
+          <S.ReferTitle>
+            <MdOutlineCode color={theme.colors.chart.blue} />
+            Referências Técnicas <span>{referenciasTecnicas}</span>
+          </S.ReferTitle>
+          {referencias
+            .filter((r) => r.tipo === "TECNICA")
+            .map((r, i) => {
+              const index = referencias.findIndex(
+                (ref) => ref.nome === r.nome && ref.tipo === "TECNICA"
+              );
+              return (
+                <S.ReferenceCard key={i}>
+                  <S.Avatar />
+                  <S.UserData>
+                    <strong>{r.nome}</strong>
+                  </S.UserData>
+                  <S.TypeBadge $tipo="tecnica">
+                    <MdOutlineCode />
+                    Técnica
+                  </S.TypeBadge>
+                  <S.EditIcon onClick={() => handleEdit(index)}>
+                    <MdOutlineEdit />
+                  </S.EditIcon>
+                  <S.DeleteIcon onClick={() => handleDelete(index)}>
+                    <MdOutlineDelete />
+                  </S.DeleteIcon>
+                </S.ReferenceCard>
+              );
+            })}
+        </>
+      )}
 
-      <S.ReferSeparator></S.ReferSeparator>
+      {referenciasTecnicas > 0 && referenciasCulturais > 0 && (
+        <S.ReferSeparator />
+      )}
 
-      <S.ReferTitle>
-        <MdOutlineGroup color={theme.colors.chart.green} />
-        Referências Culturais <span>{referenciasCulturais}</span>
-      </S.ReferTitle>
-      {referencias
-        .filter((r) => r.tipo === "CULTURAL")
-        .map((r, i) => {
-          const index = referencias.findIndex(
-            (ref) => ref.nome === r.nome && ref.tipo === "CULTURAL"
-          );
-          return (
-            <S.ReferenceCard key={i}>
-              <S.Avatar />
-              <S.UserData>
-                <strong>{r.nome}</strong>
-                {/* <span>{avaliados.find((a) => a.idAvaliado === r.idAvaliado)?.cargo || "Cargo não informado"}</span> */}
-                {/* <small>Trabalhou junto por x meses</small> */}
-              </S.UserData>
-              <S.TypeBadge $tipo="cultural">
-                <MdOutlineGroup />
-                Cultural
-              </S.TypeBadge>
-              <S.EditIcon onClick={() => handleEdit(index)}>
-                <MdOutlineEdit />
-              </S.EditIcon>
-              <S.DeleteIcon onClick={() => handleDelete(index)}>
-                <MdOutlineDelete />
-              </S.DeleteIcon>
-            </S.ReferenceCard>
-          );
-        })}
-
-      <S.CardContainer>
-        <S.CardText>
-          As indicações são enviadas automaticamente, remova e faça edições
-          enquanto o ciclo continua na fase de Avaliação
-        </S.CardText>
-      </S.CardContainer>
+      {referenciasCulturais > 0 && (
+        <>
+          <S.ReferTitle>
+            <MdOutlineGroup color={theme.colors.chart.green} />
+            Referências Culturais <span>{referenciasCulturais}</span>
+          </S.ReferTitle>
+          {referencias
+            .filter((r) => r.tipo === "CULTURAL")
+            .map((r, i) => {
+              const index = referencias.findIndex(
+                (ref) => ref.nome === r.nome && ref.tipo === "CULTURAL"
+              );
+              return (
+                <S.ReferenceCard key={i}>
+                  <S.Avatar />
+                  <S.UserData>
+                    <strong>{r.nome}</strong>
+                  </S.UserData>
+                  <S.TypeBadge $tipo="cultural">
+                    <MdOutlineGroup />
+                    Cultural
+                  </S.TypeBadge>
+                  <S.EditIcon onClick={() => handleEdit(index)}>
+                    <MdOutlineEdit />
+                  </S.EditIcon>
+                  <S.DeleteIcon onClick={() => handleDelete(index)}>
+                    <MdOutlineDelete />
+                  </S.DeleteIcon>
+                </S.ReferenceCard>
+              );
+            })}
+        </>
+      )}
 
       <Modal
         open={showModal}

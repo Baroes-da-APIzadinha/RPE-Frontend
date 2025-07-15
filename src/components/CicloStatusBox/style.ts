@@ -15,13 +15,16 @@ export const Step = styled.div<{ active: boolean; completed: boolean }>`
   z-index: 1;
 
   .circle {
-    width: 3rem; /* Aumenta o tamanho da bola */
-    height: 3rem; /* Aumenta o tamanho da bola */
+    width: 3rem;
+    height: 3rem;
     border-radius: 50%;
+    display: flex;          
+    align-items: center;    
+    justify-content: center;
     border: ${({ completed, active, theme }) =>
-      completed || active ? "none" : `2px solid ${theme.colors.text.secondary}`}; /* Remove a borda quando ativa */
+      completed || active ? "none" : `2px solid ${theme.colors.text.secondary}`};
     background: ${({ active, completed, theme }) => {
-      if (completed) return theme.colors.success.default;
+      if (completed) return theme.colors.primary.hover;
       if (active) return theme.colors.primary.default;
       return theme.colors.surface.default;
     }};

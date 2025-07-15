@@ -68,7 +68,7 @@ export const Header = styled.div`
   align-items: center;
   gap: 1.2rem;
   padding-bottom: 1.6rem;
-  margin-bottom: 2.4rem;
+  margin-bottom: 0.8rem;
   border-bottom: 1px solid ${theme.colors.border};
 `
 
@@ -105,11 +105,17 @@ export const NavItem = styled.button<{ active?: boolean }>`
   border: none;
   font-size: ${theme.font.sizes.xsmall};
   color: ${theme.colors.text.primary};
-  padding: .9rem;
+  padding: 0.9rem 1rem;
   border-radius: ${theme.border.radius.medium};
   cursor: pointer;
   text-align: left;
   transition: color 0.2s, background 0.2s;
+
+  svg {
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+  }
 
   &:hover {
     color: ${theme.colors.primary.default};
@@ -121,7 +127,60 @@ export const NavItem = styled.button<{ active?: boolean }>`
       background-color: ${theme.colors.primary.light};
       color: ${theme.colors.primary.default};
     `}
-`
+`;
+
+export const User = styled.button`
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: ${theme.font.sizes.xsmall};
+  color: ${theme.colors.text.primary};
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color 0.2s, background-color 0.2s;
+  border-radius: ${theme.border.radius.medium};
+  padding: 0.9rem 1rem;
+
+  svg {
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+  }
+
+  &:hover {
+    color: ${theme.colors.primary.default};
+  }
+
+  &[data-active="true"] {
+    background-color: ${theme.colors.primary.light};
+    color: ${theme.colors.primary.default};
+  }
+`;
+
+export const Logout = styled.button`
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: ${theme.font.sizes.xsmall};
+  color: ${theme.colors.text.primary};
+  border-radius: ${theme.border.radius.medium};
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.9rem 1rem;
+  transition: color 0.2s;
+
+  svg {
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+  }
+
+   &:hover {
+    color: ${theme.colors.error.default};
+  }
+`;
 
 
 export const Footer = styled.div`
@@ -130,41 +189,4 @@ export const Footer = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0.8rem;
-`
-
-export const User = styled.button`
-  display: flex;
-  align-items: center;
-  gap: 1.2rem;
-  font-size: ${theme.font.sizes.xsmall};
-  color: ${theme.colors.text.primary};
-  background: none;
-  border: none;
-  cursor: pointer;
-  transition: color 0.2s, background-color 0.2s;
-  border-radius: ${theme.border.radius.medium};
-  padding: 0.6rem;
-
-  &:hover {
-    background-color: ${theme.colors.primary.light};
-    color: ${theme.colors.primary.default};
-  }
-`;
-
-
-export const Logout = styled.button`
-  display: flex;
-  align-items: center;
-  font-size: ${theme.font.sizes.xsmall};
-  color: ${theme.colors.text.primary};
-  background: none;
-  border: none;
-  gap: 1.2rem;
-  cursor: pointer;
-  transition: color 0.2s;
-
-
-  &:hover {
-    color: ${theme.colors.error.default};
-  }
 `

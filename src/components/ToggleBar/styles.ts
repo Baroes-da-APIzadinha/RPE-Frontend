@@ -10,8 +10,13 @@ export const ToggleGroup = styled.div`
   border-radius: ${({ theme }) => theme.border.radius.xsmall};
 
   @media (max-width: 768px) {
-    flex-direction: column;
+    flex-wrap: wrap;
+    overflow-x: auto;
+    justify-content: flex-start;
+    padding: 0.6rem;
+    gap: 0.6rem;
   }
+
 `;
 
 export const ToggleItem = styled.button<{ active: boolean }>`
