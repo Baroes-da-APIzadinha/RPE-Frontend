@@ -30,6 +30,8 @@ import { usePerfil } from "@/hooks/usePerfil.ts";
 import { useConclusionProgressByUnit } from "@/hooks/rh/useConclusionProgressByUnit";
 import { useConclusionProgressByBoard } from "@/hooks/rh/useConclusionProgressByBoard";
 import { formatar } from "@/utils/formatters.ts";
+import { useSetReminder } from "@/hooks/useSetReminder";
+import { toast } from "sonner";
 
 function getStatusPercentage(statusCount: number, total: number) : number {
   if (total === 0) return 0;
@@ -51,11 +53,26 @@ export function RhDashboard() {
   const { perfil } = usePerfil();
   const dadosUnidade = useConclusionProgressByUnit(cicloAtual?.id ?? "")
   const dadosTrilha = useConclusionProgressByBoard(cicloAtual?.id ?? "")
+  const { setReminder } = useSetReminder();
   const toggleOptions = [
     { value: 'overview', label: 'Visão Geral', icon: <MdDashboard /> },
     { value: 'analytics', label: 'Análises', icon: <MdBarChart /> }
   ];
   const [detailedTab, setDetailedTab] = useState<'unidade' | 'trilha'>('unidade');
+
+  const handleSendReminder = async () => {
+    if (!cicloAtual) return;
+    
+    const days = treatTimeRemaining(cicloAtual.tempoRestante);
+    const message = `Lembrete: O ciclo de avaliação "${cicloAtual.nome}" está se aproximando do fim. Restam apenas ${days} para conclusão.`;
+    
+    try {
+      await setReminder(message);
+      toast.success("Lembrete enviado com sucesso!");
+    } catch (error) {
+      console.error('Erro ao enviar lembrete:', error);
+    }
+  };
 
   const getLowestParticipationAlert = () => {
     const unidadesData = dadosUnidade.data.map((item) => ({
@@ -183,7 +200,7 @@ export function RhDashboard() {
       title,
       description,
       buttonLabel: "Enviar Lembrete",
-      onClick: () => console.log("Enviar Lembrete"),
+      onClick: handleSendReminder,
     };
   };
   const renderOverviewTab = () => (
