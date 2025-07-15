@@ -1,55 +1,27 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import * as S from "./styles";
 import { Title } from "@/components/Title";
 import Button from "@/components/Button";
 import { MdAccountCircle, MdArrowBack, MdFileDownload } from "react-icons/md";
 import { formatar } from "@/utils/formatters";
-
-// Mock data para o mentorado
-const mentoradoMock = {
-  id: "1",
-  nome: "Ana Silva Costa",
-  cargo: "Desenvolvedor Frontend Junior",
-  unidade: "Tecnologia",
-  desempenho: 4.2,
-  dataInicio: "2024-01-15",
-  ultimaAvaliacao: "2024-06-15"
-};
-
-// Mock data para o relatório de Brutal Facts
-const brutalFactsReport = {
-  geradoEm: "2024-06-25T10:30:00Z",
-  resumoExecutivo: `Ana Silva Costa demonstra um perfil profissional promissor como Desenvolvedor Frontend Junior, com forte potencial de crescimento e adaptabilidade. Sua trajetória nos últimos 6 meses revela uma evolução consistente em competências técnicas e comportamentais, destacando-se pela proatividade e capacidade de aprendizado.`,
-  
-  pontosFortes: [
-    "Excelente capacidade de aprendizado e adaptação a novas tecnologias",
-    "Proatividade na busca por soluções e melhorias nos processos",
-    "Boa comunicação com a equipe e colaboração efetiva",
-    "Organização e cumprimento de prazos estabelecidos",
-    "Interesse genuíno em desenvolvimento profissional e feedback"
-  ],
-  
-  areasDeDesenvolvimento: [
-    "Aprofundamento em conceitos avançados de JavaScript e TypeScript",
-    "Melhoria na estruturação de código para projetos de maior complexidade",
-    "Desenvolvimento de habilidades de liderança técnica",
-    "Aprimoramento na documentação técnica e comunicação de soluções"
-  ],
-  
-  recomendacoes: [
-    "Participar de projetos mais complexos para acelerar o desenvolvimento técnico",
-    "Considerar mentorias técnicas específicas em arquitetura frontend",
-    "Buscar certificações relevantes em frameworks utilizados pela empresa",
-    "Assumir gradualmente responsabilidades de revisão de código de outros desenvolvedores"
-  ],
-  
-  proximosPassos: `Recomenda-se que Ana seja incluída em projetos de maior complexidade técnica nos próximos 3 meses, com acompanhamento quinzenal para avaliação do progresso. Estabelecer metas claras de desenvolvimento técnico e comportamental, com foco em liderança técnica e mentoria de desenvolvedores mais júniores.`,
-  
-  avaliacaoGeral: `Ana apresenta um perfil sólido para evolução na carreira, com características que indicam potencial para assumir posições de maior responsabilidade técnica no médio prazo. Sua dedicação e postura profissional são exemplares, necessitando apenas de experiências mais desafiadoras para consolidar seu crescimento.`
-};
+import { useGetBrutalFacts } from "@/hooks/IA/useGetBrutalFacts";
+import { useColaboradorById } from "@/hooks/colaboradores/useColaboradorById";
+import { useCicloAtual } from "@/hooks/useCicloAtual";
 
 export function BrutalFactsPage() {
   const navigate = useNavigate();
+  const { id } = useParams<{ id: string }>();
+  
+  // Decodificar o ID do colaborador da URL
+  const colaboradorId = decodeURIComponent(id || "");
+  
+  // Hooks para buscar dados reais
+  const { colaborador } = useColaboradorById(colaboradorId);
+  const { cicloAtual } = useCicloAtual();
+  const { data: brutalFacts, loading, error } = useGetBrutalFacts(
+    colaboradorId,
+    cicloAtual?.id || ""
+  );
   
   const handleBack = () => {
     navigate(-1);
@@ -60,6 +32,36 @@ export function BrutalFactsPage() {
     // Por enquanto, apenas um placeholder
     alert("Funcionalidade de exportação PDF será implementada pelo backend");
   };
+
+  if (loading) {
+    return (
+      <S.Container>
+        <div style={{ padding: "2rem", textAlign: "center" }}>
+          <p>Carregando brutal facts...</p>
+        </div>
+      </S.Container>
+    );
+  }
+
+  if (error) {
+    return (
+      <S.Container>
+        <div style={{ padding: "2rem", textAlign: "center" }}>
+          <p>Erro ao carregar brutal facts: {error}</p>
+        </div>
+      </S.Container>
+    );
+  }
+
+  if (!brutalFacts) {
+    return (
+      <S.Container>
+        <div style={{ padding: "2rem", textAlign: "center" }}>
+          <p>Nenhum brutal facts encontrado para este colaborador.</p>
+        </div>
+      </S.Container>
+    );
+  }
   
   return (
     <S.Container>
@@ -71,9 +73,9 @@ export function BrutalFactsPage() {
               <MdAccountCircle size={48} />
             </S.Avatar>
             <S.MentoradoDetails>
-              <S.MentoradoNome>{mentoradoMock.nome}</S.MentoradoNome>
-              <S.MentoradoCargo>{formatar(mentoradoMock.cargo)}</S.MentoradoCargo>
-              <S.MentoradoUnidade>{formatar(mentoradoMock.unidade)}</S.MentoradoUnidade>
+              <S.MentoradoNome>{colaborador?.nomeCompleto || "Nome não disponível"}</S.MentoradoNome>
+              <S.MentoradoCargo>{formatar(colaborador?.cargo || "Cargo não disponível")}</S.MentoradoCargo>
+              <S.MentoradoUnidade>{formatar(colaborador?.unidade || "Unidade não disponível")}</S.MentoradoUnidade>
             </S.MentoradoDetails>
           </S.MentoradoInfo>
         </S.HeaderContent>
@@ -102,62 +104,76 @@ export function BrutalFactsPage() {
         <S.ReportSection>
           <S.SectionTitle>Resumo Executivo</S.SectionTitle>
           <S.SectionContent>
-            <p>{brutalFactsReport.resumoExecutivo}</p>
+            <p>{brutalFacts.mensagemColaborador || "Resumo não disponível"}</p>
           </S.SectionContent>
         </S.ReportSection>
 
         <S.ReportSection>
+          <S.SectionTitle>Nota Final Equalizada</S.SectionTitle>
+          <S.HighlightBox>
+            <S.SectionContent>
+              <p>{brutalFacts.notaFinalEqualizada || "Nota final não disponível"}</p>
+            </S.SectionContent>
+          </S.HighlightBox>
+        </S.ReportSection>
+
+        <S.ReportSection>
+          <S.SectionTitle>Justificativa do Comitê</S.SectionTitle>
+          <S.SectionContent>
+            <p>{brutalFacts.justificativaComite || "Justificativa não disponível"}</p>
+          </S.SectionContent>
+        </S.ReportSection>
+        <S.ReportSection>
           <S.SectionTitle>Pontos Fortes</S.SectionTitle>
           <S.SectionContent>
-            <ul>
-              {brutalFactsReport.pontosFortes.map((ponto, index) => (
-                <li key={index}>{ponto}</li>
-              ))}
-            </ul>
+            {brutalFacts.pontosFortes.length > 0 ? (
+              <ul>
+                {brutalFacts.pontosFortes.map((ponto: string, index: number) => (
+                  <li key={index}>{ponto}</li>
+                ))}
+              </ul>
+            ) : (
+              <p>Nenhum ponto forte identificado</p>
+            )}
           </S.SectionContent>
         </S.ReportSection>
 
         <S.ReportSection>
           <S.SectionTitle>Áreas de Desenvolvimento</S.SectionTitle>
           <S.SectionContent>
-            <ul>
-              {brutalFactsReport.areasDeDesenvolvimento.map((area, index) => (
-                <li key={index}>{area}</li>
-              ))}
-            </ul>
+            {brutalFacts.oportunidadesMelhoria.length > 0 ? (
+              <ul>
+                {brutalFacts.oportunidadesMelhoria.map((area: string, index: number) => (
+                  <li key={index}>{area}</li>
+                ))}
+              </ul>
+            ) : (
+              <p>Nenhuma oportunidade de melhoria identificada</p>
+            )}
           </S.SectionContent>
         </S.ReportSection>
 
         <S.ReportSection>
           <S.SectionTitle>Recomendações</S.SectionTitle>
           <S.SectionContent>
-            <ul>
-              {brutalFactsReport.recomendacoes.map((recomendacao, index) => (
-                <li key={index}>{recomendacao}</li>
-              ))}
-            </ul>
+            {brutalFacts.recomendacoesComite.length > 0 ? (
+              <ul>
+                {brutalFacts.recomendacoesComite.map((recomendacao: string, index: number) => (
+                  <li key={index}>{recomendacao}</li>
+                ))}
+              </ul>
+            ) : (
+              <p>Nenhuma recomendação disponível</p>
+            )}
           </S.SectionContent>
         </S.ReportSection>
 
-        <S.ReportSection>
-          <S.SectionTitle>Próximos Passos</S.SectionTitle>
-          <S.HighlightBox>
-            <S.SectionContent>
-              <p>{brutalFactsReport.proximosPassos}</p>
-            </S.SectionContent>
-          </S.HighlightBox>
-        </S.ReportSection>
 
-        <S.ReportSection>
-          <S.SectionTitle>Avaliação Geral</S.SectionTitle>
-          <S.SectionContent>
-            <p>{brutalFactsReport.avaliacaoGeral}</p>
-          </S.SectionContent>
-        </S.ReportSection>
 
+       
         <S.MetaInfo>
           <S.GeneratedDate>
-            Relatório gerado em: {new Date(brutalFactsReport.geradoEm).toLocaleDateString('pt-BR')} às {new Date(brutalFactsReport.geradoEm).toLocaleTimeString('pt-BR')}
+            Relatório gerado em: {new Date().toLocaleDateString('pt-BR')} às {new Date().toLocaleTimeString('pt-BR')}
           </S.GeneratedDate>
           <S.AIBadge>
             Gerado por IA
