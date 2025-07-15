@@ -1,12 +1,5 @@
 import styled from "styled-components";
 
-export const ProgressCard = styled.div`
-  background: ${({ theme }) => theme.colors.surface.default};
-  padding: 1.6rem;
-  border-radius: ${({ theme }) => theme.border.radius.medium};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  margin-bottom: 1.6rem;
-`;
 
 export const Header = styled.div`
   display: flex;
@@ -26,33 +19,11 @@ export const Subtitle = styled.p`
   margin-top: 0.4rem;
 `;
 
-export const Right = styled.div`
-  text-align: right;
-`;
-
-export const Porcentagem = styled.span`
-  font-size: 1.4rem;
-  font-weight: 700;
-  color: ${({ theme }) => theme.colors.primary.default};
-`;
-
 export const Label = styled.p`
   font-size: ${({ theme }) => theme.font.sizes.xsmall};
   color: ${({ theme }) => theme.colors.text.secondary};
 `;
 
-export const ProgressBar = styled.div`
-  height: 8px;
-  background: ${({ theme }) => theme.colors.lightGray};
-  border-radius: 4px;
-  margin-top: 1rem;
-`;
-
-export const ProgressFill = styled.div`
-  height: 100%;
-  background: ${({ theme }) => theme.colors.text.primary};
-  border-radius: 4px;
-`;
 
 export const SummaryRow = styled.div`
   display: flex;

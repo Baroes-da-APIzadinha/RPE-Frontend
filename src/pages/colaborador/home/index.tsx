@@ -33,17 +33,14 @@ export function ColaboradorHome() {
           {
             subtitle: "Autoavaliação",
             value: 100,
-            color: theme.colors.success.default,
           },
           {
-            subtitle: "Avaliação 360°",
+            subtitle: "Avaliação de Pares",
             value: 10,
-            color: theme.colors.error.default,
           },
           {
-            subtitle: "Avaliação do Gestor",
+            subtitle: "Avaliação do Lider",
             value: 0,
-            color: theme.colors.secondary.default,
           },
         ]}
       />

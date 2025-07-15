@@ -1,3 +1,4 @@
+import type { TableRowBoxProps } from "@/components/TableRowBox";
 
 export function formatar(str: string): string {
   if (!str) return "";
@@ -24,7 +25,7 @@ export function formatar(str: string): string {
 
   const chave = texto.toLowerCase();
   return NOMES_CORRIGIDOS[chave] || texto;
-}
+};
 
 export const formatDateTime = (dateStr: string) => {
     const date = new Date(dateStr);
@@ -41,4 +42,19 @@ export const formatDateTime = (dateStr: string) => {
       date: `${dia}/${mes}/${ano}`,
       time: `${hora}:${minuto}:${segundo}`,
     };
+};
+
+
+export const formatStatus = (status: string): TableRowBoxProps["status"] => {
+  const STATUS_MAP: Record<string, TableRowBoxProps["status"]> = {
+    CONCLUIDA: "Avaliado",
+    EM_ANDAMENTO: "Andamento",
+    PENDENTE: "Pendente",
+    EM_REVISAO: "Em revisão",
+    EM_EQUALIZACAO: "Em equalização",
+    FINALIZADA: "Finalizado",
   };
+
+  return STATUS_MAP[status.toUpperCase()] || "Pendente";
+};
+

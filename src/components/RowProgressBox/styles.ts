@@ -1,94 +1,63 @@
 import styled from "styled-components";
 
-export const RowBox = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 1.2rem;
+export const Container = styled.div`
+  background: ${({ theme }) => theme.colors.surface.default};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  padding: 1.6rem;
+  border-radius: ${({ theme }) => theme.border.radius.medium};
   width: 100%;
-`;
-
-export const Item = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 1.6rem;
-  width: 100%;
-`;
-
-export const Title = styled.h3`
-  color: ${({ theme }) => theme.colors.text.primary};
-  font-size: ${({ theme }) => theme.font.sizes.small};
-  font-weight: 600;
-  margin: 0 0 2.2rem 0; /* espaço maior após o título */
+  margin-bottom: 1.6rem;
 `;
 
 export const BarWrapper = styled.div`
-  flex: 1;
+  width: 100%;
+  margin-bottom: 1.5rem;
 `;
 
-export const Container = styled.div`
-  background: ${({ theme }) => theme.colors.surface.default};
-  border-radius: 1.125rem;
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  padding: 1rem 1.5rem;
+export const Header = styled.div`
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  width: 100%;
-  min-width: 340px;
-  min-height: 170px;
-  position: relative;
-  margin-bottom: 2rem;
-  margin-top: 1rem;
-`;
-
-export const BarsRow = styled.div`
-  display: flex;
-  flex-direction: row;
-  gap: 2rem;
-  width: 100%;
   justify-content: space-between;
-`;
-
-export const BarBox = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  min-width: 100px;
-  flex: 1;
-`;
-
-export const BarHeader = styled.div`
-  display: flex;
-  flex-direction: row;
   align-items: flex-start;
-  justify-content: space-between;
-  width: 100%;
-  margin-bottom: 0.3rem;
 `;
 
-export const Subtitle = styled.span`
+
+export const Title = styled.h2`
+  font-size: ${({ theme }) => theme.font.sizes.large};
+  font-weight: ${({ theme }) => theme.font.bold};
   color: ${({ theme }) => theme.colors.text.primary};
+`;
+
+export const Subtitle = styled.p`
   font-size: ${({ theme }) => theme.font.sizes.small};
-  font-weight: 600;
+  color: ${({ theme }) => theme.colors.text.secondary};
+  margin-top: 0.4rem;
 `;
 
-export const Percent = styled.span`
-  color: ${({ theme }) => theme.colors.text.primary};
-  font-size: 1rem;
-  font-weight: 600;
+export const Right = styled.div`
+  text-align: right;
+`;
+
+export const Porcentagem = styled.span`
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: ${({ theme }) => theme.colors.primary.default};
+`;
+
+export const Label = styled.p`
+  font-size: ${({ theme }) => theme.font.sizes.xsmall};
+  color: ${({ theme }) => theme.colors.text.secondary};
 `;
 
 export const ProgressBar = styled.div`
-  width: 100%;
-  height: 16px;
+  height: 8px;
   background: ${({ theme }) => theme.colors.lightGray};
-  border-radius: 8px;
+  border-radius: 4px;
   overflow: hidden;
 `;
 
 export const Progress = styled.div<{ $value: number; $color?: string }>`
   height: 100%;
-  background: ${({ theme }) =>theme.colors.black};
+  background: ${({ $color, theme }) => $color || theme.colors.text.primary};
   width: ${({ $value }) => Math.min(Math.max($value, 0), 100)}%;
   transition: width 0.3s;
 `;
