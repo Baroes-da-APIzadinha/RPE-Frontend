@@ -24,8 +24,7 @@ const RowProgressBox: React.FC<RowProgressBoxProps> = ({ title, bars }) => {
               {bar.subtitle && <S.Subtitle>{bar.subtitle}</S.Subtitle>}
             </div>
             <S.Right>
-              <S.Porcentagem>{bar.value.toFixed(1)}%</S.Porcentagem>
-              <S.Label>Concluído</S.Label>
+              <S.Porcentagem $color={bar.color}>{bar.value.toFixed(1)}%</S.Porcentagem>
             </S.Right>
           </S.Header>
 

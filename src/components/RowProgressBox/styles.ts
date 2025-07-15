@@ -18,6 +18,7 @@ export const Header = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
+  padding-bottom: 0.8rem;
 `;
 
 
@@ -25,6 +26,7 @@ export const Title = styled.h2`
   font-size: ${({ theme }) => theme.font.sizes.large};
   font-weight: ${({ theme }) => theme.font.bold};
   color: ${({ theme }) => theme.colors.text.primary};
+  padding-bottom: 0.8rem;
 `;
 
 export const Subtitle = styled.p`
@@ -37,10 +39,10 @@ export const Right = styled.div`
   text-align: right;
 `;
 
-export const Porcentagem = styled.span`
+export const Porcentagem = styled.span<{ $color?: string }>`
   font-size: 1.4rem;
   font-weight: 700;
-  color: ${({ theme }) => theme.colors.primary.default};
+  color: ${({ $color, theme }) => $color || theme.colors.primary.default};
 `;
 
 export const Label = styled.p`

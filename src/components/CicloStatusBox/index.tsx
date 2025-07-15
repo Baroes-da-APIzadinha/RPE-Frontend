@@ -1,5 +1,6 @@
 import React from "react";
 import * as S from "./style.ts";
+import { LuCheck } from "react-icons/lu";
 
 type Step = {
   label: string;
@@ -24,11 +25,16 @@ export function CicloStatusBox({ steps }: Props) {
 
         return (
           <React.Fragment key={index}>
-            <S.Step active={step.active} completed={isCompleted}> {/* Passa a propriedade completed */}
-              <div className="circle" />
+            <S.Step active={step.active} completed={isCompleted}>
+              {" "}
+              <div className="circle">
+                {isCompleted && (
+                  <LuCheck size={24} strokeWidth={3} color="white" />
+                )}
+              </div>
               <div className="label">{step.label}</div>
             </S.Step>
-            {index < steps.length - 1 && <S.Line />} {/* Add a line between steps */}
+            {index < steps.length - 1 && <S.Line />}{" "}
           </React.Fragment>
         );
       })}

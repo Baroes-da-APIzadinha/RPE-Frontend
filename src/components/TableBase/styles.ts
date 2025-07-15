@@ -5,7 +5,7 @@ export const StyledTableBase = styled.div`
   flex-direction: column;
   margin: 1.5rem 0;
   padding: 1.5rem;
-  border-radius: 0.5rem;
+  border-radius: ${({ theme }) => theme.border.radius.medium};
   border: 1px solid ${({ theme }) => theme.colors.border};
   width: 100%;
   background: ${({ theme }) => theme.colors.surface.default};
