@@ -27,6 +27,8 @@ import { useUnidadesCount } from "@/hooks/rh/useUnidadesCount.ts";
 import { useEvaluationStatusCount } from "@/hooks/rh/useEvaluationStatusCount.ts";
 import { useState } from "react";
 import { usePerfil } from "@/hooks/usePerfil.ts";
+import { useConclusionProgressByUnit } from "@/hooks/rh/useConclusionProgressByUnit";
+import { formatar } from "@/utils/formatters.ts";
 
 function getStatusPercentage(statusCount: number, total: number) : number {
   if (total === 0) return 0;
@@ -46,12 +48,84 @@ export function RhDashboard() {
   const total = (quantConcluidas) + (quantPendentes) + (quantEmAndamento);
   const concludedPercentage = getStatusPercentage((quantConcluidas), total);
   const { perfil } = usePerfil();
-
+  const dadosUnidade = useConclusionProgressByUnit(cicloAtual?.id ?? "")
   const toggleOptions = [
     { value: 'overview', label: 'Visão Geral', icon: <MdDashboard /> },
     { value: 'analytics', label: 'Análises', icon: <MdBarChart /> }
   ];
 
+  const getLowestParticipationAlert = () => {
+    const unidadesData = dadosUnidade.data.map((item) => ({
+      nome: item.nomeUnidade,
+      participacao: Math.round((item.quantConcluidas / item.total) * 100),
+    }));
+
+    if (unidadesData.length === 0) {
+      return {
+        type: "yellow" as const,
+        icon: <MdInfoOutline />,
+        title: "Nenhuma unidade encontrada",
+        description: "Não há dados de participação disponíveis",
+        buttonLabel: "Ver Detalhes",
+        onClick: () => {
+          setActiveTab("analytics");
+        },
+      };
+    }
+
+    const lowestUnit = unidadesData.reduce((lowest, current) =>
+      current.participacao < lowest.participacao ? current : lowest
+    );
+
+    return {
+      type: "yellow" as const,
+      icon: <MdInfoOutline />,
+      title: `Baixa participação na unidade ${formatar(lowestUnit.nome)}`,
+      description: `Apenas ${lowestUnit.participacao}% das avaliações foram concluídas`,
+      buttonLabel: "Ver Detalhes",
+      onClick: () => {
+        setActiveTab("analytics");
+      },
+    };
+  };
+
+  const getTimeRemainingAlert = () => {
+    if (!cicloAtual) return null;
+
+    const timeRemaining = cicloAtual.tempoRestante;
+    const days = (treatTimeRemaining(timeRemaining))
+    
+    let type: "red" | "yellow" | "blue" = "blue";
+    let title = "";
+    let description = "";
+    let daysCheck = Number(days[0] + days[1]) 
+    console.log("Ciclo Atual:", daysCheck);
+    if (!days.includes("dias")) {
+      type = "red";
+      title = "Urgente: Prazo se aproximando";
+    }
+    else if (daysCheck >= 30) {
+      type = "blue";
+      title = "Tempo suficiente para o ciclo";
+    } 
+    else if (daysCheck >= 10) {
+      type = "yellow";
+      title = "Atenção: Prazo se aproximando";
+    } 
+    else {
+      type = "red";
+      title = "Urgente: Prazo se aproximando";
+    }
+    description = "Apenas " + days + " para o fim do ciclo";
+    return {
+      type,
+      icon: <MdErrorOutline />,
+      title,
+      description,
+      buttonLabel: "Enviar Lembrete",
+      onClick: () => console.log("Enviar Lembrete"),
+    };
+  };
   const renderOverviewTab = () => (
     <S.MainContent>
       <CardContainer>
@@ -93,22 +167,8 @@ export function RhDashboard() {
         title="Alertas e Ações Necessárias"
         subtitle="Itens que requerem sua atenção"
         items={[
-          {
-            type: "red",
-            icon: <MdErrorOutline />,
-            title: "Prazo se aproximando",
-            description: "Restam apenas 12 dias para o fim do ciclo",
-            buttonLabel: "Enviar Lembrete",
-            onClick: () => console.log("Enviar Lembrete"),
-          },
-          {
-            type: "yellow",
-            icon: <MdInfoOutline />,
-            title: "Baixa participação na unidade Recife",
-            description: "Apenas 31% das avaliações foram concluídas",
-            buttonLabel: "Ver Detalhes",
-            onClick: () => console.log("Ver Detalhes"),
-          },
+          ...(cicloAtual ? [getTimeRemainingAlert()!] : []),
+          getLowestParticipationAlert(),
           {
             type: "blue",
             icon: <MdGroups />,
