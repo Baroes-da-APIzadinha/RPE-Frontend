@@ -4,7 +4,6 @@ import { Title } from "@/components/Title";
 import { TableBase } from "@/components/TableBase";
 import { SearchInput } from "@/components/SearchInput";
 import { DropdownActions } from "@/components/DropdownActions";
-import { Modal } from "@/components/Modal";
 import { Checkbox } from "@/components/CheckBox";
 import Button from "@/components/Button";
 import { MdAccountCircle, MdEdit, MdSave, MdClose } from "react-icons/md";
