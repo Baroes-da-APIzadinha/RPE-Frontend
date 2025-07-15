@@ -1,3 +1,4 @@
+import type { Role } from '@/types/PerfilData';
 import { getRequest, postRequest, deleteRequest, putRequest, patchRequest } from './requests';
 
 type UpdateColaboradorDto = {
@@ -21,7 +22,7 @@ type CreateColaboradorDTO = {
 
 type AssociatePerfilDTO = {
   idColaborador: string;
-  tipoPerfil: "COLABORADOR_COMUM" | "GESTOR" | "RH" | "MEMBRO_COMITE" | "ADMIN";
+  tipoPerfil: "COLABORADOR_COMUM" | "GESTOR" | "RH" | "MEMBRO_COMITE" | "ADMIN" | "LIDER" | "MENTOR";
 };
 
 type TrocarSenhaDto = {
@@ -48,10 +49,6 @@ export async function getColaboradorConstantes() {
 
 export async function criarColaborador(data: CreateColaboradorDTO) {
   return await postRequest(baseEndpoint, data);
-}
-
-export async function associarPerfil(data: AssociatePerfilDTO) {
-  return await postRequest(`${baseEndpoint}/associar-perfil`, data);
 }
 
 export async function deleteColaborador(id: string) {
@@ -81,5 +78,18 @@ export async function trocarSenhaPrimeiroLogin(id: string, data: TrocarSenhaDto)
 export async function atualizarColaborador(id: string, data: UpdateColaboradorDto) {
   return await putRequest(`${baseEndpoint}/${id}`, data);
 }
+
+export async function getAllUsers() {
+  return await getRequest(`auditoria/all-users`);
+}
+
+export async function associarPerfil(data: AssociatePerfilDTO) {
+  return await postRequest(`${baseEndpoint}/associar-perfil`, data);
+}
+
+export async function desassociarPerfil(idColaborador: string, tipoPerfil: AssociatePerfilDTO['tipoPerfil']) {
+  return await deleteRequest(`${baseEndpoint}/${idColaborador}/desassociar-perfil/${tipoPerfil}`);
+}
+
 
 

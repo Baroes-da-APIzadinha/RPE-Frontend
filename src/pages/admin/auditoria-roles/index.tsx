@@ -9,66 +9,8 @@ import Button from "@/components/Button";
 import { MdAccountCircle, MdEdit, MdSave, MdClose } from "react-icons/md";
 import { IoPersonOutline } from "react-icons/io5";
 import { formatar } from "@/utils/formatters";
-
-// Mock data para colaboradores
-const colaboradoresMock = [
-  {
-    id: "1",
-    nome: "Ana Silva Costa",
-    cargo: "DESENVOLVEDOR",
-    trilha: "DESENVOLVIMENTO",
-    roles: ["colaborador" as Role, "mentor" as Role]
-  },
-  {
-    id: "2",
-    nome: "Pedro Santos Oliveira",
-    cargo: "ANALISTA_QA",
-    trilha: "QA",
-    roles: ["colaborador" as Role]
-  },
-  {
-    id: "3",
-    nome: "Carla Mendes",
-    cargo: "TECH_LEAD",
-    trilha: "DESENVOLVIMENTO",
-    roles: ["colaborador" as Role, "lider" as Role]
-  },
-  {
-    id: "4",
-    nome: "Lucas Fernando",
-    cargo: "PRODUCT_OWNER",
-    trilha: "PRODUTO",
-    roles: ["colaborador" as Role, "gestor" as Role]
-  },
-  {
-    id: "5",
-    nome: "Mariana Souza",
-    cargo: "UX_DESIGNER",
-    trilha: "DESIGN",
-    roles: ["colaborador" as Role]
-  },
-  {
-    id: "6",
-    nome: "João Santos",
-    cargo: "ANALISTA_RH",
-    trilha: "RH",
-    roles: ["colaborador" as Role, "rh" as Role]
-  },
-  {
-    id: "7",
-    nome: "Maria Oliveira",
-    cargo: "GERENTE_PROJETOS",
-    trilha: "GESTAO",
-    roles: ["colaborador" as Role, "gestor" as Role, "comite" as Role]
-  },
-  {
-    id: "8",
-    nome: "Roberto Lima",
-    cargo: "ADMINISTRADOR",
-    trilha: "INFRAESTRUTURA",
-    roles: ["colaborador" as Role, "admin" as Role]
-  }
-];
+import { useAllUsers } from "@/hooks/useAllUsers";
+import type { Role } from "@/types/PerfilData";
 
 // Roles disponíveis do sistema
 const rolesDisponiveis = [
@@ -81,13 +23,12 @@ const rolesDisponiveis = [
   { value: "admin", label: "Admin" }
 ];
 
-type Role = "colaborador" | "rh" | "gestor" | "comite" | "lider" | "mentor" | "admin";
-
 interface ColaboradorData {
   id: string;
   nome: string;
   cargo: string;
   trilha: string;
+  unidade: string;
   roles: Role[];
 }
 
@@ -96,7 +37,32 @@ export function AuditoriaRolesPage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [colaboradorSelecionado, setColaboradorSelecionado] = useState<ColaboradorData | null>(null);
   const [rolesTemporarias, setRolesTemporarias] = useState<Role[]>([]);
-  const [colaboradores, setColaboradores] = useState<ColaboradorData[]>(colaboradoresMock);
+  
+  const { users, loading, error } = useAllUsers();
+  console.log('Loading:', loading);
+  console.log('Error:', error);
+  console.log('Users:', users);
+  // Transformar dados da API para o formato esperado
+  const colaboradores: ColaboradorData[] = users.map((user) => ({
+    id: user.email, // Usar email como ID único
+    nome: user.nome,
+    cargo: user.cargos[0] || "",
+    trilha: user.trilha,
+    unidade: user.unidade,
+    roles: user.cargos.map(cargo => {
+      // Mapear cargos para roles
+      const roleMap: Record<string, Role> = {
+        'COLABORADOR_COMUM': 'colaborador',
+        'GESTOR': 'gestor',
+        'RH': 'rh',
+        'MEMBRO_COMITE': 'comite',
+        'ADMIN': 'admin',
+        'LIDER': 'lider',
+        'MENTOR': 'mentor'
+      };
+      return roleMap[cargo] || 'colaborador';
+    })
+  }));
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
@@ -118,13 +84,8 @@ export function AuditoriaRolesPage() {
 
   const handleSaveRoles = () => {
     if (colaboradorSelecionado) {
-      setColaboradores(prev => 
-        prev.map(colab => 
-          colab.id === colaboradorSelecionado.id 
-            ? { ...colab, roles: rolesTemporarias }
-            : colab
-        )
-      );
+      // TODO: Implementar chamada para API para salvar roles
+      console.log('Salvando roles para:', colaboradorSelecionado.nome, rolesTemporarias);
     }
     handleCloseModal();
   };
@@ -144,7 +105,7 @@ export function AuditoriaRolesPage() {
   ];
 
   const filteredColaboradores = colaboradores.filter((colaborador) => {
-    const matchesSearch = `${colaborador.nome} ${colaborador.cargo} ${colaborador.trilha}`
+    const matchesSearch = `${colaborador.nome} ${colaborador.cargo} ${colaborador.trilha} ${colaborador.unidade}`
       .toLowerCase()
       .includes(searchTerm.toLowerCase());
     return matchesSearch;
@@ -169,14 +130,25 @@ export function AuditoriaRolesPage() {
           <S.FilterItem>
             <label>Buscar colaborador</label>
             <SearchInput
-              placeholder="Buscar por nome, cargo ou trilha..."
+              placeholder="Buscar por nome, cargo, trilha ou unidade..."
               value={searchTerm}
               onChange={handleSearchChange}
             />
           </S.FilterItem>
         </S.FiltersSection>
 
-        {sortedColaboradores.length === 0 ? (
+        {loading ? (
+          <S.EmptyState>
+            <IoPersonOutline size={48} />
+            <S.EmptyTitle>Carregando colaboradores...</S.EmptyTitle>
+          </S.EmptyState>
+        ) : error ? (
+          <S.EmptyState>
+            <IoPersonOutline size={48} />
+            <S.EmptyTitle>Erro ao carregar colaboradores</S.EmptyTitle>
+            <S.EmptySubtitle>{error}</S.EmptySubtitle>
+          </S.EmptyState>
+        ) : sortedColaboradores.length === 0 ? (
           <S.EmptyState>
             <IoPersonOutline size={48} />
             <S.EmptyTitle>Nenhum colaborador encontrado</S.EmptyTitle>
@@ -194,7 +166,7 @@ export function AuditoriaRolesPage() {
                 <S.ColaboradorDetails>
                   <S.ColaboradorNome>{colaborador.nome}</S.ColaboradorNome>
                   <S.ColaboradorCargo>{formatar(colaborador.cargo)}</S.ColaboradorCargo>
-                  <S.ColaboradorTrilha>{formatar(colaborador.trilha)}</S.ColaboradorTrilha>
+                  <S.ColaboradorTrilha>{formatar(colaborador.trilha)} • {colaborador.unidade}</S.ColaboradorTrilha>
                 </S.ColaboradorDetails>
               </S.ColaboradorInfo>
 
