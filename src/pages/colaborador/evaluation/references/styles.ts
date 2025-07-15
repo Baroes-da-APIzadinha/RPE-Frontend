@@ -6,6 +6,7 @@ export const Wrapper = styled.div`
   height: 100vh;
   background-color: ${theme.colors.background};
 `;
+
 export const Main = styled.main`
   flex: 1;
   padding: ${theme.spacings.large};
@@ -13,6 +14,7 @@ export const Main = styled.main`
   overflow-y: auto;
   padding-top: ${theme.spacings.small}; 
 `;
+
 export const Header = styled.div`
   display: flex;
   justify-content: space-between;
@@ -20,33 +22,36 @@ export const Header = styled.div`
   margin-bottom: 4vh;
   gap: 1.2rem;
 `;
+
 export const HeaderButtons = styled.div`
+  width: 100%;
   display: flex;
-  gap: 1.2rem;
+  justify-content: flex-end;
 `;
 
-export const CardContainer = styled.div`
-  background-color: ${theme.colors.surface.default};
-  border-radius: ${theme.border.radius.medium};
-  border: 1px solid ${theme.colors.border};
-  margin-bottom: 1rem;
-  padding: 2rem;
-`;
 
 export const CardText = styled.p`
   align-items: center;
-  font-size: ${theme.font.sizes.medium}
+  font-size: ${theme.font.sizes.xsmall}
 `;
 export const Title = styled.h1`
-  font-size: ${theme.font.sizes.xlarge};
+  font-size: ${theme.font.sizes.medium};
   font-weight: ${theme.font.bold};
   color: ${theme.colors.text.primary};
 `;
+
 export const Subtitle = styled.h2`
-  font-size: ${theme.font.sizes.medium};
+  font-size: ${theme.font.sizes.small};
   font-weight: ${theme.font.medium};
   color: ${theme.colors.text.secondary};
 `;
+
+export const CardSeparator = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+`;
+
 export const ReferTitle = styled.h2`
   display: flex;
   align-items: center;
