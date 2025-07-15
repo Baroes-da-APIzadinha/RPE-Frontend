@@ -56,7 +56,7 @@ export function Sidebar({ roles, mainRole, userName }: SidebarProps) {
     rh: [
       {
         to: "/rh/dashboard",
-        label: "Dashboard (RH)",
+        label: "Home",
         icon: <MdGridView size={24} />,
       },
       {
