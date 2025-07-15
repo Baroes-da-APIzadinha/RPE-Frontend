@@ -172,11 +172,9 @@ export function BrutalFactsPage() {
 
        
         <S.MetaInfo>
-          <S.GeneratedDate>
-            Relatório gerado em: {new Date().toLocaleDateString('pt-BR')} às {new Date().toLocaleTimeString('pt-BR')}
-          </S.GeneratedDate>
+          
           <S.AIBadge>
-            Gerado por IA
+            Gerado pelo Gemini 2.5
           </S.AIBadge>
         </S.MetaInfo>
       </S.ReportContent>

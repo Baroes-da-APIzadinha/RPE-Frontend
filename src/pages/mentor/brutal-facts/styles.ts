@@ -142,7 +142,7 @@ export const HighlightBox = styled.div`
 
 export const MetaInfo = styled.div`
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
   margin-top: 2rem;
   padding-top: 1rem;
