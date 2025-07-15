@@ -7,6 +7,8 @@ import { TableBase } from "@/components/TableBase/index.tsx";
 import { useProgressoAvaliacao } from "@/hooks/avaliacoes/useProgressoAvaliacao";
 import { useOutletContext } from "react-router-dom";
 import type { PerfilData } from "@/types/PerfilData";
+import { EmptyMessage } from "@/components/EmptyMensage";
+import { MdAccountCircle } from "react-icons/md";
 
 export function ColaboradorHome() {
   const theme = useTheme();
@@ -21,6 +23,16 @@ export function ColaboradorHome() {
     if (value >= 75) return theme.colors.success.default;
     if (value >= 25) return theme.colors.secondary.default;
     return theme.colors.error.default;
+  }
+
+  if (!perfil.roles.includes("colaborador")) {
+    return (
+      <EmptyMessage
+        icon={<MdAccountCircle size={32} />}
+        title="Acesso restrito"
+        description="Esta página está disponível apenas para colaboradores."
+      />
+    );
   }
 
   return (

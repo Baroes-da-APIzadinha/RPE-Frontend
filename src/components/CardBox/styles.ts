@@ -1,17 +1,21 @@
-import styled from 'styled-components'
+import styled from 'styled-components';
 
 export const Container = styled.div`
   background: ${({ theme }) => theme.colors.surface.default};
   border-radius: 1.125rem;
   border: 1px solid ${({ theme }) => theme.colors.border};
-  padding: 1rem 1.5rem;
+  padding: 1.5rem;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  width: 440px;
-  height: 170px;
+  width: 100%;
+  min-height: 170px;
   position: relative;
-  margin-top: 1rem;
+
+  @media (max-width: 768px) {
+    padding: 1rem;
+    min-height: 140px;
+  }
 `;
 
 export const IconWrapper = styled.div`
@@ -85,4 +89,3 @@ export const AlertSpan = styled.span`
   font-weight: 500;
   margin-top: 0.3rem;
 `;
-
