@@ -1,18 +1,6 @@
+import { Modal } from '@/components/Modal';
 import theme from '@/styles/theme'
 import styled from 'styled-components'
-
-export const Wrapper = styled.div`
-  display: flex;
-  height: 100vh;
-  background-color: ${theme.colors.background};
-`
-export const Main = styled.main`
-  flex: 1;
-  padding: ${theme.spacings.large};
-  background-color: ${theme.colors.background};
-  overflow-y: auto;
-  padding-top: ${theme.spacings.small}; 
-`
 
 //Header Styles
 export const Header = styled.div`
@@ -36,20 +24,24 @@ export const HeaderButtons = styled.div`
 
 export const FiltersWrapper = styled.div`
   display: flex;
-  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
   gap: 1.2rem;
   margin-top: 1.2rem;
 
   @media (max-width: 768px) {
     flex-direction: column;
+    align-items: stretch;
   }
 `;
 
-export const FilterItem = styled.div`
+export const FilterItem = styled.div<{ $grow?: boolean }>`
   display: flex;
   flex-direction: column;
-  min-width: 200px;
   gap: 0.4rem;
+  flex: ${({ $grow }) => ($grow ? 1 : "initial")};
+  min-width: ${({ $grow }) => ($grow ? "0" : "12rem")};
+
 
   label {
     font-size: ${theme.font.sizes.xsmall};
@@ -57,6 +49,7 @@ export const FilterItem = styled.div`
     font-weight: ${theme.font.medium};
   }
 `;
+
 
 // Card Styles
 export const Title = styled.h1`
@@ -189,10 +182,5 @@ export const ModalAlert = styled.p`
   margin-bottom: 0.4rem;
   margin-top: 0.4rem;
 `
-export const ModalCheckbox = styled.div`
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 0.8rem;
-  margin-top: 0.8rem;
-`;
+
 

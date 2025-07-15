@@ -40,5 +40,16 @@ export const ChartWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-    
+
+  max-width: 100%;
+
+  @media (max-width: 1024px) {
+    max-width: 400px;
+    margin: 0 auto;
+  }
+
+  @media (max-width: 600px) {
+    max-width: 100%;
+  }
 `;
+
