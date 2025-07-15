@@ -10,7 +10,9 @@ import { MdAccountCircle, MdEdit, MdSave, MdClose } from "react-icons/md";
 import { IoPersonOutline } from "react-icons/io5";
 import { formatar } from "@/utils/formatters";
 import { useAllUsers } from "@/hooks/useAllUsers";
+import { useManageProfiles } from "@/hooks/useManageProfiles";
 import type { Role } from "@/types/PerfilData";
+import { toast } from "sonner";
 
 // Roles disponíveis do sistema
 const rolesDisponiveis = [
@@ -39,12 +41,10 @@ export function AuditoriaRolesPage() {
   const [rolesTemporarias, setRolesTemporarias] = useState<Role[]>([]);
   
   const { users, loading, error } = useAllUsers();
-  console.log('Loading:', loading);
-  console.log('Error:', error);
-  console.log('Users:', users);
+  const { manageProfiles, loading: manageLoading, error: manageError } = useManageProfiles();
   // Transformar dados da API para o formato esperado
   const colaboradores: ColaboradorData[] = users.map((user) => ({
-    id: user.email, // Usar email como ID único
+    id: user.idColaborador,
     nome: user.nome,
     cargo: user.cargos[0] || "",
     trilha: user.trilha,
@@ -82,12 +82,47 @@ export function AuditoriaRolesPage() {
     }
   };
 
-  const handleSaveRoles = () => {
+  const handleSaveRoles = async () => {
     if (colaboradorSelecionado) {
-      // TODO: Implementar chamada para API para salvar roles
-      console.log('Salvando roles para:', colaboradorSelecionado.nome, rolesTemporarias);
+      // Mapear roles para perfis da API
+      const roleToPerfilMap: Record<Role, string> = {
+        'colaborador': 'COLABORADOR_COMUM',
+        'gestor': 'GESTOR',
+        'rh': 'RH',
+        'comite': 'MEMBRO_COMITE',
+        'admin': 'ADMIN',
+        'lider': 'LIDER',
+        'mentor': 'MENTOR'
+      };
+
+      // Perfis originais do colaborador
+      const originalPerfis = colaboradorSelecionado.roles.map(role => roleToPerfilMap[role]);
+      console.log('Perfis originais:', colaboradorSelecionado.id);
+      // Perfis selecionados no modal
+      const selectedPerfis = rolesTemporarias.map(role => roleToPerfilMap[role]);
+
+      // Arrays para desassociar e associar
+      const arrayToDisassociate = originalPerfis.filter(perfil => !selectedPerfis.includes(perfil));
+      const arrayToAssociate = selectedPerfis.filter(perfil => !originalPerfis.includes(perfil));
+      if (arrayToDisassociate.length === 0 && arrayToAssociate.length === 0) {
+        toast.info("Nenhuma alteração detectada nos perfis.");
+        handleCloseModal();
+        return;
+      }
+      try {
+        await manageProfiles(
+          colaboradorSelecionado.id, 
+          arrayToAssociate as any[], 
+          arrayToDisassociate as any[]
+        );
+        toast.success("Perfis atualizados com sucesso!");
+      } catch (err) {
+        console.error('Erro ao atualizar perfis:', err);
+        toast.error("Erro ao atualizar perfis");
+      }
     }
     handleCloseModal();
+    window.location.reload();
   };
 
   const handleCloseModal = () => {
@@ -262,6 +297,12 @@ export function AuditoriaRolesPage() {
               )}
             </S.PreviewRoles>
           </S.SelectedRolesPreview>
+
+          {manageError && (
+            <div style={{ color: 'red', fontSize: '0.875rem', marginTop: '1rem' }}>
+              {manageError}
+            </div>
+          )}
         </S.ModalContent>
         
         <S.ModalActions>
@@ -275,10 +316,10 @@ export function AuditoriaRolesPage() {
           <Button 
             variant="primary" 
             onClick={handleSaveRoles}
-            disabled={rolesTemporarias.length === 0}
+            disabled={rolesTemporarias.length === 0 || manageLoading}
           >
             <MdSave style={{ marginRight: '0.5rem' }} />
-            Salvar Alterações
+            {manageLoading ? 'Salvando...' : 'Salvar Alterações'}
           </Button>
         </S.ModalActions>
       </S.StyledModal>

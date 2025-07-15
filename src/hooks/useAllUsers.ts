@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { getAllUsers } from '@/services/HTTP/colaboradores';
 
 export interface User {
+  idColaborador: string;
   nome: string;
   cargos: string[];
   email: string;

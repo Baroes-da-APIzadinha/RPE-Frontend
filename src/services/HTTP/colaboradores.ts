@@ -1,4 +1,3 @@
-import type { Role } from '@/types/PerfilData';
 import { getRequest, postRequest, deleteRequest, putRequest, patchRequest } from './requests';
 
 type UpdateColaboradorDto = {
@@ -20,7 +19,7 @@ type CreateColaboradorDTO = {
   unidade: string;
 };
 
-type AssociatePerfilDTO = {
+export type AssociatePerfilDTO = {
   idColaborador: string;
   tipoPerfil: "COLABORADOR_COMUM" | "GESTOR" | "RH" | "MEMBRO_COMITE" | "ADMIN" | "LIDER" | "MENTOR";
 };
@@ -88,7 +87,7 @@ export async function associarPerfil(data: AssociatePerfilDTO) {
 }
 
 export async function desassociarPerfil(idColaborador: string, tipoPerfil: AssociatePerfilDTO['tipoPerfil']) {
-  return await deleteRequest(`${baseEndpoint}/${idColaborador}/desassociar-perfil/${tipoPerfil}`);
+  return await deleteRequest(`${baseEndpoint}/${idColaborador}/remover-perfil/${tipoPerfil}`);
 }
 
 
