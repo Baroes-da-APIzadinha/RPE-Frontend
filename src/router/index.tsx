@@ -26,6 +26,7 @@ import { CycleHistory } from "@/pages/comite/CycleHistory";
 import { CollaboratorEqualization } from "@/pages/comite/CollaboratorEqualization";
 import { CollaboratorDiscrepancy } from "@/pages/comite/collaboratorDiscrepancy";
 import AuditoriaPage from "@/pages/admin/Auditoria";
+import { AuditoriaRolesPage } from "@/pages/admin/auditoria-roles";
 import PerfilPage from "@/pages/perfil";
 import { FirstLogin } from "@/pages/FirstLogin";
 
@@ -102,6 +103,7 @@ function AppRoutes() {
             {/* Admin */}
             <Route path="/admin">
               <Route path="auditoria" element={<AuditoriaPage />} />
+              <Route path="auditoria-roles" element={<AuditoriaRolesPage />} />
             </Route>
           </Route>
         </Route>
