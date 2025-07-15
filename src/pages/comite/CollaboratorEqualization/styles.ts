@@ -77,20 +77,23 @@ export const Container = styled.div`
 
 export const FiltersWrapper = styled.div`
   display: flex;
-  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
   gap: 1.2rem;
   margin-top: 1.2rem;
-  flex-direction: column;
+
   @media (max-width: 768px) {
     flex-direction: column;
+    align-items: stretch;
   }
 `;
 
-export const FilterItem = styled.div`
+export const FilterItem = styled.div<{ $grow?: boolean }>`
   display: flex;
   flex-direction: column;
-  min-width: 200px;
   gap: 0.4rem;
+  flex: ${({ $grow }) => ($grow ? 1 : "initial")};
+  min-width: ${({ $grow }) => ($grow ? "0" : "12rem")};
 
   label {
     font-size: ${theme.font.sizes.xsmall};
@@ -98,6 +101,7 @@ export const FilterItem = styled.div`
     font-weight: ${theme.font.medium};
   }
 `;
+
 
 
 export const Title = styled.h1`
@@ -123,14 +127,15 @@ export const CardContainer = styled.div`
 `;
 
 export const UserHeader = styled.div`
-  display: flex;
+  display: grid;
+  grid-template-columns: 3fr 2fr 2fr 2fr 2fr;
+  align-items: center;
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
 
   @media (max-width: 768px) {
-    flex-direction: column;
-    align-items: flex-start;
+    grid-template-columns: 2fr;
     gap: 1.2rem;
   }
 `;
@@ -251,8 +256,8 @@ export const DiscrepancyValue = styled.span<{ $value: number | null }>`
 
   color: ${({ $value, theme }) => {
     if ($value === null || isNaN($value)) return theme.colors.text.secondary;
-    if ($value >= 0.7) return theme.colors.error.default;
-    if ($value >= 0.4) return theme.colors.secondary.default;
+    if ($value >= 2.0) return theme.colors.error.default;
+    if ($value >= 1.0) return theme.colors.secondary.default;
     return theme.colors.success.default;
   }};
 `;

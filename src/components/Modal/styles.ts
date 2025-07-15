@@ -32,7 +32,7 @@ export const Container = styled.div`
   box-sizing: border-box;
 
   @media (max-width: 768px) {
-    height: 100%;
+    /* height: 100%; */
     max-height: none;
   }
 `;
@@ -92,7 +92,7 @@ export const Content = styled.div`
   padding: 2rem;
 
   @media (max-width: 768px) {
-    padding: 1.6rem;
+    /* padding: 1.6rem; */
   }
 `;
 

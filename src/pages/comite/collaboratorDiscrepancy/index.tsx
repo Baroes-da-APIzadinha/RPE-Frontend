@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import * as S from "./styles";
 import { Title } from "@/components/Title";
 import { Card } from "@/components/Card";
@@ -11,15 +11,30 @@ import { Select } from "@/components/Select";
 import { TableBase } from "@/components/TableBase";
 import { IoSparklesOutline } from "react-icons/io5";
 import { FaUser, FaUsers, FaClipboardCheck } from "react-icons/fa";
-import { MdKeyboardArrowDown, MdKeyboardArrowUp, MdAccountCircle } from "react-icons/md";
+import {
+  MdKeyboardArrowDown,
+  MdKeyboardArrowUp,
+  MdAccountCircle,
+  MdError,
+  MdAssignmentTurnedIn,
+  MdLibraryBooks,
+  MdAutorenew,
+  MdArrowBack,
+} from "react-icons/md";
 import Button from "@/components/Button";
 import { useReferenciasPorIndicado } from "@/hooks/useReferenciasPorIndicado";
 import { useColaboradorById } from "@/hooks/colaboradores/useColaboradorById";
-import { useAvaliacaoColaborador, clearAvaliacaoColaboradorIACache, type AvaliacaoColaboradorIA } from "@/hooks/IA/useAvaliacaoColaborador";
+import {
+  useAvaliacaoColaborador,
+  clearAvaliacaoColaboradorIACache,
+  type AvaliacaoColaboradorIA,
+} from "@/hooks/IA/useAvaliacaoColaborador";
 import { useGetAvaliacoes } from "@/hooks/comite/useGetAvaliacoes";
 import { useCicloAtual } from "@/hooks/useCicloAtual";
 import { useEffect } from "react";
 import { formatar } from "@/utils/formatters";
+import { LoadingMessage } from "@/components/LoadingMessage";
+import { EmptyMessage } from "@/components/EmptyMensage";
 type TabType = "autoavaliacao" | "referencias" | "360";
 
 const motivacoes = [
@@ -33,15 +48,16 @@ const motivacoes = [
 // Componente helper para buscar nome do avaliador
 function AvaliadorName({ idAvaliador }: { idAvaliador: string }) {
   const { colaborador, loading } = useColaboradorById(idAvaliador);
-  
+
   if (loading) {
-    return <>Carregando...</>;
+    return <LoadingMessage message="Carregando dados..." />;
   }
-  
+
   return <>{colaborador?.nomeCompleto || `Avaliador ${idAvaliador}`}</>;
 }
 
 export function CollaboratorDiscrepancy() {
+  const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const [activeTab, setActiveTab] = useState<TabType>("autoavaliacao");
   const [summary, setSummary] = useState<AvaliacaoColaboradorIA | null>(null);
@@ -51,34 +67,52 @@ export function CollaboratorDiscrepancy() {
   // Decodificar o ID do colaborador da URL
   const colaboradorId = decodeURIComponent(id || "");
   const { colaborador } = useColaboradorById(colaboradorId);
-  
+
   // Obtém ciclo atual
   const { cicloAtual } = useCicloAtual();
   const idCiclo = cicloAtual?.id ?? "";
 
   // Hook para buscar referências reais usando o ID do colaborador
-  const { referencias, loading: loadingReferencias, error: errorReferencias } = useReferenciasPorIndicado(colaboradorId);
+  const {
+    referencias,
+    loading: loadingReferencias,
+    error: errorReferencias,
+  } = useReferenciasPorIndicado(colaboradorId);
 
   // Hook para buscar avaliações reais
-  const { data: avaliacoes, loading: loadingAvaliacoes, error: errorAvaliacoes } = useGetAvaliacoes(colaboradorId, idCiclo);
+  const {
+    data: avaliacoes,
+    loading: loadingAvaliacoes,
+    error: errorAvaliacoes,
+  } = useGetAvaliacoes(colaboradorId, idCiclo);
   console.log("Avaliações carregadas:", errorAvaliacoes);
   // Hook para buscar avaliação da IA - só carrega quando shouldLoadIA for true
-  const { data: avaliacaoIA, loading: loadingIA, error: errorIA } = useAvaliacaoColaborador(
-    shouldLoadIA ? colaboradorId : "", 
+  const {
+    data: avaliacaoIA,
+    loading: loadingIA,
+    error: errorIA,
+  } = useAvaliacaoColaborador(
+    shouldLoadIA ? colaboradorId : "",
     shouldLoadIA ? idCiclo : ""
   );
 
   // Definir primeiro item aberto quando avaliacoes carregarem
   useEffect(() => {
     if (avaliacoes && avaliacoes.length > 0 && open.length === 0) {
-      const autoAvaliacao = avaliacoes.find(av => av.tipoAvaliacao === "AUTOAVALIACAO");
-      const liderColaborador = avaliacoes.find(av => av.tipoAvaliacao === "LIDER_COLABORADOR");
+      const autoAvaliacao = avaliacoes.find(
+        (av) => av.tipoAvaliacao === "AUTOAVALIACAO"
+      );
+      const liderColaborador = avaliacoes.find(
+        (av) => av.tipoAvaliacao === "LIDER_COLABORADOR"
+      );
 
-      const primeiroCard = autoAvaliacao?.autoAvaliacao?.cardAutoAvaliacoes?.[0] || 
-                          liderColaborador?.avaliacaoLiderColaborador?.cardAvaliacaoLiderColaborador?.[0];
-      
+      const primeiroCard =
+        autoAvaliacao?.autoAvaliacao?.cardAutoAvaliacoes?.[0] ||
+        liderColaborador?.avaliacaoLiderColaborador
+          ?.cardAvaliacaoLiderColaborador?.[0];
+
       if (primeiroCard) {
-        setOpen(prev => [...prev, primeiroCard.idCardAvaliacao]);
+        setOpen((prev) => [...prev, primeiroCard.idCardAvaliacao]);
       }
     }
   }, [avaliacoes]);
@@ -99,7 +133,6 @@ export function CollaboratorDiscrepancy() {
     };
   }, []);
 
-
   const handleAccordion = (id: string) => {
     setOpen((prev) =>
       prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
@@ -110,23 +143,23 @@ export function CollaboratorDiscrepancy() {
     {
       value: "autoavaliacao",
       label: "Revisão do Gestor",
-      icon: <FaUser />
+      icon: <FaUser />,
     },
-     {
+    {
       value: "360",
       label: "Avaliação 360°",
-      icon: <FaUsers />
+      icon: <FaUsers />,
     },
     {
       value: "referencias",
       label: "Referencias",
-      icon: <FaClipboardCheck />
-    }
+      icon: <FaClipboardCheck />,
+    },
   ];
 
   const handleGenerateSummary = async () => {
     if (!colaboradorId || !idCiclo) return;
-    
+
     // Ativar carregamento da IA
     setShouldLoadIA(true);
     setSummary(null);
@@ -134,34 +167,41 @@ export function CollaboratorDiscrepancy() {
 
   const renderAutoavaliacaoTab = () => {
     if (loadingAvaliacoes) {
-      return (
-        <div style={{ padding: "2rem", textAlign: "center" }}>
-          <p>Carregando avaliações...</p>
-        </div>
-      );
+      return <LoadingMessage message="Carregando avaliações..." />;
     }
 
     if (errorAvaliacoes) {
       return (
-        <div style={{ padding: "2rem", textAlign: "center" }}>
-          <p>Erro ao carregar avaliações: {errorAvaliacoes}</p>
-        </div>
+        <EmptyMessage
+          icon={<MdError size={32} />}
+          title="Erro ao carregar avaliações"
+          description={errorAvaliacoes}
+        />
       );
     }
 
     if (!avaliacoes || avaliacoes.length === 0) {
       return (
-        <div style={{ padding: "2rem", textAlign: "center" }}>
-          <p>Nenhuma avaliação encontrada para este colaborador.</p>
-        </div>
+        <EmptyMessage
+          icon={<MdAssignmentTurnedIn size={32} />}
+          title="Sem avaliações"
+          description="Nenhuma avaliação encontrada para este colaborador."
+        />
       );
     }
 
     // Separar avaliações por tipo
-    const autoAvaliacao = avaliacoes.find(av => av.tipoAvaliacao === "AUTOAVALIACAO");
-    const liderColaborador = avaliacoes.find(av => av.tipoAvaliacao === "LIDER_COLABORADOR");
+    const autoAvaliacao = avaliacoes.find(
+      (av) => av.tipoAvaliacao === "AUTOAVALIACAO"
+    );
+    const liderColaborador = avaliacoes.find(
+      (av) => av.tipoAvaliacao === "LIDER_COLABORADOR"
+    );
 
-    if (!autoAvaliacao?.autoAvaliacao && !liderColaborador?.avaliacaoLiderColaborador) {
+    if (
+      !autoAvaliacao?.autoAvaliacao &&
+      !liderColaborador?.avaliacaoLiderColaborador
+    ) {
       return (
         <div style={{ padding: "2rem", textAlign: "center" }}>
           <p>Dados de autoavaliação e avaliação do gestor não encontrados.</p>
@@ -170,18 +210,26 @@ export function CollaboratorDiscrepancy() {
     }
 
     // Obter critérios da autoavaliação ou da avaliação do gestor
-    const criterios = autoAvaliacao?.autoAvaliacao?.cardAutoAvaliacoes || 
-                     liderColaborador?.avaliacaoLiderColaborador?.cardAvaliacaoLiderColaborador || 
-                     [];
+    const criterios =
+      autoAvaliacao?.autoAvaliacao?.cardAutoAvaliacoes ||
+      liderColaborador?.avaliacaoLiderColaborador
+        ?.cardAvaliacaoLiderColaborador ||
+      [];
 
     return (
       <>
         <EvaluationFrame title="Critérios de Avaliação">
           {criterios.map((criterio) => {
             const isOpen = open.includes(criterio.idCardAvaliacao);
-            const autoCard = autoAvaliacao?.autoAvaliacao?.cardAutoAvaliacoes?.find(c => c.nomeCriterio === criterio.nomeCriterio);
-            const gestorCard = liderColaborador?.avaliacaoLiderColaborador?.cardAvaliacaoLiderColaborador?.find(c => c.nomeCriterio === criterio.nomeCriterio);
-            
+            const autoCard =
+              autoAvaliacao?.autoAvaliacao?.cardAutoAvaliacoes?.find(
+                (c) => c.nomeCriterio === criterio.nomeCriterio
+              );
+            const gestorCard =
+              liderColaborador?.avaliacaoLiderColaborador?.cardAvaliacaoLiderColaborador?.find(
+                (c) => c.nomeCriterio === criterio.nomeCriterio
+              );
+
             return (
               <Card key={criterio.idCardAvaliacao}>
                 <S.CriterioHeader>
@@ -198,9 +246,7 @@ export function CollaboratorDiscrepancy() {
                       onClick={() => handleAccordion(criterio.idCardAvaliacao)}
                       tabIndex={0}
                       role="button"
-                      aria-label={
-                        isOpen ? "Fechar critério" : "Abrir critério"
-                      }
+                      aria-label={isOpen ? "Fechar critério" : "Abrir critério"}
                     >
                       {isOpen ? (
                         <MdKeyboardArrowUp size={36} />
@@ -278,26 +324,26 @@ export function CollaboratorDiscrepancy() {
 
   const renderReferencesTab = () => {
     if (loadingReferencias) {
-      return (
-        <div style={{ padding: "2rem", textAlign: "center" }}>
-          <p>Carregando referências...</p>
-        </div>
-      );
+      return <LoadingMessage message="Carregando referências..." />;
     }
 
     if (errorReferencias) {
       return (
-        <div style={{ padding: "2rem", textAlign: "center" }}>
-          <p>Erro ao carregar referências: {errorReferencias}</p>
-        </div>
+        <EmptyMessage
+          icon={<MdError size={32} />}
+          title="Erro ao carregar referências"
+          description={errorReferencias}
+        />
       );
     }
 
     if (!referencias || referencias.length === 0) {
       return (
-        <div style={{ padding: "2rem", textAlign: "center" }}>
-          <p>Nenhuma referência encontrada para este colaborador.</p>
-        </div>
+        <EmptyMessage
+          icon={<MdLibraryBooks size={32} />}
+          title="Sem referências"
+          description="Nenhuma referência encontrada para este colaborador."
+        />
       );
     }
 
@@ -311,21 +357,29 @@ export function CollaboratorDiscrepancy() {
             <S.ReferenciaInfo>
               <MdAccountCircle size={48} />
               <S.ReferenciaDetails>
-                <S.ReferenciaIndicador>{referencia.indicador.nomeCompleto}</S.ReferenciaIndicador>
-                <S.ReferenciaCargo>{formatar(referencia.indicador.cargo)}</S.ReferenciaCargo>
+                <S.ReferenciaIndicador>
+                  {referencia.indicador.nomeCompleto}
+                </S.ReferenciaIndicador>
+                <S.ReferenciaCargo>
+                  {formatar(referencia.indicador.cargo)}
+                </S.ReferenciaCargo>
                 <S.ReferenciaData>
                   {formatar(referencia.indicador.unidade)}
                 </S.ReferenciaData>
               </S.ReferenciaDetails>
             </S.ReferenciaInfo>
-            
+
             <S.ReferenciaContent>
-              <S.ReferenciaJustificativa>{referencia.justificativa}</S.ReferenciaJustificativa>
+              <S.ReferenciaJustificativa>
+                {referencia.justificativa}
+              </S.ReferenciaJustificativa>
             </S.ReferenciaContent>
-            
+
             <S.ReferenciaActions>
-              <S.TipoBadge $tipo={referencia.tipo === 'TECNICA' ? 'Técnica' : 'Cultural'}>
-                {referencia.tipo === 'TECNICA' ? 'Técnica' : 'Cultural'}
+              <S.TipoBadge
+                $tipo={referencia.tipo === "TECNICA" ? "Técnica" : "Cultural"}
+              >
+                {referencia.tipo === "TECNICA" ? "Técnica" : "Cultural"}
               </S.TipoBadge>
             </S.ReferenciaActions>
           </S.ReferenciaRow>
@@ -336,29 +390,30 @@ export function CollaboratorDiscrepancy() {
 
   const render360Tab = () => {
     if (loadingAvaliacoes) {
-      return (
-        <div style={{ padding: "2rem", textAlign: "center" }}>
-          <p>Carregando avaliações 360°...</p>
-        </div>
-      );
+      return <LoadingMessage message="Carregando avaliações 360°..." />;
     }
 
     if (errorAvaliacoes) {
       return (
-        <div style={{ padding: "2rem", textAlign: "center" }}>
-          <p>Erro ao carregar avaliações 360°: {errorAvaliacoes}</p>
-        </div>
+        <EmptyMessage
+          icon={<MdError size={32} />}
+          title="Erro ao carregar avaliações 360°"
+          description={errorAvaliacoes}
+        />
       );
     }
 
     // Filtrar apenas avaliações de pares (360°)
-    const avaliacoes360 = avaliacoes?.filter(av => av.tipoAvaliacao === "AVALIACAO_PARES") || [];
+    const avaliacoes360 =
+      avaliacoes?.filter((av) => av.tipoAvaliacao === "AVALIACAO_PARES") || [];
 
     if (avaliacoes360.length === 0) {
       return (
-        <div style={{ padding: "2rem", textAlign: "center" }}>
-          <p>Nenhuma avaliação 360° encontrada para este colaborador.</p>
-        </div>
+        <EmptyMessage
+          icon={<MdAssignmentTurnedIn size={32} />}
+          title="Sem avaliações"
+          description="Nenhuma avaliação 360° encontrada para este colaborador."
+        />
       );
     }
 
@@ -370,20 +425,23 @@ export function CollaboratorDiscrepancy() {
               <S.ColleagueName>
                 <MdAccountCircle size={24} />
                 <AvaliadorName idAvaliador={avaliacao.idAvaliador} />
-                <S.ColleagueRole>
-                  (Avaliação de Pares)
-                </S.ColleagueRole>
+                <S.ColleagueRole>(Avaliação de Pares)</S.ColleagueRole>
               </S.ColleagueName>
-              <S.NotaBadge>
-                {avaliacao.avaliacaoPares?.nota || "-"}
-              </S.NotaBadge>
+              <S.NotaBadge>{avaliacao.avaliacaoPares?.nota || "-"}</S.NotaBadge>
             </S.CriterioHeader>
-            
+
             <S.CriteriaContent>
               {/* Avaliação Geral */}
               <S.CriteriaSection>
                 <S.Subtitle>Nota de 1 a 5 dada ao colaborador: </S.Subtitle>
-                <div style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: "0.5rem" }}>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    alignItems: "center",
+                    gap: "0.5rem",
+                  }}
+                >
                   <StarRating
                     value={parseFloat(avaliacao.avaliacaoPares?.nota || "0")}
                     readOnly
@@ -393,21 +451,25 @@ export function CollaboratorDiscrepancy() {
                   </S.NotaBadge>
                 </div>
               </S.CriteriaSection>
-              
+
               {/* Motivação para trabalhar novamente */}
               <S.CriteriaSection>
-                <S.Subtitle>Ficaria motivado em trabalhar novamente?</S.Subtitle>
+                <S.Subtitle>
+                  Ficaria motivado em trabalhar novamente?
+                </S.Subtitle>
                 <Select
                   onChange={() => {}}
-                  value={avaliacao.avaliacaoPares?.motivadoTrabalharNovamente || ""}
+                  value={
+                    avaliacao.avaliacaoPares?.motivadoTrabalharNovamente || ""
+                  }
                   options={motivacoes}
                   disabled
                 />
               </S.CriteriaSection>
             </S.CriteriaContent>
-            
+
             <S.Divider />
-            
+
             <S.CriteriaContent>
               {/* Pontos Fortes */}
               <S.CriteriaSection>
@@ -418,7 +480,7 @@ export function CollaboratorDiscrepancy() {
                   rows={4}
                 />
               </S.CriteriaSection>
-              
+
               {/* Pontos de Melhoria */}
               <S.CriteriaSection>
                 <S.Subtitle>Pontos de melhoria</S.Subtitle>
@@ -448,16 +510,27 @@ export function CollaboratorDiscrepancy() {
     }
   };
 
-  // Buscar nome do colaborador pelos dados das referências ou usar o ID
-
   return (
     <>
       <S.Header>
-        <Title>Análise de Discrepância: <br/> {colaborador?.nomeCompleto || "GAEL"}</Title>
-        <Button onClick={handleGenerateSummary} variant="primary">
-          <IoSparklesOutline size={24}/>
-          Gerar Resumo IA
-        </Button>
+        <Title>
+          Análise de Discrepância: <br />{" "}
+          {colaborador?.nomeCompleto || "Colaborador Desconhecido"}
+        </Title>
+        <S.HeaderButtons>
+          <Button variant="outline" onClick={() => navigate(-1)}>
+            <MdArrowBack size={20} />
+            Voltar
+          </Button>
+          <Button
+            onClick={handleGenerateSummary}
+            variant="primary"
+            disabled={loadingIA || summary !== null}
+          >
+            <IoSparklesOutline size={24} />
+            Gerar Resumo IA
+          </Button>
+        </S.HeaderButtons>
       </S.Header>
 
       {(summary || loadingIA) && (
@@ -470,29 +543,44 @@ export function CollaboratorDiscrepancy() {
             <S.SummaryContent>
               {loadingIA ? (
                 <div className="loading">
-                  <IoSparklesOutline />
+                  <MdAutorenew />
                   Gerando resumo...
                 </div>
               ) : errorIA ? (
                 <>
                   <strong>Erro ao carregar avaliação da IA</strong>
-                  <span>Não foi possível gerar o resumo automaticamente. Tente novamente mais tarde.</span>
+                  <span>
+                    Não foi possível gerar o resumo automaticamente. Tente
+                    novamente mais tarde.
+                  </span>
                 </>
               ) : summary ? (
                 <S.SummaryDetailsWrapper>
                   <S.SummaryScoreBox>
-                    <S.SummaryScoreLabel>Nota Final Sugerida</S.SummaryScoreLabel>
-                    <S.SummaryScoreValue>{summary.notaFinalSugerida}/5</S.SummaryScoreValue>
+                    <S.SummaryScoreLabel>
+                      Nota Final Sugerida
+                    </S.SummaryScoreLabel>
+                    <S.SummaryScoreValue>
+                      {summary.notaFinalSugerida}/5
+                    </S.SummaryScoreValue>
                   </S.SummaryScoreBox>
-                  
+
                   <S.SummarySection>
-                    <S.SummarySectionTitle>Análise Detalhada</S.SummarySectionTitle>
-                    <S.SummarySectionContent>{summary.analiseDetalhada}</S.SummarySectionContent>
+                    <S.SummarySectionTitle>
+                      Análise Detalhada
+                    </S.SummarySectionTitle>
+                    <S.SummarySectionContent>
+                      {summary.analiseDetalhada}
+                    </S.SummarySectionContent>
                   </S.SummarySection>
-                  
+
                   <S.SummarySection>
-                    <S.SummarySectionTitle>Resumo Executivo</S.SummarySectionTitle>
-                    <S.SummarySectionContent>{summary.resumoExecutivo}</S.SummarySectionContent>
+                    <S.SummarySectionTitle>
+                      Resumo Executivo
+                    </S.SummarySectionTitle>
+                    <S.SummarySectionContent>
+                      {summary.resumoExecutivo}
+                    </S.SummarySectionContent>
                   </S.SummarySection>
                 </S.SummaryDetailsWrapper>
               ) : null}
@@ -509,10 +597,8 @@ export function CollaboratorDiscrepancy() {
             onChange={(value) => setActiveTab(value as TabType)}
           />
         </S.TabContainer>
-        
-        <S.TabContent>
-          {renderTabContent()}
-        </S.TabContent>
+
+        <S.TabContent>{renderTabContent()}</S.TabContent>
       </div>
     </>
   );

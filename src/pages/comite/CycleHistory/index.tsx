@@ -1,8 +1,7 @@
 import * as S from "./styles.ts";
-import { Title } from "./styles.ts";
 import { Card } from "@/components/Card/index.tsx";
 import Button from "@/components/Button";
-import { MdFileDownload } from "react-icons/md";
+import { MdAccountCircle, MdFileDownload } from "react-icons/md";
 import { useEffect, useState } from "react";
 import { Modal } from "@/components/Modal/index.tsx";
 import { LuTriangleAlert } from "react-icons/lu";
@@ -11,6 +10,10 @@ import { useCicloAtual } from "@/hooks/useCicloAtual";
 import theme from "@/styles/theme";
 import { SearchInput } from "@/components/SearchInput/index.tsx";
 import { Select } from "@/components/Select/index.tsx";
+import { Title } from "@/components/Title/index.tsx";
+import { EmptyMessage } from "@/components/EmptyMensage/index.tsx";
+import { useOutletContext } from "react-router-dom";
+import type { PerfilData } from "@/types/PerfilData.tsx";
 
 type Ciclo = {
   id: string;
@@ -21,6 +24,7 @@ type Ciclo = {
 };
 
 export function CycleHistory() {
+  const { perfil } = useOutletContext<{ perfil: PerfilData }>();
   const [showExportModal, setShowExportModal] = useState(false);
   const [selectedCycle, setSelectedCycle] = useState<string | null>(null);
   const [ciclos, setCiclos] = useState<Ciclo[]>([]);
@@ -72,6 +76,16 @@ export function CycleHistory() {
 
   const filteredCiclos = ciclos.filter(cicloPassaFiltro);
 
+  if (!perfil.roles.includes("comite")) {
+    return (
+      <EmptyMessage
+        icon={<MdAccountCircle size={32} />}
+        title="Acesso restrito"
+        description="Esta página está disponível apenas para membros do comitê."
+      />
+    );
+  }
+
   return (
     <>
       <div>
@@ -82,7 +96,7 @@ export function CycleHistory() {
         <Card>
           <S.Title>Filtros</S.Title>
           <S.FiltersWrapper>
-            <S.FilterItem>
+            <S.FilterItem $grow>
               <label>Buscar por ciclo</label>
               <SearchInput
                 placeholder="Buscar ciclo..."
@@ -96,7 +110,9 @@ export function CycleHistory() {
               <Select
                 placeholder="Todos os status"
                 value={statusFilter}
-                onChange={(val) => setStatusFilter(val)}
+                onChange={(val) =>
+                  setStatusFilter(Array.isArray(val) ? val[0] : val)
+                }
                 options={[
                   { label: "Todos", value: "todos" },
                   { label: "Agendado", value: "AGENDADO" },
@@ -207,7 +223,6 @@ export function CycleHistory() {
               O ciclo de avaliação atual ainda não foi finalizado. Os dados
               podem estar incompletos ou conter informações provisórias.
             </S.Subtitle>
-
             <S.ModalAlert>Deseja exportar os dados mesmo assim?</S.ModalAlert>
           </S.ModalDiv>
           <S.ModalButtons>
