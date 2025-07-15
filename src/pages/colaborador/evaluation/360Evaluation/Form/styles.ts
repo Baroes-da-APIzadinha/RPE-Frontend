@@ -88,20 +88,10 @@ export const Label = styled.label`
 
 export const StarsGroup = styled.div<{ $error?: boolean }>`
   display: flex;
-  flex-wrap: wrap;
-  gap: 1.2rem;
+  align-items: center; 
+  gap: 0.8rem;
 `;
 
-export const StarButton = styled.button<{ $active: boolean }>`
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: ${({ $active, theme }) =>
-    $active ? theme.colors.secondary.default : theme.colors.lightGray};
-  font-size: 1.7rem;
-  transition: color 0.2s;
-  padding: 0;
-`;
 
 export const TextArea = styled.textarea<{ error?: boolean }>`
   resize: none;
@@ -114,8 +104,48 @@ export const TextArea = styled.textarea<{ error?: boolean }>`
 `;
 
 export const Score = styled.span`
+  font-size: ${({ theme }) => theme.font.sizes.medium};
+  font-weight: ${({ theme }) => theme.font.semibold};
   color: ${({ theme }) => theme.colors.text.primary};
   font-size: 1.1rem;
   font-weight: 600;
   margin-left: 0.7rem;
+`;
+
+// Modal styles
+export const ModalContent = styled.div`
+  margin-bottom: 1.5rem;
+`;
+
+export const ModalDescription = styled.p`
+  margin: 0 0 1rem 0;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: ${theme.colors.text.primary};
+`;
+
+export const ModalSummary = styled.div`
+  background: ${theme.colors.surface.default};
+  padding: 1rem;
+  border-radius: 8px;
+  border: 1px solid ${theme.colors.border};
+`;
+
+export const ModalSummaryTitle = styled.p`
+  margin: 0 0 0.5rem 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: ${theme.colors.text.primary};
+`;
+
+export const ModalSummaryText = styled.p`
+  margin: 0;
+  font-size: 0.875rem;
+  color: ${theme.colors.text.secondary};
+`;
+
+export const ModalActions = styled.div`
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
 `;

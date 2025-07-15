@@ -17,7 +17,7 @@ const EvaluationFrame: React.FC<EvaluationFrameProps> = ({
     <S.Container>
       <S.Header>
         <S.Title>{title}</S.Title>
-        {count && <S.CountContainer>{count} preenchidos</S.CountContainer>}
+        {count && <S.CountContainer> {count} Preenchidos</S.CountContainer>}
       </S.Header>
       <S.Content>{children}</S.Content>
     </S.Container>

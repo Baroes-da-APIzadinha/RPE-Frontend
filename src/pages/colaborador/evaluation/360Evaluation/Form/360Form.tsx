@@ -1,6 +1,12 @@
 import React, { useEffect, useState } from "react";
 import * as S from "./styles.ts";
-import { MdAccountCircle, MdArrowBack, MdOutlineInfo } from "react-icons/md";
+import {
+  MdAccountCircle,
+  MdArrowBack,
+  MdOutlineAssignmentTurnedIn,
+  MdOutlineInfo,
+  MdWarning,
+} from "react-icons/md";
 import Button from "@/components/Button";
 import { Card } from "@/components/Card";
 import { Select } from "@/components/Select";
@@ -14,6 +20,9 @@ import type { PerfilData } from "@/types/PerfilData.tsx";
 import { preencherAvaliacaoPares } from "@/services/HTTP/avaliacoes.ts";
 import { useColaboradorById } from "@/hooks/colaboradores/useColaboradorById.ts";
 import { formatar } from "@/utils/formatters.ts";
+import { Modal } from "@/components/Modal/index.tsx";
+import { LoadingMessage } from "@/components/LoadingMessage/index.tsx";
+import { EmptyMessage } from "@/components/EmptyMensage/index.tsx";
 
 interface Props {
   id: string;
@@ -34,8 +43,10 @@ const EvaluationDetails: React.FC<Props> = ({ id, onBack }) => {
   const [melhoria, setMelhoria] = useState("");
   const [forte, setForte] = useState("");
   const [motivacao, setMotivacao] = useState<string | null>(null);
-  const [jaEnviado, setJaEnviado] = useState(false);
+  const status = avaliacao?.status;
+  const jaEnviado = status === "CONCLUIDA";
 
+  const [modalOpen, setModalOpen] = useState(false);
   const [errors, setErrors] = useState({
     nota: false,
     motivacao: false,
@@ -50,15 +61,10 @@ const EvaluationDetails: React.FC<Props> = ({ id, onBack }) => {
       setMotivacao(pares.motivadoTrabalharNovamente);
       setForte(pares.pontosFortes);
       setMelhoria(pares.pontosFracos);
-      setJaEnviado(true);
     }
   }, [avaliacao]);
 
-  if (loadingAvaliacao) return <p>Carregando...</p>;
-  if (loadingColaborador) return <p>Carregando...</p>;
-  if (!avaliacao) return <p>Avaliação não encontrada.</p>;
-
-  const colaborador = avaliacao.avaliado;
+  const colaborador = avaliacao?.avaliado ?? null;
 
   const motivacoes = [
     { value: "Discordo Totalmente", label: "Discordo Totalmente" },
@@ -93,16 +99,27 @@ const EvaluationDetails: React.FC<Props> = ({ id, onBack }) => {
         pontosFracos: melhoria,
       };
 
-      console.log("Payload enviado:", payload);
-
       await preencherAvaliacaoPares(payload);
       toast.success("Avaliação enviada com sucesso!");
-      setJaEnviado(true);
     } catch (err) {
       console.error(err);
       toast.error("Erro ao enviar a avaliação.");
     }
   };
+
+  if (!avaliacao || !avaliacao.avaliado) {
+    return (
+      <EmptyMessage
+        icon={<MdOutlineAssignmentTurnedIn size={32} />}
+        title="Nenhuma avaliação de pares encontrada"
+        description="Verifique com sua liderança se você foi incluído no ciclo atual."
+      />
+    );
+  }
+
+  if (loadingAvaliacao || loadingColaborador) {
+    return <LoadingMessage message="Carregando formulário de avaliação..." />;
+  }
 
   return (
     <S.Container>
@@ -117,8 +134,7 @@ const EvaluationDetails: React.FC<Props> = ({ id, onBack }) => {
               "Cargo desconhecido"}{" "}
             •{" "}
             {formatar(colaboradorCompleto?.unidade as string) ||
-              "Unidade desconhecida"}{" "}
-            • Trabalhou junto por 6 meses
+              "Unidade desconhecida"}
           </S.ColabCargo>
         </S.ColabInfo>
         <S.RightContent>
@@ -152,7 +168,7 @@ const EvaluationDetails: React.FC<Props> = ({ id, onBack }) => {
                   <StarRating
                     value={nota || 0}
                     onChange={(val) => setNota(val)}
-                    // readOnly={jaEnviado}
+                    readOnly={jaEnviado}
                   />
                   <S.Score>{nota || 0}</S.Score>
                 </S.StarsGroup>
@@ -168,7 +184,7 @@ const EvaluationDetails: React.FC<Props> = ({ id, onBack }) => {
                   onChange={(val) => setMotivacao(val as string)}
                   options={motivacoes}
                   error={errors.motivacao}
-                  // disabled={jaEnviado}
+                  disabled={jaEnviado}
                 />
               </S.FormBlock>
             </S.FormRow>
@@ -180,7 +196,7 @@ const EvaluationDetails: React.FC<Props> = ({ id, onBack }) => {
                   value={forte}
                   onChange={(e) => setForte(e.target.value)}
                   error={errors.forte}
-                  // disabled={jaEnviado}
+                  disabled={jaEnviado}
                 />
               </S.FormBlock>
               <S.FormBlock>
@@ -190,21 +206,49 @@ const EvaluationDetails: React.FC<Props> = ({ id, onBack }) => {
                   value={melhoria}
                   onChange={(e) => setMelhoria(e.target.value)}
                   error={errors.melhoria}
-                  // disabled={jaEnviado}
+                  disabled={jaEnviado}
                 />
               </S.FormBlock>
             </S.FormRow>
           </S.FormWrapper>
         </Card>
         <ButtonFrame text="Para submeter sua avaliação do colaborador, preencha todos os campos.">
-          <Button type="submit" 
-          // disabled={jaEnviado}
+          <Button
+            type="button"
+            onClick={() => setModalOpen(true)}
+            disabled={jaEnviado}
           >
             <FaPaperPlane />
             Enviar
           </Button>
         </ButtonFrame>
       </form>
+
+      <Modal
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        title="Confirmar envio"
+        description="Essa ação é irreversível e não poderá ser desfeita."
+        icon={<MdWarning />}
+        iconColor="warning"
+        iconSize="large"
+      >
+        <S.ModalContent>
+          <S.ModalDescription>
+            Tem certeza que deseja enviar a avaliação de{" "}
+            <strong>{colaborador?.nomeCompleto}</strong>?
+          </S.ModalDescription>
+        </S.ModalContent>
+
+        <S.ModalActions>
+          <Button variant="outline" onClick={() => setModalOpen(false)}>
+            Cancelar
+          </Button>
+          <Button variant="primary" onClick={handleSubmit}>
+            Confirmar envio
+          </Button>
+        </S.ModalActions>
+      </Modal>
     </S.Container>
   );
 };

@@ -44,12 +44,12 @@ export const WorkTime = styled.span`
 
 `;
 
-export const StatusContainer = styled.div<{ $status: 'avaliado' | 'andamento' | 'pendente' | 'Finalizado' | 'Em revisão' | 'Em equalização' }>`
+export const StatusContainer = styled.div<{ $status: 'Avaliado' | 'Andamento' | 'Pendente' | 'Finalizado' | 'Em revisão' | 'Em equalização' }>`
   border: 2px solid
     ${({ $status, theme }) =>
-    ($status === 'avaliado' || $status === 'Finalizado')
+    ($status === 'Avaliado' || $status === 'Finalizado')
         ? theme.colors.success.text
-        : $status === 'andamento' || $status === 'Em revisão' || $status === 'Em equalização'
+        : $status === 'Andamento' || $status === 'Em revisão' || $status === 'Em equalização'
         ? theme.colors.secondary.hover
         : theme.colors.text.iconMuted};
   border-radius: 0.5rem;
@@ -59,13 +59,13 @@ export const StatusContainer = styled.div<{ $status: 'avaliado' | 'andamento' | 
   justify-content: center;
 `;
 
-export const Status = styled.span<{$status: 'avaliado' | 'andamento' | 'pendente' | 'Finalizado' | 'Em revisão' | 'Em equalização'}>`
+export const Status = styled.span<{$status: 'Avaliado' | 'Andamento' | 'Pendente' | 'Finalizado' | 'Em revisão' | 'Em equalização'}>`
   font-size: 1rem;
   font-weight: bold;
   color:     ${({ $status, theme }) =>
-        $status === 'avaliado' || $status === 'Finalizado'
+        $status === 'Avaliado' || $status === 'Finalizado'
         ? theme.colors.success.text
-        : $status === 'andamento' || $status === 'Em revisão' || $status === 'Em equalização'
+        : $status === 'Andamento' || $status === 'Em revisão' || $status === 'Em equalização'
         ? theme.colors.secondary.hover
         : theme.colors.text.iconMuted};
 `;
