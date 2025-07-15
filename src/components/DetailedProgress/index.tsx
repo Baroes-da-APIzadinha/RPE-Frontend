@@ -5,18 +5,8 @@ import { ToggleBar } from "../ToggleBar";
 import { useCicloAtual } from "@/hooks/useCicloAtual";
 import { useConclusionProgressByUnit } from "@/hooks/rh/useConclusionProgressByUnit";
 import { useConclusionProgressByBoard } from "@/hooks/rh/useConclusionProgressByBoard";
-type ViewMode = "unidade" | "trilha";
+import { formatar } from "@/utils/formatters";
 
-interface ProgressItem {
-  label: string;
-  value: number;
-  totalColab: number;
-}
-
-interface Props {
-  data: ProgressItem[];
-  title: string;
-}
 
 type TipoProgresso = "unidade" | "trilha";
 
@@ -25,14 +15,14 @@ export function DetailedProgress({ title }: { title: string }) {
 
   const dadosUnidade = useConclusionProgressByUnit(useCicloAtual().cicloAtual?.id ?? "")
   .data.map((item) => ({
-    label: item.nomeUnidade,
+    label: formatar(item.nomeUnidade),
     value: Math.round((item.quantConcluidas / item.total) * 100),
     totalColab: item.total,
   }));
 
   const dadosTrilha = useConclusionProgressByBoard(useCicloAtual().cicloAtual?.id ?? "")
   .data.map((item) => ({
-    label: item.nomeTrilha,
+    label: formatar(item.nomeTrilha),
     value: Math.round((item.quantConcluidas / item.total) * 100),
     totalColab: item.total,
   }));

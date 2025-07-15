@@ -1,7 +1,7 @@
 import styled from "styled-components";
 
 export const Container = styled.div`
-  margin: 1.5rem 0;
+  margin:  0;
   padding: 1.6rem;
   border-radius: 1.125rem;
   border: 1px solid ${({ theme }) => theme.colors.border};

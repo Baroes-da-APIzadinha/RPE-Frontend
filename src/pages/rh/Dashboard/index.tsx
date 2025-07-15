@@ -26,6 +26,7 @@ import { useCollaboratorsCount } from "@/hooks/rh/useCollaboratorsCount.ts";
 import { useUnidadesCount } from "@/hooks/rh/useUnidadesCount.ts";
 import { useEvaluationStatusCount } from "@/hooks/rh/useEvaluationStatusCount.ts";
 import { useState } from "react";
+import { usePerfil } from "@/hooks/usePerfil.ts";
 
 function getStatusPercentage(statusCount: number, total: number) : number {
   if (total === 0) return 0;
@@ -44,6 +45,7 @@ export function RhDashboard() {
   const { quantConcluidas, quantPendentes, quantEmAndamento } = useEvaluationStatusCount(cicloAtual?.id ?? "");
   const total = (quantConcluidas) + (quantPendentes) + (quantEmAndamento);
   const concludedPercentage = getStatusPercentage((quantConcluidas), total);
+  const { perfil } = usePerfil();
 
   const toggleOptions = [
     { value: 'overview', label: 'Visão Geral', icon: <MdDashboard /> },
@@ -121,7 +123,7 @@ export function RhDashboard() {
   );
 
   const renderAnalyticsTab = () => (
-    <>
+    <S.MainContent>
       <CardContainer>
         <ChartBox
           title="Avaliações por Dia"
@@ -196,13 +198,13 @@ export function RhDashboard() {
       </CardContainer>
 
       <DetailedProgress title="Progresso Detalhado" />
-    </>
+    </S.MainContent>
   );
 
   return (
     <>
       <S.Header>
-        <Title>Dashboard RH</Title>
+        <Title>Bem vindo(a), {perfil?.userName}</Title>
         <S.HeaderButtons>
           <Button variant="outline">
             <MdFileDownload /> Exportar Relatório
