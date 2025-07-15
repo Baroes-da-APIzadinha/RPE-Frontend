@@ -17,6 +17,7 @@ import { useCicloAtual } from "@/hooks/useCicloAtual";
 import { IoMdPerson } from "react-icons/io";
 import { StarRating } from "@/components/StarRating";
 import { useMiniAvaliacaoIA, clearMiniAvaliacaoIACache } from "@/hooks/IA/useMiniAvaliacaoIA";
+import { useGerarBrutalFacts } from "@/hooks/IA/useGerarBrutalFacts";
 import { formatar } from "@/utils/formatters";
 import { toast } from "sonner";
 import type { SendEqualizacaoParams } from "@/types/equalizacao";
@@ -254,6 +255,7 @@ export function CollaboratorEqualization() {
   }, []);
 
   const { sendEqualizacaoData } = useSendEqualizacao();
+  const { generateBrutalFacts } = useGerarBrutalFacts();
   
   const handleConfirmApproval = useCallback(async () => {
     if (colaboradorToApprove) {
@@ -272,6 +274,8 @@ export function CollaboratorEqualization() {
       await sendEqualizacaoData(colab)
       toast.success(`${colaboradorToApprove.nome} teve a nota equalizada com sucesso!`);
 
+      
+
       } catch (error) {
         console.error("Erro ao enviar equalização:", error);
         toast.error("Erro ao enviar equalização.");
@@ -281,6 +285,16 @@ export function CollaboratorEqualization() {
       // Fechar modal e limpar estado
       setConfirmModalOpen(false);
       setColaboradorToApprove(null);
+
+      // Gerar brutal facts após sucesso da equalização
+      try {
+        await generateBrutalFacts(colaboradorToApprove.id, idCiclo);
+        console.log("Brutal facts gerados com sucesso para:", colaboradorToApprove.nome);
+      } catch (brutalFactsError) {
+        console.error("Erro ao gerar brutal facts:", brutalFactsError);
+        // Não exibir erro para o usuário, apenas logar
+      }
+      window.location.reload(); // Recarrega a página para atualizar os dados
     }
   }, [colaboradorToApprove, sendEqualizacaoData]);
 
