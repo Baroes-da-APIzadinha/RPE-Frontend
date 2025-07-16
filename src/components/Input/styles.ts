@@ -8,13 +8,13 @@ export const Wrapper = styled.div`
 
 export const Label = styled.label`
   margin-bottom: 0.5rem;
-  color: ${({ theme }) => theme.colors.text.secondary};
+  color: ${({ theme }) => theme.colors.text.primary};
   font-size: 1rem;
 `
 
 export const Input = styled.input<{ error?: boolean }>`
   padding: 0.75rem 1rem;
-  border: 1px solid ${({ error, theme }) =>  error ? theme.colors.error.default : theme.colors.border};
+  border: 1px solid ${({ error, theme }) =>  error ? theme.colors.error.default : theme.colors.primary.default};
 
   border-radius: 6px;
   font-size: 1rem;
@@ -23,5 +23,8 @@ export const Input = styled.input<{ error?: boolean }>`
   &:focus {
     border-color: ${({ theme }) => theme.colors.primary.default};
     outline: none;
+  }
+  &:not(:placeholder-shown) {
+    background: ${({ theme }) => theme.colors.primary.light}; // exemplo de cor diferente
   }
 `

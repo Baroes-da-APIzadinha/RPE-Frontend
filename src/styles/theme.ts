@@ -33,56 +33,67 @@ export default {
     },
   },
 
+  //NOVA PALETA DE CORES
+
+  // #340773
+  // #150140
+  // #0D0126
+  // #9373D9 
+  // #A68A56
+  
   colors: {
-    background: "#F0F0F0",
+    background: "#F4F1FA",
     black: "#000000",
-    lightGray: "#D9D9D9",
+    lightGray: "#E6E1F1",
+    border: "#D5CCE9",
 
     surface: {
-      default: "#FAFAFA",
-      alt: "#F7F9FC",
-      hover: "#F5F5F5"
+      default: "#FFFFFF",   // branco para cards e formulários
+      alt: "#F4F1FA",        // lavanda clarinha (match com background claro)
+      hover: "#EAE3F7",      // hover com um tom a mais de lavanda
     },
 
-    border: "#E1E4E8",
 
     text: {
-      primary: "#1F1F1F",
-      secondary: "#5F6368",
-      disabled: "#BFC3C9",
-      placeholder: "#B1B1B1",
-      iconMuted: "#7A7A7A",
-      title: "#3F3F46",
+      primary: "#1F1F1F",       // preto suave
+      secondary: "#4A4170",     // roxo escuro acinzentado (neutralizado)
+      tertiary: "#7E73A5",      // lavanda acinzentada
+      disabled: "#B8B0D2",      // claro e legível, mas sutil
+      placeholder: "#9F94C1",   // lavanda média
+      iconMuted: "#A892C1",     // para ícones de menor importância
+      title: "#340773",         // sua cor primária (usada com parcimônia)
     },
 
+
     primary: {
-      default: "#3F63F7",
-      hover: "#2E4DE3",
-      pressed: "#213BB7",
-      light: "#EAF0FF",
-      onPrimary: "#FFFFFF",
+      default: "#340773",
+      hover: "#150140",
+      pressed: "#0D0126",
+      light: "#e0d7f4",
+      xlight: "#9373D9",
+      onPrimary: "#F3F3F3",
       opacity: {
-        100: "rgba(63, 99, 247, 1)",
-        80: "rgba(63, 99, 247, 0.8)",
-        60: "rgba(63, 99, 247, 0.6)",
-        40: "rgba(63, 99, 247, 0.4)",
-        20: "rgba(63, 99, 247, 0.2)",
-        10: "rgba(63, 99, 247, 0.1)",
+        100: "rgba(52, 7, 115, 1)",
+        80: "rgba(52, 7, 115, 0.8)",
+        60: "rgba(52, 7, 115, 0.6)",
+        40: "rgba(52, 7, 115, 0.4)",
+        20: "rgba(52, 7, 115, 0.2)",
+        10: "rgba(52, 7, 115, 0.1)",
       },
     },
 
     secondary: {
-      default: "#FFB200",
-      hover: "#E59E00",
-      light: "#FFF4DA",
+      default: "#A68A56",
+      hover: "#877045",
+      light: "#dcd1bc",
       onSecondary: "#2B1D00",
       opacity: {
-        100: "rgba(255, 178, 0, 1)",
-        80: "rgba(255, 178, 0, 0.8)",
-        60: "rgba(255, 178, 0, 0.6)",
-        40: "rgba(255, 178, 0, 0.4)",
-        20: "rgba(255, 178, 0, 0.2)",
-        10: "rgba(255, 178, 0, 0.1)",
+        100: "rgba(166, 138, 86, 1)",
+        80: "rgba(166, 138, 86, 0.8)",
+        60: "rgba(166, 138, 86, 0.6)",
+        40: "rgba(166, 138, 86, 0.4)",
+        20: "rgba(166, 138, 86, 0.2)",
+        10: "rgba(166, 138, 86, 0.1)",
       },
     },
 
@@ -106,9 +117,20 @@ export default {
       text: "#1C3D7C"
     },
 
-    warning: "#FFB200",
-
-    tertiary: "#A0A0A0", // Adicionando cor para texto terciário
+    warning: {
+      default: "#FFB200",
+      hover: "#E59E00",
+      light: "#FFF4DA",
+      textOnWarning: "#2B1D00",
+      opacity: {
+        100: "rgba(255, 178, 0, 1)",
+        80: "rgba(255, 178, 0, 0.8)",
+        60: "rgba(255, 178, 0, 0.6)",
+        40: "rgba(255, 178, 0, 0.4)",
+        20: "rgba(255, 178, 0, 0.2)",
+        10: "rgba(255, 178, 0, 0.1)",
+      },
+    },
 
     chart: {
       blue: "#3B82F6",

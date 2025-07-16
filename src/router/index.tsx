@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { Login } from "@/pages/Login";
+import { Login } from "@/pages/Login/LoginPage";
+import { FirstLogin } from "@/pages/Login/FirstLogin";
 
 import PublicRoute from "./publicRoute";
 import ProtectedRoute from "./protectedRoute";
@@ -29,7 +30,6 @@ import AuditoriaPage from "@/pages/admin/Auditoria";
 import { AuditoriaRolesPage } from "@/pages/admin/auditoria-roles";
 import AdminPage from "@/pages/admin/AdminPanel";
 import PerfilPage from "@/pages/perfil";
-import { FirstLogin } from "@/pages/FirstLogin";
 
 function AppRoutes() {
   return (

@@ -194,8 +194,8 @@ export const EqualizationBadge = styled.span<{ $status: string }>`
         `
       : $status === "andamento"
       ? css`
-          background: ${theme.colors.secondary.light};
-          color: ${theme.colors.secondary.default};
+          background: ${theme.colors.warning.light};
+          color: ${theme.colors.warning.default};
         `
       : css`
           background: ${theme.colors.error.light};

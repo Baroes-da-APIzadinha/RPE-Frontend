@@ -146,7 +146,7 @@ export const StatusBadge = styled.div<{ $status: string }>`
     $status === "concluida"
       ? theme.colors.success.light
       : $status === "andamento"
-      ? theme.colors.secondary.light
+      ? theme.colors.warning.light
       : theme.colors.error.light};
   color: ${theme.colors.text.primary};
 `;

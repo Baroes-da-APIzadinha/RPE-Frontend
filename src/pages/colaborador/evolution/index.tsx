@@ -154,7 +154,7 @@ export function ColaboradorEvolution() {
               yaxis: {
                 title: { text: "Nota" },
               },
-              colors: [theme.colors.primary.default],
+              colors: [theme.colors.chart.purple],
               dataLabels: { enabled: true },
             }}
           />
@@ -249,11 +249,9 @@ export function ColaboradorEvolution() {
                 title: { text: "Nota" },
               },
               colors: [
-                theme.colors.primary.default,
-                theme.colors.success.default,
                 theme.colors.secondary.default,
-                theme.colors.error.default,
-                theme.colors.chart.purple,
+                theme.colors.primary.xlight,
+                theme.colors.chart.green,
               ],
               dataLabels: { enabled: false },
               stroke: { width: 2 },

@@ -1,4 +1,4 @@
-import styled from 'styled-components'
+import styled from "styled-components";
 
 export const Container = styled.div`
   min-height: 100vh;
@@ -8,8 +8,8 @@ export const Container = styled.div`
   background: ${({ theme }) => theme.colors.background};
 `
 
-export const Form = styled.form`
-  background: ${({ theme }) => theme.colors.primary.onPrimary};
+export const FormContainer = styled.div`
+  background: ${({ theme }) => theme.colors.surface.default};
   padding: 2.5rem 2rem;
   border-radius: 12px;
   box-shadow: 0 4px 24px rgba(0,0,0,0.08);
@@ -32,6 +32,7 @@ export const IconWrapper = styled.div`
   color: ${({ theme }) => theme.colors.primary.default};
 `;
 
+
 export const Title = styled.h2`
   margin: 0;
   color: ${({ theme }) => theme.colors.text.primary};
@@ -48,8 +49,9 @@ export const Subtitle = styled.p`
   line-height: 1.2;
 `
 
-export const Label = styled.label`
-  margin-bottom: 0.5rem;
-  color: ${({ theme }) => theme.colors.text.secondary};
-  font-size: 1rem;
-`
+export const Form = styled.form`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+`;
+
