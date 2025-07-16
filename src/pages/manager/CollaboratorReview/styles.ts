@@ -1,20 +1,18 @@
 import styled from "styled-components";
 import theme from "@/styles/theme";
 
-export const Wrapper = styled.div`
+export const Header = styled.div`
   display: flex;
-  height: 100vh;
-  width: 100vw;
-  
-`;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4vh;
+  gap: 1.2rem;
+`
 
-export const Main = styled.main`
-  flex: 1;
-  min-width: 0;
-  overflow-y: auto;
-  padding: 24px;
-  background-color:  ${theme.colors.background};
-`;
+export const HeaderButtons = styled.div`
+  display: flex;
+  gap: 1.2rem;
+`
 
 // export const CriteriaList = styled(EvaluationFrame)`
 //   display: flex;

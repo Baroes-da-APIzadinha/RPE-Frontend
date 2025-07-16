@@ -8,3 +8,8 @@ export const Header = styled.div`
   margin-bottom: 4vh;
   gap: 1.2rem;
 `
+
+export const HeaderButtons = styled.div`
+  display: flex;
+  gap: 1.2rem;
+`

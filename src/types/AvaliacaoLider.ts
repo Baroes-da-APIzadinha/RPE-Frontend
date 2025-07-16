@@ -26,4 +26,21 @@ export interface CriterioForm {
   descricao: string;
 }
 
+export interface Avaliacao {
+  idAvaliado: string;
+  idAvaliacao: string;
+  status: Status;
+  avaliacaoLiderColaborador?: {
+    cardAvaliacaoLiderColaborador?: {
+      nomeCriterio: string;
+      nota: string;
+      justificativa: string;
+    }[];
+  };
+}
+
+export interface AvaliacoesResponse {
+  avaliacoes: Avaliacao[];
+}
+
 export type FormularioLiderColaborador = Record<string, CriterioForm[]>;

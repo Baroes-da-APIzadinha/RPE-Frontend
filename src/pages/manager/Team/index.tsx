@@ -5,14 +5,19 @@ import Button from "@/components/Button";
 import { SearchInput } from "@/components/SearchInput";
 import { useState } from "react";
 import { useNavigate, useOutletContext } from "react-router-dom";
-import { MdOutlineHistory, MdOutlineModeEdit } from "react-icons/md";
+import {
+  MdAccountCircle,
+  MdOutlineHistory,
+  MdOutlineModeEdit,
+} from "react-icons/md";
 import { ExpandableCard } from "@/components/ExpandableCard";
 import { Select } from "@/components/Select";
-import { useQuery } from "@tanstack/react-query";
-import { getLideradosPorCiclo } from "@/services/HTTP/avaliacoes";
 import type { PerfilData } from "@/types/PerfilData";
 import { useCicloAtual } from "@/hooks/useCicloAtual";
 import { formatar } from "@/utils/formatters";
+import { useLideradosComAvaliacao } from "@/hooks/avaliacoes/useLideradosComAvaliacao";
+import { LoadingMessage } from "@/components/LoadingMessage";
+import { EmptyMessage } from "@/components/EmptyMensage";
 
 export function ManagerTeam() {
   const { perfil } = useOutletContext<{ perfil: PerfilData }>();
@@ -21,11 +26,10 @@ export function ManagerTeam() {
   const { cicloAtual } = useCicloAtual();
   const idCiclo = cicloAtual?.id;
 
-  const { data, isLoading } = useQuery({
-    queryKey: ["liderados", idColaborador, idCiclo],
-    queryFn: () => getLideradosPorCiclo(idColaborador, idCiclo),
-    enabled: !!idColaborador && !!idCiclo,
-  });
+  const { liderados, isLoading } = useLideradosComAvaliacao(
+    idColaborador,
+    idCiclo!
+  );
 
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("todos");
@@ -36,8 +40,6 @@ export function ManagerTeam() {
   const toggleExpand = (index: number) => {
     setExpandedIndex((prev) => (prev === index ? null : index));
   };
-
-  const liderados = data?.liderados ?? [];
 
   const filteredEquipe = liderados.filter((colab) => {
     const matchesSearch = colab.nomeCompleto
@@ -57,7 +59,29 @@ export function ManagerTeam() {
     return matchesSearch && matchesStatus;
   });
 
-  if (isLoading || !cicloAtual) return <p>Carregando dados...</p>;
+  if (isLoading || !cicloAtual) {
+    return <LoadingMessage message="Carregando dados..." />;
+  }
+
+  if (!cicloAtual) {
+    return (
+      <EmptyMessage
+        icon={<MdAccountCircle size={32} />}
+        title="Nenhum ciclo ativo"
+        description="Você não está vinculado a nenhum ciclo avaliativo no momento."
+      />
+    );
+  }
+
+  if (!isLoading && filteredEquipe.length === 0) {
+    return (
+      <EmptyMessage
+        icon={<MdAccountCircle size={32} />}
+        title="Nenhum colaborador encontrado"
+        description="Você ainda não possui liderados vinculados neste ciclo ou nenhum atende aos filtros."
+      />
+    );
+  }
 
   return (
     <>
@@ -69,7 +93,7 @@ export function ManagerTeam() {
         <S.Title>Filtros</S.Title>
         <S.FiltersWrapper>
           <S.FilterItem $grow>
-            <label>Buscar por ciclo</label>
+            <label>Buscar por nome ou cargo</label>
             <SearchInput
               placeholder="Buscar membro da equipe..."
               value={searchTerm}
@@ -149,7 +173,14 @@ export function ManagerTeam() {
                 <S.FooterButtons>
                   <Button
                     variant="outline"
-                    onClick={() => console.log("Histórico Avaliação")}
+                    onClick={() =>
+                      navigate("/gestor/collaborator/evolution", {
+                        state: {
+                          idColaborador: colab.idColaborador,
+                          nome: colab.nomeCompleto,
+                        },
+                      })
+                    }
                   >
                     <MdOutlineHistory /> Histórico
                   </Button>

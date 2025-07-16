@@ -17,7 +17,7 @@ import RhCyclePage from "@/pages/rh/cycle";
 import CycleCriteriaPage from "@/pages/rh/cycleCriteria";
 
 import { CollaboratorReview } from "@/pages/manager/CollaboratorReview";
-import { MananegerDashboard } from "@/pages/manager/Dashboard";
+import { ManagerDashboard } from "@/pages/manager/Dashboard";
 import { ManagerTeam } from "@/pages/manager/Team";
 import { MentoradosPage } from "@/pages/mentor/mentorados";
 import { BrutalFactsPage } from "@/pages/mentor/brutal-facts";
@@ -63,18 +63,17 @@ function AppRoutes() {
 
             {/* Gestor */}
             <Route path="/gestor">
-              <Route path="dashboard" element={<MananegerDashboard />} />
+              <Route path="dashboard" element={<ManagerDashboard />} />
               <Route path="team" element={<ManagerTeam />} />
-              <Route
-                path="collaborator/review"
-                element={<CollaboratorReview />}
-              />
+              <Route path="collaborator/review"element={<CollaboratorReview />} />
+              <Route path="collaborator/evolution" element={<ColaboradorEvolution />} />
             </Route>
 
             {/* Mentor */}
             <Route path="/mentor">
               <Route path="mentorados" element={<MentoradosPage />} />
               <Route path="brutal-facts/:id" element={<BrutalFactsPage />} />
+              <Route path="mentorado/evolução" element={<ColaboradorEvolution />} />
             </Route>
 
             {/* RH */}
