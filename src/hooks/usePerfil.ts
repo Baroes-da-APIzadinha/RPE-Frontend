@@ -51,10 +51,6 @@ export function usePerfil() {
           .map(r => roleMap[r])
           .filter(Boolean) as Role[];
 
-        if (rolesFromApi.includes("ADMIN")) {
-          finalRoles = ["admin", "colaborador", "rh", "gestor", "comite", "lider"];
-        }
-
         const perfilData: PerfilData = {
           userId: res.userId ?? "",
           userName: res.email ? formatUserName(res.email) : "Usuário",
