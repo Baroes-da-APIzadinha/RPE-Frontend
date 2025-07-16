@@ -9,7 +9,7 @@ export const Container = styled.div`
 `
 
 export const FormContainer = styled.div`
-  background: ${({ theme }) => theme.colors.primary.onPrimary};
+  background: ${({ theme }) => theme.colors.surface.default};
   padding: 2.5rem 2rem;
   border-radius: 12px;
   box-shadow: 0 4px 24px rgba(0,0,0,0.08);

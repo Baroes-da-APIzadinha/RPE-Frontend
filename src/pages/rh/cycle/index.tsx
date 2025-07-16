@@ -21,9 +21,9 @@ function getStatusLabel(status: string): string {
       return "andamento";
     case "FECHADO":
       return "Finalizado";
-    case "REVISAO":
+    case "EM_REVISAO":
       return "Em revisão";
-    case "EQUALIZACAO":
+    case "EM_EQUALIZAÇÃO":
       return "Em equalização";
     default:
       return "pendente";
@@ -210,9 +210,8 @@ export function RhCyclePage() {
             )}`}
             status={getStatusLabel(ciclo.status) as any}
             onClick={() => {
-              if (ciclo.status === "AGENDADO") {
+             
                 navigate("/rh/cycle/criteria", { state: { ciclo } });
-              }
             }}
           />
         ))}

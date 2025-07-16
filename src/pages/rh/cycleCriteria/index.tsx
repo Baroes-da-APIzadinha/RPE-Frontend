@@ -17,11 +17,11 @@ import { toast } from "sonner";
 export function CycleCriteriaPage() {
   const location = useLocation();
   const navigate = useNavigate();
-  const ciclo = location.state?.cicloAtivo;
-  
+  const ciclo = location.state?.ciclo || location.state?.cicloAtivo;
+
   if (!ciclo) {
     navigate("/rh/cycle");
-    return null;
+    return <p>Ciclo Não encontrado</p>;
   }
 
   const { criterios, fetchAllPilares } = useCriterios();
@@ -34,7 +34,7 @@ export function CycleCriteriaPage() {
 
   const [tipo, setTipo] = React.useState<
     "execucao" | "comportamento" | "gestao"
-  >("execucao");
+  >("comportamento");
   const [checkedCriterios, setCheckedCriterios] = React.useState<
     Record<string, boolean>
   >({});
@@ -43,8 +43,8 @@ export function CycleCriteriaPage() {
   >({});
 
   const categorias = [
-    { value: "execucao", label: "Execução" },
     { value: "comportamento", label: "Comportamento" },
+    { value: "execucao", label: "Execução" },
     { value: "gestao", label: "Gestão e Liderança" },
   ];
 
@@ -116,7 +116,16 @@ export function CycleCriteriaPage() {
     }));
   }
 
-  const criteriosPorTipo = criterios[pilaresMap[tipo]] || [];
+  const criteriosOriginais = criterios[pilaresMap[tipo]] || [];
+
+  const criteriosPorTipo =
+    ciclo.status !== "AGENDADO"
+      ? criteriosOriginais.filter((criterio) =>
+          associacoes.some((assoc) => assoc.idCriterio === criterio.idCriterio)
+        )
+      : criteriosOriginais;
+
+  const isEditable = ciclo.status === "AGENDADO";
 
   const { constantes, loading: loadingConstantes } = useColaboradorConstantes();
 
@@ -357,6 +366,7 @@ export function CycleCriteriaPage() {
                       options={trilhasOptions}
                       value={criteriosSelecionados[id]?.trilhas || []}
                       onChange={(val) => updateTrilhas(id, val as string[])}
+                      disabled={!isEditable}
                     />
                     <S.BadgeList>
                       {criteriosSelecionados[id]?.trilhas?.map((trilha) => {
@@ -394,6 +404,7 @@ export function CycleCriteriaPage() {
                       options={unidadesOptions}
                       value={criteriosSelecionados[id]?.unidades || []}
                       onChange={(val) => updateUnidades(id, val as string[])}
+                      disabled={!isEditable}
                     />
                     <S.BadgeList>
                       {criteriosSelecionados[id]?.unidades?.map((unidade) => {
@@ -430,7 +441,9 @@ export function CycleCriteriaPage() {
       </Card>
 
       <ButtonFrame text="Para salvar os critérios, clique no botão de salvar.">
-        <Button onClick={handleSalvar}>Salvar</Button>
+        <Button onClick={handleSalvar} variant="primary" disabled={!isEditable}>
+          Salvar
+        </Button>
       </ButtonFrame>
     </>
   );

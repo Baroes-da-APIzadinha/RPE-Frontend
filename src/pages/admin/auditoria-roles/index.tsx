@@ -201,7 +201,7 @@ export function AuditoriaRolesPage() {
                 <S.ColaboradorDetails>
                   <S.ColaboradorNome>{colaborador.nome}</S.ColaboradorNome>
                   <S.ColaboradorCargo>{formatar(colaborador.cargo)}</S.ColaboradorCargo>
-                  <S.ColaboradorTrilha>{formatar(colaborador.trilha)} • {colaborador.unidade}</S.ColaboradorTrilha>
+                  <S.ColaboradorTrilha>{formatar(colaborador.trilha)} • {formatar(colaborador.unidade)}</S.ColaboradorTrilha>
                 </S.ColaboradorDetails>
               </S.ColaboradorInfo>
 
