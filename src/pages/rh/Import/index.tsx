@@ -13,7 +13,7 @@ import { useExportacaoTemplate } from "@/hooks/rh/useExportacaoTemplate";
 type TipoImportacao = "colaboradores" | "avaliacoes" | "criterios";
 
 export function Import() {
-  const { downloadTemplate, loading: templateLoading } = useExportacaoTemplate();
+  const { downloadTemplate } = useExportacaoTemplate();
 
   const [showModal, setShowModal] = useState(false);
   const [tipo, setTipo] = useState<TipoImportacao>("colaboradores");
