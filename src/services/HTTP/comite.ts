@@ -31,6 +31,6 @@ export async function sendEqualizacao(
 
 }
 
-export async function getEqualizacaoCiclo(idCiclo: string) {
+export async function getExportacaoCiclo(idCiclo: string) {
   return await api.get(`exportacao/ciclo/${idCiclo}`, { responseType: 'blob' });
 }

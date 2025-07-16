@@ -14,7 +14,7 @@ import { Title } from "@/components/Title/index.tsx";
 import { EmptyMessage } from "@/components/EmptyMensage/index.tsx";
 import { useOutletContext } from "react-router-dom";
 import type { PerfilData } from "@/types/PerfilData.tsx";
-import { useEqualizacaoCiclo } from '@/hooks/comite/useEqualizacaoCiclo';
+import { useEqualizacaoCiclo } from '@/hooks/comite/useExportacaoCiclo.ts';
 
 type Ciclo = {
   id: string;
@@ -27,12 +27,11 @@ type Ciclo = {
 export function CycleHistory() {
   const { perfil } = useOutletContext<{ perfil: PerfilData }>();
   const [showExportModal, setShowExportModal] = useState(false);
-  const [selectedCycle, setSelectedCycle] = useState<string | null>(null);
   const [ciclos, setCiclos] = useState<Ciclo[]>([]);
   const { cicloAtual } = useCicloAtual();
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("todos");
-  const { downloadCycleData, loading, error } = useEqualizacaoCiclo();
+  const { downloadCycleData, loading } = useEqualizacaoCiclo();
 
   useEffect(() => {
     const fetchCiclos = async () => {
@@ -150,7 +149,6 @@ export function CycleHistory() {
                   <Button
                     variant="secondary"
                     onClick={() => {
-                      setSelectedCycle(cicloAtual.nome);
                       setShowExportModal(true);
                     }}
                   >
@@ -175,7 +173,7 @@ export function CycleHistory() {
                 <Button
                   variant="outline"
                   onClick={() => {
-                    downloadCycleData(ciclo.id);
+                    downloadCycleData(ciclo.id, ciclo.nome);
                   }}
                   disabled={ciclo.status === "AGENDADO" || loading}
                 >
@@ -234,7 +232,7 @@ export function CycleHistory() {
             <Button
               variant="secondary"
               onClick={() => {
-                downloadCycleData(cicloAtual?.id || "");
+                downloadCycleData(cicloAtual?.id || "", cicloAtual?.nome || "");
                 setShowExportModal(false);
               }}
             >
