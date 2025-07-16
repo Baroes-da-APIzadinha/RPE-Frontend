@@ -1,15 +1,18 @@
 import { getRequest } from "./requests";
 
 export interface LogAuditoria {
-    id: string;
-    userId: string;
-    action: string;
-    resource: string;
-    details: Record<string, any>; 
-    timestamp: string;
-    ip: string;
+    dataHora: string;
+    usuario: string;
+    acao: string;
+    endpoint: string;
 }
 
-export async function getLogsAuditoria(){
-  return await getRequest("/auditoria");
+export interface LogAuditoriaResponse {
+    logs: LogAuditoria[];
+}
+
+const baseEndpoint = "/auditoria";
+
+export async function getLogsAuditoria(inicio: number, fim?: number): Promise<LogAuditoriaResponse> {
+  return await getRequest(`${baseEndpoint}/logs?inicio=${inicio}${fim ? `&fim=${fim}` : ''}`);
 }
