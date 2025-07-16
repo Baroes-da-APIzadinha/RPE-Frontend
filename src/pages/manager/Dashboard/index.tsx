@@ -1,7 +1,7 @@
 import * as S from "./styles.ts";
-import { Title } from "@/components/Title/index.tsx";
-import CardContainer from "@/components/CardContainer/index.tsx";
-import CardBox from "@/components/CardBox/index.tsx";
+import { Title } from "@/components/Title";
+import CardContainer from "@/components/CardContainer";
+import CardBox from "@/components/CardBox";
 import { BsGraphUpArrow } from "react-icons/bs";
 import {
   MdAccountCircle,
@@ -12,44 +12,51 @@ import {
   MdOutlineCheckCircle,
   MdTrackChanges,
 } from "react-icons/md";
-import { Card } from "@/components/Card/index.tsx";
 import { useTheme } from "styled-components";
-import Button from "@/components/Button/index.tsx";
-import { AlertList } from "@/components/AlertList/index.tsx";
+import Button from "@/components/Button";
+import { AlertList } from "@/components/AlertList";
+import { useOutletContext } from "react-router-dom";
+import { useCicloAtual } from "@/hooks/useCicloAtual";
+import { useLideradosComAvaliacao } from "@/hooks/avaliacoes/useLideradosComAvaliacao";
+import type { PerfilData } from "@/types/PerfilData";
 
-export function MananegerDashboard() {
+export function ManagerDashboard() {
   const theme = useTheme();
+  const { perfil } = useOutletContext<{ perfil: PerfilData }>();
+  const idColaborador = perfil?.userId;
 
-  const colaboradores = [
-    {
-      nome: "João Silva",
-      cargo: "Desenvolvedor Senior",
-      status: "concluida",
-      nota: "4.2",
-      data: "08-06-2025",
-    },
-    {
-      nome: "Ana Costa",
-      cargo: "Desenvolvedor Pleno",
-      status: "andamento",
-      nota: "4.1",
-      data: "06-06-2025",
-    },
-    {
-      nome: "Pedro Santos",
-      cargo: "Desenvolvedor Junior",
-      status: "andamento",
-      nota: "3.8",
-      data: "05-06-2025",
-    },
-    {
-      nome: "Carla Mendes",
-      cargo: "QA Analyst",
-      status: "pendente",
-      nota: "4.0",
-      data: "15-06-2025",
-    },
-  ];
+  const { cicloAtual } = useCicloAtual();
+  const idCiclo = cicloAtual?.id;
+
+  const { liderados, isLoading } = useLideradosComAvaliacao(
+    idColaborador,
+    idCiclo!
+  );
+
+  // Total da equipe
+  const totalEquipe = liderados.length;
+
+  // Cálculo de progresso
+  const totalCriterios = liderados.length * 3; // exemplo: 3 critérios por colaborador
+  const totalPreenchido = liderados.reduce(
+    (acc, colab) =>
+      acc +
+      colab.cardsPreenchidos.filter(
+        (c) => Number(c.nota) > 0 && c.justificativa?.trim() !== ""
+      ).length,
+    0
+  );
+  const progresso = totalCriterios === 0 ? 0 : Math.round((totalPreenchido / totalCriterios) * 100);
+
+  // Cálculo da média geral
+  const notasValidas = liderados
+    .map((l) => Number(l.notaLider))
+    .filter((n) => !isNaN(n) && n > 0);
+
+  const mediaEquipe =
+    notasValidas.length > 0
+      ? (notasValidas.reduce((a, b) => a + b, 0) / notasValidas.length).toFixed(1)
+      : "0.0";
 
   return (
     <>
@@ -60,22 +67,22 @@ export function MananegerDashboard() {
       <CardContainer>
         <CardBox
           title="Total da Equipe"
-          bigSpan="8"
+          bigSpan={totalEquipe.toString()}
           span="colaboradores diretos"
           icon={<MdGroup />}
         />
 
         <CardBox
           title="Progresso Geral"
-          bigSpan="63%"
-          progress={63}
+          bigSpan={`${progresso}%`}
+          progress={progresso}
           icon={<MdTrackChanges />}
         />
 
         <CardBox
           title="Média da Equipe"
-          bigSpan="4.2"
-          miniSpan="+0.1"
+          bigSpan={mediaEquipe}
+          miniSpan="+0.1" // Esse pode ser dinâmico depois
           span="vs anterior"
           icon={<BsGraphUpArrow />}
         />
@@ -84,104 +91,41 @@ export function MananegerDashboard() {
       <AlertList
         title="Alertas e Ações Necessárias"
         subtitle="Itens que requerem sua atenção"
-        items={[
-          {
+        items={liderados
+          .filter((colab) => colab.statusAutoavaliacao === "PENDENTE")
+          .map((colab) => ({
             type: "red",
             icon: <MdErrorOutline />,
-            title: "Carla Mendes não iniciou avaliação",
-            description: "Sem progresso há 3 semanas",
+            title: `${colab.nomeCompleto} não iniciou a autoavaliação`,
+            description: "Sem progresso detectado",
             buttonLabel: "Enviar Lembrete",
-            onClick: () => console.log("Enviar Lembrete"),
-          },
-          {
-            type: "yellow",
-            icon: <MdOutlineAccessTime />,
-            title: "Pedro Santos precisa de suporte",
-            description: "Progresso lento na autoavaliação",
-            buttonLabel: "Agendar 1:1",
-            onClick: () => console.log("Agendar 1:1"),
-          },
-          {
-            type: "green",
-            icon: <MdOutlineCheckCircle />,
-            title: "João Silva completou todas as avaliações",
-            description: "Primeiro da equipe a finalizar o ciclo",
-            buttonLabel: "Parabenizar",
-            onClick: () => console.log("Parabenizar"),
-          },
-        ]}
+            onClick: () => console.log("Enviar lembrete para", colab.nomeCompleto),
+          }))
+          .concat(
+            liderados
+              .filter((colab) => colab.statusAutoavaliacao === "EM_RASCUNHO")
+              .map((colab) => ({
+                type: "yellow",
+                icon: <MdOutlineAccessTime />,
+                title: `${colab.nomeCompleto} está em andamento`,
+                description: "Pode precisar de suporte",
+                buttonLabel: "Agendar 1:1",
+                onClick: () => console.log("Agendar reunião com", colab.nomeCompleto),
+              }))
+          )
+          .concat(
+            liderados
+              .filter((colab) => colab.statusAutoavaliacao === "CONCLUIDA")
+              .map((colab) => ({
+                type: "green",
+                icon: <MdOutlineCheckCircle />,
+                title: `${colab.nomeCompleto} concluiu a autoavaliação`,
+                description: "Parabenize pelo comprometimento",
+                buttonLabel: "Parabenizar",
+                onClick: () => console.log("Parabenizar", colab.nomeCompleto),
+              }))
+          )}
       />
-
-      <Card>
-        <S.HeaderRow>
-          <div>
-            <S.SectionTitle>Status da Equipe</S.SectionTitle>
-            <S.SectionSubtitle>
-              Progresso individual das avaliações
-            </S.SectionSubtitle>
-          </div>
-          <Button variant="outline">
-            Ver Todos <MdArrowForward />
-          </Button>
-        </S.HeaderRow>
-
-        <S.CollaboratorList>
-          {colaboradores.map((colab, index) => (
-            <S.CollaboratorCard key={index}>
-              <S.UserInfo>
-                <MdAccountCircle size={64} />
-                <S.TextDiv>
-                  <S.Name>{colab.nome}</S.Name>
-                  <S.Role>{colab.cargo}</S.Role>
-                </S.TextDiv>
-              </S.UserInfo>
-
-              <S.UserStatus>
-                <div>
-                  <S.StatusLabel>Progresso</S.StatusLabel>
-                  <S.StatusBadge $status={colab.status}>
-                    {colab.status === "concluida" && (
-                      <>
-                        <MdOutlineCheckCircle
-                          size={20}
-                          color={theme.colors.success.text}
-                        />
-                        Concluída
-                      </>
-                    )}
-                    {colab.status === "andamento" && (
-                      <>
-                        <MdOutlineAccessTime
-                          size={20}
-                          color={theme.colors.secondary.default}
-                        />
-                        Em andamento
-                      </>
-                    )}
-                    {colab.status === "pendente" && (
-                      <>
-                        <MdErrorOutline
-                          size={20}
-                          color={theme.colors.error.text}
-                        />
-                        Pendente
-                      </>
-                    )}
-                  </S.StatusBadge>
-                </div>
-                <div>
-                  <S.StatusLabel>Desempenho</S.StatusLabel>
-                  <S.Score>{colab.nota}</S.Score>
-                </div>
-                <div>
-                  <S.StatusLabel>Última Avaliação</S.StatusLabel>
-                  <S.Date>{colab.data}</S.Date>
-                </div>
-              </S.UserStatus>
-            </S.CollaboratorCard>
-          ))}
-        </S.CollaboratorList>
-      </Card>
     </>
   );
 }
