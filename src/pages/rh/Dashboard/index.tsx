@@ -262,57 +262,58 @@ export function RhDashboard() {
           subtitle="Distribuição das notas de autoavaliação no ciclo atual"
         >
           <ReactApexChart
-            type="scatter"
+            type="bar"
             height={300}
             width={400}
             series={[
               {
-                name: "Quantidade de Avaliações",
-                data: Object.entries(notasDistribuicao).map(([nota, quantidade]) => ({
-                  x: parseFloat(nota),
-                  y: quantidade
-                }))
+          name: "Quantidade de Avaliações",
+          data: Object.entries(notasDistribuicao).map(([nota, quantidade]) => ({
+            x: parseFloat(nota),
+            y: quantidade
+          }))
               }
             ]}
             options={{
               chart: {
-                toolbar: { show: false },
-                zoom: { enabled: false },
+          toolbar: { show: false },
+          zoom: { enabled: false },
               },
               xaxis: {
-                type: "numeric",
-                title: { text: "Nota" },
-                min: 0,
-                max: 5,
-                tickAmount: 10,
-                labels: {
-                  formatter: (val: string) => parseFloat(val).toFixed(1)
-                }
+          type: "numeric",
+          title: { text: "Nota" },
+          min: 0,
+          max: 5,
+          tickAmount: 10,
+          labels: {
+            formatter: (val: string) => parseFloat(val).toFixed(1)
+          }
               },
               yaxis: {
-                title: { text: "Quantidade de Avaliações" },
-                min: 0
+          title: { text: "Quantidade de Avaliações" },
+          min: 0
               },
               colors: [theme.colors.chart.purple],
               legend: { position: "top" },
               dataLabels: { 
-                enabled: true,
-                formatter: (val: any) => val.y > 0 ? val.y.toString() : ''
-              },
-              markers: {
-                size: 8,
-                shape: "circle"
+          enabled: true,
+          formatter: (val: any) => val.y > 0 ? val.y.toString() : ''
               },
               grid: { show: true },
               tooltip: {
-                custom: ({ seriesIndex, dataPointIndex, w }) => {
-                  const nota = w.globals.initialSeries[seriesIndex].data[dataPointIndex].x;
-                  const quantidade = w.globals.initialSeries[seriesIndex].data[dataPointIndex].y;
-                  return `<div class="arrow_box">
-                    <span>Nota: ${nota}</span><br/>
-                    <span>Quantidade: ${quantidade}</span>
-                  </div>`;
-                }
+          custom: ({ seriesIndex, dataPointIndex, w }) => {
+            const nota = w.globals.initialSeries[seriesIndex].data[dataPointIndex].x;
+            const quantidade = w.globals.initialSeries[seriesIndex].data[dataPointIndex].y;
+            return `<div class="arrow_box">
+              <span>Nota: ${nota}</span><br/>
+              <span>Quantidade: ${quantidade}</span>
+            </div>`;
+          }
+              },
+              plotOptions: {
+          bar: {
+            horizontal: false,
+          }
               }
             }}
           />
