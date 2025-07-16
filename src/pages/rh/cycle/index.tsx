@@ -191,9 +191,8 @@ export function RhCyclePage() {
                 status={getStatusLabel(cicloAtivo.status) as any}
                 icon={<MdHistory size={64} />}
                 onClick={() => {
-                  if (cicloAtivo.status === "AGENDADO") {
+                    console.log("Valor de cicloAtivo antes da navegação:", cicloAtivo);
                     navigate("/rh/cycle/criteria", { state: { cicloAtivo } });
-                  }
                 }}
               />
             </TableBase>

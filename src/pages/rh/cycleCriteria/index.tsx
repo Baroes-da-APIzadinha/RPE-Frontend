@@ -17,8 +17,8 @@ import { toast } from "sonner";
 export function CycleCriteriaPage() {
   const location = useLocation();
   const navigate = useNavigate();
-  const ciclo = location.state?.ciclo;
-
+  const ciclo = location.state?.cicloAtivo;
+  
   if (!ciclo) {
     navigate("/rh/cycle");
     return null;
