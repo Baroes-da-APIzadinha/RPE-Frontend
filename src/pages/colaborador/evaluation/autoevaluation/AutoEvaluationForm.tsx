@@ -18,7 +18,10 @@ import { MdOutlineAssignmentTurnedIn, MdWarning } from "react-icons/md";
 import { useAutoAvaliacaoId } from "@/hooks/avaliacoes/useAutoAvaliacaoId";
 import { useCriteriosAutoAvaliacao } from "@/hooks/avaliacoes/useCriteriosAutoAvaliacao";
 import type { PerfilData } from "@/types/PerfilData";
-import { preencherAutoAvaliacao } from "@/services/HTTP/avaliacoes";
+import {
+  preencherAutoAvaliacao,
+  preencherRascunhoAutoAvaliacao,
+} from "@/services/HTTP/avaliacoes";
 
 export function AutoEvaluationForm() {
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
@@ -41,7 +44,7 @@ export function AutoEvaluationForm() {
   const modoVisualizacao = status === "CONCLUIDA";
 
   useEffect(() => {
-    if (!criterios || !respostas) return;
+    if (!criterios) return;
 
     const valoresIniciais: Record<
       string,
@@ -64,6 +67,34 @@ export function AutoEvaluationForm() {
     reset(valoresIniciais);
     calculateProgress(valoresIniciais);
   }, [criterios, respostas, reset]);
+
+  useEffect(() => {
+    if (!idAvaliacao || !criterios || modoVisualizacao) return;
+
+    const interval = setInterval(() => {
+      const values = getValues(); // cuidado: pode estar desatualizado
+      const criteriosPayload = Object.keys(criterios).flatMap((pilar) =>
+        criterios[pilar].map((criterio) => {
+          const nome = criterio.nomeCriterio;
+          const val = values?.[nome] || { nota: 0, justificativa: "" };
+          return {
+            nome,
+            nota: Number(val.nota ?? 0),
+            justificativa: val.justificativa?.trim() || "",
+          };
+        })
+      );
+
+      if (criteriosPayload.length === 0) return;
+
+      preencherRascunhoAutoAvaliacao({
+        idAvaliacao,
+        criterios: criteriosPayload,
+      });
+    }, 10000); // salva a cada 10s
+
+    return () => clearInterval(interval);
+  }, [idAvaliacao, criterios, getValues, modoVisualizacao]);
 
   const watchedValues = useWatch({ control });
   useEffect(() => {

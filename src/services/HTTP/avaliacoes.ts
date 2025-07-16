@@ -45,8 +45,20 @@ export async function getCriteriosAutoAvaliacao(idAvaliacao: string) {
   return await getRequest(`${baseEndpoint}/forms-autoavaliacao/${idAvaliacao}`);
 }
 
-export async function preencherAvaliacaoPares(data: Record<string, any>) {
-  return await postRequest(`${baseEndpoint}/preencher-avaliacao-pares`, data);
+export async function preencherRascunhoAutoAvaliacao(payload: PreencherAutoAvaliacaoDto) {
+  return await postRequest(`${baseEndpoint}/rascunho-auto-avaliacao`, payload);
+}
+
+// Avaliacao de pares (360)
+export async function preencherAvaliacaoPares(payload: {
+  idAvaliacao: string;
+  nota: number;
+  motivacao: string;
+  pontosFortes: string;
+  pontosFracos: string;
+  status: 'EM_RASCUNHO' | 'CONCLUIDA';
+}) {
+  return await postRequest(`${baseEndpoint}/preencher-avaliacao-pares`, payload);
 }
 
 export async function preencherAvaliacaoMentor(payload: {
