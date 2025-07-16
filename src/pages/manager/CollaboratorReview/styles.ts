@@ -22,29 +22,28 @@ export const HeaderButtons = styled.div`
 
 export const CriteriaContent = styled.div`
   display: flex;
+  flex-wrap: wrap;
   gap: 1rem;
-  justify-content: flex-start;
-  align-items: flex-start;
+  justify-content: center;
+  align-items: stretch;
   transition: opacity 1s cubic-bezier(0.4, 0, 0.2, 1);
   opacity: 1;
-  @media (max-width: 900px) {
-    flex-direction: column;
-    gap: 16px;
-  }
 `;
 
+
 export const CriteriaSection = styled.div`
-  flex: 1;
-  min-width: 260px;
+  flex: 1 1 320px;
+  max-width: 100%;
   background: ${theme.colors.surface.default};
   border-radius: 8px;
   padding: 20px 20px 24px 20px;
   border: 1px solid ${theme.colors.border};
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  justify-content: space-between;
   gap: .5rem;
 `;
+
 
 export const SectionTitle = styled.h3`
   font-size: ${theme.font.sizes.medium};
@@ -105,4 +104,44 @@ export const NotaBadge = styled.span<{ $visible?: boolean }>`
   font-weight: ${theme.font.bold};
   font-size: 1rem;
   margin: 0 8px;
+`;
+
+
+
+// Modal styles
+export const ModalContent = styled.div`
+  margin-bottom: 1.5rem;
+`;
+
+export const ModalDescription = styled.p`
+  margin: 0 0 1rem 0;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: ${theme.colors.text.primary};
+`;
+
+export const ModalSummary = styled.div`
+  background: ${theme.colors.surface.default};
+  padding: 1rem;
+  border-radius: 8px;
+  border: 1px solid ${theme.colors.border};
+`;
+
+export const ModalSummaryTitle = styled.p`
+  margin: 0 0 0.5rem 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: ${theme.colors.text.primary};
+`;
+
+export const ModalSummaryText = styled.p`
+  margin: 0;
+  font-size: 0.875rem;
+  color: ${theme.colors.text.secondary};
+`;
+
+export const ModalActions = styled.div`
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
 `;

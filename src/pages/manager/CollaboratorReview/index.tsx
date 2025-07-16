@@ -8,6 +8,7 @@ import {
   MdArrowBack,
   MdKeyboardArrowDown,
   MdKeyboardArrowUp,
+  MdWarning,
 } from "react-icons/md";
 import EvaluationFrame from "@/components/EvaluationFrame";
 import RowProgressBox from "@/components/RowProgressBox";
@@ -24,8 +25,11 @@ import type { FormularioLiderColaborador } from "@/types/AvaliacaoLider";
 import ButtonFrame from "@/components/ButtonFrame";
 import Button from "@/components/Button";
 import { LoadingMessage } from "@/components/LoadingMessage";
+import { FaPaperPlane } from "react-icons/fa";
+import { Modal } from "@/components/Modal";
 
 export function CollaboratorReview() {
+  const [confirmModalOpen, setConfirmModalOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const {
@@ -142,6 +146,7 @@ export function CollaboratorReview() {
 
       toast.success("Avaliação enviada com sucesso!");
       setIsReadonly(true);
+      setConfirmModalOpen(false);
     } catch {
       toast.error("Erro ao enviar avaliação.");
     }
@@ -329,11 +334,37 @@ export function CollaboratorReview() {
         </EvaluationFrame>
       ))}
 
-      <ButtonFrame>
-        <Button onClick={handleSubmit} disabled={isReadonly}>
-          Concluir e enviar
+      <ButtonFrame text="Esta avaliação é salva automaticamente a cada 10 segundos. Uma vez enviada a avaliação ela não pode mais ser alterada.">
+        <Button onClick={() => setConfirmModalOpen(true)} disabled={isReadonly}>
+          <FaPaperPlane /> Concluir e enviar
         </Button>
       </ButtonFrame>
+
+      <Modal
+        open={confirmModalOpen}
+        onClose={() => setConfirmModalOpen(false)}
+        title="Confirmar envio"
+        description="Essa ação é irreversível e não poderá ser desfeita."
+        icon={<MdWarning />}
+        iconColor="warning"
+        iconSize="large"
+      >
+        <S.ModalContent>
+          <S.ModalDescription>
+            Tem certeza que deseja enviar sua avaliação do liderado {nome}? Após
+            o envio, você não poderá alterá-la.
+          </S.ModalDescription>
+        </S.ModalContent>
+
+        <S.ModalActions>
+          <Button variant="outline" onClick={() => setConfirmModalOpen(false)}>
+            Cancelar
+          </Button>
+          <Button variant="primary" type="submit" onClick={handleSubmit}>
+            Confirmar envio
+          </Button>
+        </S.ModalActions>
+      </Modal>
     </>
   );
 }
