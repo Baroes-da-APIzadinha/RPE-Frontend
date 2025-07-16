@@ -66,8 +66,6 @@ export function Login() {
           </S.IconWrapper>
           <div>
             <img src={textTitle} alt="Rocket Corp" width={350} height={90} />
-            {/* <S.Title>RPE</S.Title> */}
-            {/* <S.Subtitle>Rocket Performance &amp; Engagement</S.Subtitle> */}
           </div>
         </S.Header>
         <Input

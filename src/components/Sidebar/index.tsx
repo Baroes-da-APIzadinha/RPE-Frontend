@@ -23,6 +23,8 @@ import { useState, type ReactNode } from "react";
 import { useLogout } from "@/services/Auth/logout";
 import { LuLogs } from "react-icons/lu";
 import type { Role } from "@/types/PerfilData.tsx";
+import logo from "@/assets/DefaultLogo.svg"; 
+
 
 type SidebarProps = {
   roles: Role[]; // papéis ativos
@@ -163,9 +165,11 @@ export function Sidebar({ roles, mainRole, userName }: SidebarProps) {
         )}
 
         <S.Header>
-          <S.Logo />
+          {/* <S.Logo /> */}
+          <img src={logo} alt="Logo" width={60} height={60} />
+
           <div>
-            <S.Title>RPE</S.Title>
+            {/* <S.Title>ROCKET</S.Title> */}
             <S.Subtitle>{roleLabels[mainRole]}</S.Subtitle>
           </div>
         </S.Header>

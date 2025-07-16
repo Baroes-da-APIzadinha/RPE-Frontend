@@ -42,27 +42,28 @@ export default {
   // #A68A56
   
   colors: {
-    background: "#150140",
+    background: "#F4F1FA",
     black: "#000000",
-    lightGray: "#D9D9D9",
+    lightGray: "#E6E1F1",
+    border: "#D5CCE9",
 
     surface: {
-      default: "#f3f3f3ff",
-      alt: "#F7F9FC",
-      hover: "#F5F5F5"
+      default: "#FFFFFF",   // branco para cards e formulários
+      alt: "#F4F1FA",        // lavanda clarinha (match com background claro)
+      hover: "#EAE3F7",      // hover com um tom a mais de lavanda
     },
 
-    border: "#E1E4E8",
 
     text: {
-      primary: "#1F1F1F",
-      secondary: "#5F6368",
-      tertiary: "#A0A0A0",
-      disabled: "#BFC3C9",
-      placeholder: "#B1B1B1",
-      iconMuted: "#7A7A7A",
-      title: "#3F3F46",
+      primary: "#1F1F1F",       // preto suave
+      secondary: "#4A4170",     // roxo escuro acinzentado (neutralizado)
+      tertiary: "#7E73A5",      // lavanda acinzentada
+      disabled: "#B8B0D2",      // claro e legível, mas sutil
+      placeholder: "#9F94C1",   // lavanda média
+      iconMuted: "#A892C1",     // para ícones de menor importância
+      title: "#340773",         // sua cor primária (usada com parcimônia)
     },
+
 
     primary: {
       default: "#340773",
@@ -70,7 +71,7 @@ export default {
       pressed: "#0D0126",
       light: "#e0d7f4",
       xlight: "#9373D9",
-      onPrimary: "#FFFFFF",
+      onPrimary: "#F3F3F3",
       opacity: {
         100: "rgba(52, 7, 115, 1)",
         80: "rgba(52, 7, 115, 0.8)",
