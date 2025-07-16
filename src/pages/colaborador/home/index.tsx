@@ -62,28 +62,26 @@ export function ColaboradorHome() {
         />
       </TableBase>
 
-      {!loading && !isEmpty && (
-        <RowProgressBox
-          title="Progresso no ciclo atual"
-          bars={[
-            {
-              subtitle: "Autoavaliação",
-              value: progresso.autoavaliacao,
-              color: getColorFromProgress(progresso.autoavaliacao),
-            },
-            {
-              subtitle: "Avaliação de Pares",
-              value: progresso.avaliacaoPares,
-              color: getColorFromProgress(progresso.avaliacaoPares),
-            },
-            {
-              subtitle: "Avaliação do Mentor",
-              value: progresso.avaliacaoMentor,
-              color: getColorFromProgress(progresso.avaliacaoMentor),
-            },
-          ]}
-        />
-      )}
+      <RowProgressBox
+        title="Progresso no ciclo atual"
+        bars={[
+          {
+            subtitle: "Autoavaliação",
+            value: progresso.autoavaliacao,
+            color: getColorFromProgress(progresso.autoavaliacao),
+          },
+          {
+            subtitle: "Avaliação de Pares",
+            value: progresso.avaliacaoPares,
+            color: getColorFromProgress(progresso.avaliacaoPares),
+          },
+          {
+            subtitle: "Avaliação do Mentor",
+            value: progresso.avaliacaoMentor,
+            color: getColorFromProgress(progresso.avaliacaoMentor),
+          },
+        ]}
+      />
     </>
   );
 }

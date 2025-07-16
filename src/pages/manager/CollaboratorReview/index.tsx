@@ -1,10 +1,14 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import * as S from "./styles";
 import { Title } from "@/components/Title";
 import { Card } from "@/components/Card";
 import TextArea from "@/components/Textarea";
 import { StarRating } from "@/components/StarRating";
-import { MdArrowBack, MdKeyboardArrowDown, MdKeyboardArrowUp } from "react-icons/md";
+import {
+  MdArrowBack,
+  MdKeyboardArrowDown,
+  MdKeyboardArrowUp,
+} from "react-icons/md";
 import EvaluationFrame from "@/components/EvaluationFrame";
 import RowProgressBox from "@/components/RowProgressBox";
 import { toast } from "sonner";
@@ -24,11 +28,19 @@ import { LoadingMessage } from "@/components/LoadingMessage";
 export function CollaboratorReview() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { idColaborador, idAvaliacaoLider, nome, cardsPreenchidos } = location.state || {};
+  const {
+    idColaborador,
+    idAvaliacaoLider,
+    nome,
+    cardsPreenchidos,
+    statusAvaliacaoLider,
+  } = location.state || {};
 
   const [isReadonly, setIsReadonly] = useState(false);
   const [open, setOpen] = useState<string[]>([]);
-  const [avaliacaoGestor, setAvaliacaoGestor] = useState<Record<string, { nota: number; justificativa: string }>>({});
+  const [avaliacaoGestor, setAvaliacaoGestor] = useState<
+    Record<string, { nota: number; justificativa: string }>
+  >({});
 
   useEffect(() => {
     if (!idAvaliacaoLider) {
@@ -37,11 +49,12 @@ export function CollaboratorReview() {
     }
   }, []);
 
-  const { data: criteriosPorPilar, isLoading } = useQuery<FormularioLiderColaborador>({
-    queryKey: ["form-lider-colaborador", idAvaliacaoLider],
-    queryFn: () => getFormLiderColaborador(idAvaliacaoLider),
-    enabled: !!idAvaliacaoLider,
-  });
+  const { data: criteriosPorPilar, isLoading } =
+    useQuery<FormularioLiderColaborador>({
+      queryKey: ["form-lider-colaborador", idAvaliacaoLider],
+      queryFn: () => getFormLiderColaborador(idAvaliacaoLider),
+      enabled: !!idAvaliacaoLider,
+    });
 
   const { data: autoavaliacao } = useQuery({
     queryKey: ["autoavaliacao", idColaborador],
@@ -71,11 +84,10 @@ export function CollaboratorReview() {
   }, [criteriosPorPilar]);
 
   useEffect(() => {
-    const hasCards = Array.isArray(cardsPreenchidos) && cardsPreenchidos.length > 0;
-    if (hasCards) {
+    if (statusAvaliacaoLider === "CONCLUIDA") {
       setIsReadonly(true);
     }
-  }, []);
+  }, [statusAvaliacaoLider]);
 
   const totalCriterios = Object.values(criteriosPorPilar || {}).flat().length;
 
@@ -85,7 +97,8 @@ export function CollaboratorReview() {
 
   const autoMap = useMemo(() => {
     const map: Record<string, { nota: number; justificativa: string }> = {};
-    const cards = autoavaliacao?.avaliacoes?.[0]?.autoAvaliacao?.cardAutoAvaliacoes;
+    const cards =
+      autoavaliacao?.avaliacoes?.[0]?.autoAvaliacao?.cardAutoAvaliacoes;
 
     if (Array.isArray(cards)) {
       cards.forEach((card: any) => {
@@ -100,8 +113,12 @@ export function CollaboratorReview() {
   }, [autoavaliacao]);
 
   const handleAccordion = (id: string) => {
-    setOpen((prev) => (prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]));
+    setOpen((prev) =>
+      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+    );
   };
+
+  const autosaveInterval = useRef<NodeJS.Timeout | null>(null);
 
   const handleSubmit = async () => {
     if (criteriosPreenchidos < totalCriterios) {
@@ -110,44 +127,56 @@ export function CollaboratorReview() {
     }
 
     try {
-      const criterios = Object.entries(avaliacaoGestor).map(([nome, { nota, justificativa }]) => ({
-        nome,
-        nota,
-        justificativa,
-      }));
+      const criterios = Object.entries(avaliacaoGestor).map(
+        ([nome, { nota, justificativa }]) => ({
+          nome,
+          nota,
+          justificativa,
+        })
+      );
 
-      await preencherAvaliacaoLider({ idAvaliacao: idAvaliacaoLider, criterios });
+      await preencherAvaliacaoLider({
+        idAvaliacao: idAvaliacaoLider,
+        criterios,
+      });
 
       toast.success("Avaliação enviada com sucesso!");
       setIsReadonly(true);
     } catch {
       toast.error("Erro ao enviar avaliação.");
     }
-  };
 
-  const handleAutoSave = async () => {
-    if (isReadonly) return;
-
-    try {
-      const criterios = Object.entries(avaliacaoGestor).map(([nome, { nota, justificativa }]) => ({
-        nome,
-        nota,
-        justificativa,
-      }));
-
-      await preencherRascunhoLider({ idAvaliacao: idAvaliacaoLider, criterios });
-      toast.success("Rascunho salvo com sucesso");
-    } catch {
-      toast.error("Erro ao salvar rascunho");
+    if (autosaveInterval.current) {
+      clearInterval(autosaveInterval.current);
     }
   };
 
   useEffect(() => {
-    window.addEventListener("beforeunload", handleAutoSave);
+    if (!idAvaliacaoLider || !criteriosPorPilar || isReadonly) return;
+
+    autosaveInterval.current = setInterval(() => {
+      const criterios = Object.entries(avaliacaoGestor).map(
+        ([nome, { nota, justificativa }]) => ({
+          nome,
+          nota,
+          justificativa: justificativa.trim(),
+        })
+      );
+
+      if (criterios.length === 0) return;
+
+      preencherRascunhoLider({
+        idAvaliacao: idAvaliacaoLider,
+        criterios,
+      });
+    }, 10000); // 10s
+
     return () => {
-      window.removeEventListener("beforeunload", handleAutoSave);
+      if (autosaveInterval.current) {
+        clearInterval(autosaveInterval.current);
+      }
     };
-  }, [avaliacaoGestor]);
+  }, [idAvaliacaoLider, criteriosPorPilar, isReadonly, avaliacaoGestor]);
 
   const handleGestorNotaChange = (id: string, nota: number) => {
     setAvaliacaoGestor((prev) => ({
@@ -156,7 +185,10 @@ export function CollaboratorReview() {
     }));
   };
 
-  const handleGestorJustificativaChange = (id: string, justificativa: string) => {
+  const handleGestorJustificativaChange = (
+    id: string,
+    justificativa: string
+  ) => {
     setAvaliacaoGestor((prev) => ({
       ...prev,
       [id]: { ...prev[id], justificativa },
@@ -172,7 +204,10 @@ export function CollaboratorReview() {
       <S.Header>
         <Title>Revisão de notas: {nome}</Title>
         <S.HeaderButtons>
-          <Button variant="outline" onClick={() => navigate(-1)}> <MdArrowBack/> Voltar </Button>
+          <Button variant="outline" onClick={() => navigate(-1)}>
+            {" "}
+            <MdArrowBack /> Voltar{" "}
+          </Button>
         </S.HeaderButtons>
       </S.Header>
       <RowProgressBox
@@ -198,10 +233,19 @@ export function CollaboratorReview() {
                       {(autoMap[criterio.nomeCriterio]?.nota ?? 0).toFixed(1)}
                     </S.NotaBadge>
                     <S.NotaBadge $visible={!isOpen}>
-                      {(avaliacaoGestor[criterio.nomeCriterio]?.nota ?? 0).toFixed(1)}
+                      {(
+                        avaliacaoGestor[criterio.nomeCriterio]?.nota ?? 0
+                      ).toFixed(1)}
                     </S.NotaBadge>
-                    <S.ToggleIcon $open={isOpen} onClick={() => handleAccordion(criterio.nomeCriterio)}>
-                      {isOpen ? <MdKeyboardArrowUp size={36} /> : <MdKeyboardArrowDown size={36} />}
+                    <S.ToggleIcon
+                      $open={isOpen}
+                      onClick={() => handleAccordion(criterio.nomeCriterio)}
+                    >
+                      {isOpen ? (
+                        <MdKeyboardArrowUp size={36} />
+                      ) : (
+                        <MdKeyboardArrowDown size={36} />
+                      )}
                     </S.ToggleIcon>
                   </div>
                 </S.CriterioHeader>
@@ -209,15 +253,28 @@ export function CollaboratorReview() {
                 {isOpen && (
                   <S.CriteriaContent>
                     <S.CriteriaSection>
-                      <div style={{ display: "flex", alignItems: "center", width: "100%" }}>
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          width: "100%",
+                        }}
+                      >
                         <S.Subtitle>Avaliação do colaborador</S.Subtitle>
                         <S.NotaBadge style={{ marginLeft: "auto" }}>
-                          {(autoMap[criterio.nomeCriterio]?.nota ?? 0).toFixed(1)}
+                          {(autoMap[criterio.nomeCriterio]?.nota ?? 0).toFixed(
+                            1
+                          )}
                         </S.NotaBadge>
                       </div>
-                      <StarRating value={autoMap[criterio.nomeCriterio]?.nota ?? 0} readOnly />
+                      <StarRating
+                        value={autoMap[criterio.nomeCriterio]?.nota ?? 0}
+                        readOnly
+                      />
                       <TextArea
-                        value={autoMap[criterio.nomeCriterio]?.justificativa ?? ""}
+                        value={
+                          autoMap[criterio.nomeCriterio]?.justificativa ?? ""
+                        }
                         readOnly
                         placeholder="Justificativa do colaborador"
                         rows={4}
@@ -225,20 +282,40 @@ export function CollaboratorReview() {
                     </S.CriteriaSection>
 
                     <S.CriteriaSection>
-                      <div style={{ display: "flex", alignItems: "center", width: "100%" }}>
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          width: "100%",
+                        }}
+                      >
                         <S.Subtitle>Sua avaliação</S.Subtitle>
                         <S.NotaBadge style={{ marginLeft: "auto" }}>
-                          {(avaliacaoGestor[criterio.nomeCriterio]?.nota ?? 0).toFixed(1)}
+                          {(
+                            avaliacaoGestor[criterio.nomeCriterio]?.nota ?? 0
+                          ).toFixed(1)}
                         </S.NotaBadge>
                       </div>
                       <StarRating
-                        value={avaliacaoGestor[criterio.nomeCriterio]?.nota ?? 0}
-                        onChange={(nota) => handleGestorNotaChange(criterio.nomeCriterio, nota)}
+                        value={
+                          avaliacaoGestor[criterio.nomeCriterio]?.nota ?? 0
+                        }
+                        onChange={(nota) =>
+                          handleGestorNotaChange(criterio.nomeCriterio, nota)
+                        }
                         readOnly={isReadonly}
                       />
                       <TextArea
-                        value={avaliacaoGestor[criterio.nomeCriterio]?.justificativa || ""}
-                        onChange={(e) => handleGestorJustificativaChange(criterio.nomeCriterio, e.target.value)}
+                        value={
+                          avaliacaoGestor[criterio.nomeCriterio]
+                            ?.justificativa || ""
+                        }
+                        onChange={(e) =>
+                          handleGestorJustificativaChange(
+                            criterio.nomeCriterio,
+                            e.target.value
+                          )
+                        }
                         disabled={isReadonly}
                         placeholder="Justifique sua nota"
                         rows={4}
