@@ -65,10 +65,8 @@ function AppRoutes() {
             <Route path="/gestor">
               <Route path="dashboard" element={<MananegerDashboard />} />
               <Route path="team" element={<ManagerTeam />} />
-              <Route
-                path="collaborator/review"
-                element={<CollaboratorReview />}
-              />
+              <Route path="collaborator/review"element={<CollaboratorReview />} />
+              <Route path="collaborator/evolution" element={<ColaboradorEvolution />} />
             </Route>
 
             {/* Mentor */}

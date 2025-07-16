@@ -1,7 +1,7 @@
 import CardConteiner from "@/components/CardContainer/index.tsx";
 import CardBox from "@/components/CardBox/index.tsx";
 import { Title } from "@/components/Title/index.tsx";
-import { MdAccountCircle, MdGrade } from "react-icons/md";
+import { MdAccountCircle, MdArrowBack, MdGrade } from "react-icons/md";
 import { FaFileAlt } from "react-icons/fa";
 import { IoMdTrophy } from "react-icons/io";
 import ReactApexChart from "react-apexcharts";
@@ -15,8 +15,9 @@ import { useCountAvaliacoes } from "@/hooks/colaboradores/useCountAvaliacoes";
 import * as S from "./styles";
 import { useEffect, useState } from "react";
 import { EmptyMessage } from "@/components/EmptyMensage";
-import { useOutletContext } from "react-router-dom";
+import { useLocation, useNavigate, useOutletContext } from "react-router-dom";
 import type { PerfilData } from "@/types/PerfilData";
+import Button from "@/components/Button";
 
 function getHigherPilar(pilarNotas: CicloPilarNotas[]) {
   // Pega o último ciclo
@@ -41,9 +42,19 @@ function getHigherPilar(pilarNotas: CicloPilarNotas[]) {
 
 export function ColaboradorEvolution() {
   const theme = useTheme();
+  const location = useLocation();
   const { perfil } = useOutletContext<{ perfil: PerfilData }>();
-  const { notasHistorico } = useColaboradorNotasHistorico(perfil?.userId || "");
-  const { pilarNotas } = useColaboradorPilarNotas(perfil?.userId || "");
+  const { idColaborador, nome } = location.state || {};
+
+  const colaboradorId = idColaborador || perfil?.userId;
+
+  const navigate = useNavigate();
+  const isGestorVisualizandoOutro = perfil?.userId !== colaboradorId;
+
+  const { notasHistorico } = useColaboradorNotasHistorico(colaboradorId);
+  const { pilarNotas } = useColaboradorPilarNotas(colaboradorId);
+  const { countAvaliacoes } = useCountAvaliacoes(colaboradorId);
+
   const higherPilar = getHigherPilar(pilarNotas);
   const notas = notasHistorico.map((item) => item.cicloNota);
 
@@ -53,7 +64,6 @@ export function ColaboradorEvolution() {
   const currentNote = last;
   const previousNote = before;
   const differNote = (currentNote - previousNote).toFixed(2);
-  const { countAvaliacoes } = useCountAvaliacoes(perfil?.userId || "");
 
   const [chartWidth, setChartWidth] = useState("300%");
 
@@ -68,12 +78,12 @@ export function ColaboradorEvolution() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  if (!perfil.roles.includes("colaborador")) {
+  if (!colaboradorId) {
     return (
       <EmptyMessage
         icon={<MdAccountCircle size={32} />}
         title="Acesso restrito"
-        description="Esta página está disponível apenas para colaboradores."
+        description="Usuário não encontrado."
       />
     );
   }
@@ -81,7 +91,20 @@ export function ColaboradorEvolution() {
   return (
     <>
       <S.Header>
-        <Title>Sua evolução na RocketCorp</Title>
+        <Title>
+          {" "}
+          {isGestorVisualizandoOutro
+            ? `Evolução do seu liderado: ${nome}`
+            : "Sua evolução na RocketCorp"}
+        </Title>
+        {isGestorVisualizandoOutro && (
+          <S.HeaderButtons>
+            <Button variant="outline" onClick={() => navigate(-1)}>
+              <MdArrowBack size={18} style={{ marginRight: 4 }} />
+              Voltar
+            </Button>
+          </S.HeaderButtons>
+        )}
       </S.Header>
       <CardConteiner>
         <CardBox
