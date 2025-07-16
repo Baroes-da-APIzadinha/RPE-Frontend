@@ -52,10 +52,10 @@ const AdminPage: React.FC = () => {
   const handleSyncConfirm = async () => {
     try {
       await forceSync();
-      toast.success("Sincronização com ERP iniciada com sucesso!");
+      toast.success("Sincronização com ERP realizada com sucesso!");
       setShowSyncModal(false);
     } catch (error) {
-      toast.error("Erro ao iniciar sincronização com ERP");
+      toast.error("Erro ao sincronização com ERP");
     }
   };
 

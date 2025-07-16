@@ -3,7 +3,7 @@ import { postRequest, patchRequest } from './requests';
 const baseEndpoint = '/admin';
 
 export async function forceERPSync() {
-  return await postRequest(`${baseEndpoint}/sync-erp`, {});
+  return await postRequest(`sincronizacao`, {});
 }
 
 export async function updateCycleStatus(idCiclo: string, status: string) {
