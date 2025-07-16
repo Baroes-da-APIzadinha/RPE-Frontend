@@ -1,5 +1,21 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import * as S from "./styles";
+
+// Hook para detectar cliques fora do elemento
+function useClickOutside(ref: React.RefObject<HTMLDivElement | null>, callback: () => void) {
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (ref.current && !ref.current.contains(event.target as Node)) {
+        callback();
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [ref, callback]);
+}
 
 type Option = {
   label: string;
@@ -28,6 +44,12 @@ export function Select({
   disabled = false,
 }: Props) {
   const [open, setOpen] = useState(false);
+  const selectRef = useRef<HTMLDivElement>(null);
+
+  // Usar o hook para fechar quando clicar fora
+  useClickOutside(selectRef, () => {
+    setOpen(false);
+  });
 
   const handleSelect = (selectedValue: string) => {
     if (disabled) return;
@@ -55,7 +77,7 @@ export function Select({
     : options.find((opt) => opt.value === value);
 
   return (
-    <S.Container>
+    <S.Container ref={selectRef}>
       {label && <S.Label>{label}</S.Label>}
 
       <S.SelectBox
