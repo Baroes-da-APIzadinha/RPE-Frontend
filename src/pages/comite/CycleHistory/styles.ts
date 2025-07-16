@@ -137,18 +137,18 @@ export const StatusTag = styled.span<{ $status: string }>`
   background-color: ${({ $status, theme }) =>
     $status === "concluída"
       ? theme.colors.success.light
-      : theme.colors.secondary.light};
+      : theme.colors.warning.light};
 
   color: ${({ $status, theme }) =>
     $status === "concluída"
       ? theme.colors.success.default
-      : theme.colors.secondary.default};
+      : theme.colors.warning.default};
 
   border: 1px solid
     ${({ $status, theme }) =>
       $status === "concluída"
         ? theme.colors.success.default
-        : theme.colors.secondary.default};
+        : theme.colors.warning.default};
 `;
 
 //Modal Styles

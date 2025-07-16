@@ -63,7 +63,7 @@ const Table360: React.FC<Table360Props> = ({ onSelect }) => {
           <S.SummaryLabel>Concluídas</S.SummaryLabel>
         </S.SummaryBox>
         <S.SummaryBox>
-          <S.SummaryValue color={theme.colors.warning}>
+          <S.SummaryValue color={theme.colors.warning.default}>
             {andamento}
           </S.SummaryValue>
           <S.SummaryLabel>Em Andamento</S.SummaryLabel>

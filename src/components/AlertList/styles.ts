@@ -37,7 +37,7 @@ export const Alert = styled.div<{ $type: "red" | "yellow" | "blue" | "green" }>`
     $type === "red"
       ? theme.colors.error.light
       : $type === "yellow"
-      ? theme.colors.secondary.light
+      ? theme.colors.warning.light
       : $type === "blue"
       ? theme.colors.info.light
       : theme.colors.success.light};
