@@ -11,6 +11,7 @@ import { Modal } from "@/components/Modal";
 import { useNavigate } from "react-router-dom";
 import { useCiclos } from "@/hooks/useTodosCiclos";
 import { createCiclo } from "@/services/HTTP/ciclos";
+import { toast } from "sonner";
 // import { Card } from '@/components/Card';
 
 function getStatusLabel(status: string): string {
@@ -70,9 +71,10 @@ export function RhCyclePage() {
         !dataDeInicioEqualizacao ||
         !dataDeTermino
       ) {
-        alert("Preencha todos os campos de data e nome do ciclo.");
+        toast.error("Preencha todos os campos de data e nome do ciclo.");
         return;
       }
+      if (!nomeCiclo.match(/^\d{4}\.\d$/)) return toast.error("O nome do ciclo deve seguir o formato 'XXXX.Y'");
 
       const [anoInit, mesInit, diaInit] = dataDeInicio.split("-").map(Number);
       const inicio = new Date(anoInit, mesInit - 1, diaInit);
@@ -107,7 +109,7 @@ export function RhCyclePage() {
       await createCiclo(cicloData);
       await refetch();
 
-      alert("Ciclo criado com sucesso!");
+      toast.success("Ciclo criado com sucesso!");
       setForm({
         nomeCiclo: "",
         dataDeInicio: "",
@@ -118,7 +120,7 @@ export function RhCyclePage() {
       setModalOpen(false);
     } catch (error) {
       console.error("Erro ao criar ciclo:", error);
-      alert("Erro ao criar ciclo. Veja o console para detalhes.");
+      toast.error("Erro ao criar ciclo. Por favor, insira datas válidas.");
     }
   };
 
@@ -135,6 +137,8 @@ export function RhCyclePage() {
         open={modalOpen}
         onClose={() => setModalOpen(false)}
         title="Criar novo ciclo"
+        description="O ciclo deve ter no minimo 30 dias, e no maximo 190 dias."
+
       >
         <S.ModalForm>
           <Input
@@ -142,6 +146,7 @@ export function RhCyclePage() {
             name="nomeCiclo"
             value={form.nomeCiclo}
             onChange={handleChange}
+            placeholder="Ex: 2024.1"
           />
           <S.DateRow>
             <Input
