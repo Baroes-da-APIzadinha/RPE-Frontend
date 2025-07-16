@@ -32,6 +32,7 @@ import { useConclusionProgressByBoard } from "@/hooks/rh/useConclusionProgressBy
 import { formatar } from "@/utils/formatters.ts";
 import { useSetReminder } from "@/hooks/useSetReminder";
 import { toast } from "sonner";
+import { useNotasDistribuicao } from "@/hooks/rh/useNotasDistribuicao";
 
 function getStatusPercentage(statusCount: number, total: number) : number {
   if (total === 0) return 0;
@@ -54,6 +55,7 @@ export function RhDashboard() {
   const dadosUnidade = useConclusionProgressByUnit(cicloAtual?.id ?? "")
   const dadosTrilha = useConclusionProgressByBoard(cicloAtual?.id ?? "")
   const { setReminder } = useSetReminder();
+  const { data: notasDistribuicao } = useNotasDistribuicao(cicloAtual?.id ?? "");
   const toggleOptions = [
     { value: 'overview', label: 'Visão Geral', icon: <MdDashboard /> },
     { value: 'analytics', label: 'Análises', icon: <MdBarChart /> }
@@ -256,23 +258,20 @@ export function RhDashboard() {
     <S.MainContent>
       <CardContainer>
         <ChartBox
-          title="Avaliações por Dia"
-          subtitle="Número de avaliações concluídas nos últimos 7 dias"
+          title="Distribuição de Notas"
+          subtitle="Distribuição das notas de autoavaliação no ciclo atual"
         >
-
           <ReactApexChart
-            type="bar"
-            stacked={true}
+            type="scatter"
             height={300}
             width={400}
             series={[
               {
-                name: "Total",
-                data: [10, 12, 9]
-              },
-              {
-                name: "Respondidas",
-                data: [5, 8, 3] 
+                name: "Quantidade de Avaliações",
+                data: Object.entries(notasDistribuicao).map(([nota, quantidade]) => ({
+                  x: parseFloat(nota),
+                  y: quantidade
+                }))
               }
             ]}
             options={{
@@ -281,16 +280,41 @@ export function RhDashboard() {
                 zoom: { enabled: false },
               },
               xaxis: {
-                categories: ["proj-1", "proj-2", "proj-3"],
+                type: "numeric",
+                title: { text: "Nota" },
+                min: 0,
+                max: 5,
+                tickAmount: 10,
+                labels: {
+                  formatter: (val: string) => parseFloat(val).toFixed(1)
+                }
               },
               yaxis: {
-                title: { text: "Número de Avaliações" },
+                title: { text: "Quantidade de Avaliações" },
+                min: 0
               },
-              colors: [theme.colors.chart.green, theme.colors.chart.purple],
-              dataLabels: { enabled: true },
+              colors: [theme.colors.chart.purple],
+              legend: { position: "top" },
+              dataLabels: { 
+                enabled: true,
+                formatter: (val: any) => val.y > 0 ? val.y.toString() : ''
+              },
+              markers: {
+                size: 8,
+                shape: "circle"
+              },
+              grid: { show: true },
+              tooltip: {
+                custom: ({ seriesIndex, dataPointIndex, w }) => {
+                  const nota = w.globals.initialSeries[seriesIndex].data[dataPointIndex].x;
+                  const quantidade = w.globals.initialSeries[seriesIndex].data[dataPointIndex].y;
+                  return `<div class="arrow_box">
+                    <span>Nota: ${nota}</span><br/>
+                    <span>Quantidade: ${quantidade}</span>
+                  </div>`;
+                }
+              }
             }}
-           
-
           />
         </ChartBox>
         <ChartBox

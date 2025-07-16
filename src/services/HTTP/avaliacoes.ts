@@ -49,6 +49,10 @@ export async function preencherRascunhoAutoAvaliacao(payload: PreencherAutoAvali
   return await postRequest(`${baseEndpoint}/rascunho-auto-avaliacao`, payload);
 }
 
+export async function getNotasDistribuicao(idCiclo: string, tipoAvaliacao: string = 'AUTOAVALIACAO') {
+  return await getRequest(`${baseEndpoint}/notas-distribuicao/${idCiclo}?tipoAvaliacao=${tipoAvaliacao}`);
+}
+
 // Avaliacao de pares (360)
 export async function preencherAvaliacaoPares(payload: {
   idAvaliacao: string;
