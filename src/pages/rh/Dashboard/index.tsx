@@ -259,38 +259,38 @@ export function RhDashboard() {
           title="Avaliações por Dia"
           subtitle="Número de avaliações concluídas nos últimos 7 dias"
         >
+
           <ReactApexChart
             type="bar"
+            stacked={true}
             height={300}
-            width={"100%"}
-            options={{
-              chart: { toolbar: { show: false } },
-              xaxis: {
-                categories: [
-                  "01/5",
-                  "02/5",
-                  "03/5",
-                  "04/5",
-                  "05/5",
-                  "06/5",
-                  "07/5",
-                ],
-              },
-              yaxis: {
-                labels: { style: { fontSize: "12px" } },
-              },
-              plotOptions: {
-                bar: { borderRadius: 4, columnWidth: "40%" },
-              },
-              colors: [theme.colors.chart.blue],
-              dataLabels: { enabled: false },
-            }}
+            width={400}
             series={[
               {
-                name: "Avaliações",
-                data: [45, 52, 39, 66, 75, 58, 65],
+                name: "Total",
+                data: [10, 12, 9]
               },
+              {
+                name: "Respondidas",
+                data: [5, 8, 3] 
+              }
             ]}
+            options={{
+              chart: {
+                toolbar: { show: false },
+                zoom: { enabled: false },
+              },
+              xaxis: {
+                categories: ["proj-1", "proj-2", "proj-3"],
+              },
+              yaxis: {
+                title: { text: "Número de Avaliações" },
+              },
+              colors: [theme.colors.chart.green, theme.colors.chart.purple],
+              dataLabels: { enabled: true },
+            }}
+           
+
           />
         </ChartBox>
         <ChartBox
