@@ -30,3 +30,14 @@ export async function getConclusionProgressByBoard(idCiclo: string) {
 export async function getExportacaoTemplate() {
   return await api.get('importacao/template', { responseType: 'blob' });
 }
+
+export async function importarAvaliacoes(file: File) {
+  const formData = new FormData();
+  formData.append('file', file);
+
+  return await api.post('importacao/avaliacoes', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+}

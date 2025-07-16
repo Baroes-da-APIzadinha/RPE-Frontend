@@ -5,18 +5,32 @@ import { MdAssignment, MdChecklist, MdGroup, MdHistory } from "react-icons/md";
 import { CardImportHistory } from "@/components/CardImportHistory/index.tsx";
 import { CardImportData } from "@/components/CardImportData/index.tsx";
 import { useState } from "react";
+import { useEffect } from "react";
 import { Modal } from "@/components/Modal/index.tsx";
 import { ToggleBar } from "@/components/ToggleBar/index.tsx";
 import { DropdownActions } from "@/components/DropdownActions/index.tsx";
 import { useExportacaoTemplate } from "@/hooks/rh/useExportacaoTemplate";
+import { useImportacaoAvaliacoes } from "@/hooks/rh/useImportacaoAvaliacoes";
+import { toast } from "sonner";
 
 type TipoImportacao = "colaboradores" | "avaliacoes" | "criterios";
 
 export function Import() {
   const { downloadTemplate } = useExportacaoTemplate();
+  const { importAvaliacoes, error: importError, success: importSuccess } = useImportacaoAvaliacoes();
 
   const [showModal, setShowModal] = useState(false);
   const [tipo, setTipo] = useState<TipoImportacao>("colaboradores");
+
+  // Monitorar mudanças no estado da importação
+  useEffect(() => {
+    if (importSuccess) {
+      toast.success("Importação de avaliações iniciada com sucesso!");
+    }
+    if (importError) {
+      toast.error(importError);
+    }
+  }, [importSuccess, importError]);
 
   const labels = {
     colaboradores: "Importar Colaboradores",
@@ -39,8 +53,13 @@ export function Import() {
     criterios: "Nome, Descrição, Categoria, Peso, Trilhas Aplicáveis",
   };
 
-  const handleSelect = (file: File) => {
-    console.log(`Importando ${tipo}:`, file);
+  const handleSelect = async (file: File) => {
+    if (tipo === "avaliacoes") {
+      await importAvaliacoes(file);
+    } else {
+      console.log(`Importando ${tipo}:`, file);
+      toast.info(`Função de importação para ${tipo} não implementada ainda`);
+    }
   };
 
 
@@ -49,7 +68,7 @@ export function Import() {
       <>
         <S.Header>
           <Title>Importação de Dados</Title>
-          <S.HeaderButtons>
+          {/* <S.HeaderButtons>
             <S.DesktopButtons>
               <Button variant="outline">
                 <MdHistory /> Ver Histórico
@@ -77,7 +96,7 @@ export function Import() {
                 ]}
               />
             </S.MobileActions>
-          </S.HeaderButtons>
+          </S.HeaderButtons> */}
         </S.Header>
 
         <S.CardContainer>
@@ -86,7 +105,10 @@ export function Import() {
             subtitle="Importe todos os dados em massa através de planilha Excel"
             formatoEsperado="xlsx, xls, csv"
             onDownloadTemplate={downloadTemplate}
-            onFileSelect={(file) => console.log("Selecionado:", file)}
+            onFileSelect={async (file) => {
+              // Por padrão, vamos importar como avaliações
+              await importAvaliacoes(file);
+            }}
           />
           <CardImportHistory
             data={[
