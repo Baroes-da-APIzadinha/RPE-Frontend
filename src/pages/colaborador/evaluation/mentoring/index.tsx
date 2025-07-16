@@ -1,5 +1,5 @@
 import * as S from "./styles.ts";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Card } from "@/components/Card";
 import Button from "@/components/Button";
 import ButtonFrame from "@/components/ButtonFrame";
@@ -27,21 +27,58 @@ export function MentoringPage() {
     nota: false,
     justificativa: false,
   });
+  const isReadonly = avaliacao?.status === "CONCLUIDA";
+
+  // SE JA FOI AVALIADO
+  useEffect(() => {
+    if (avaliacao?.avaliacaoColaboradorMentor) {
+      const mentor = avaliacao.avaliacaoColaboradorMentor;
+      setNota(mentor.nota);
+      setJustificativa(mentor.justificativa);
+    }
+  }, [avaliacao]);
 
   const { colaborador: mentor, loading: loadingMentor } = useColaboradorById(
     avaliacao?.idAvaliado ?? ""
   );
 
-  const isReadonly = avaliacao?.status === "CONCLUIDA";
+  const montarPayload = (status: "EM_RASCUNHO" | "CONCLUIDA") => {
+    const payload: any = {
+      idAvaliacao: avaliacao?.idAvaliacao ?? "",
+      status,
+    };
 
-  useEffect(() => {
-    if (isReadonly && avaliacao?.idAvaliacao) {
-      setNota(avaliacao.avaliacaoColaboradorMentor?.nota ?? 0);
-      setJustificativa(
-        avaliacao.avaliacaoColaboradorMentor?.justificativa ?? ""
-      );
+    if (typeof nota === "number" && nota > 0) {
+      payload.nota = nota;
     }
-  }, [avaliacao, isReadonly]);
+
+    if (justificativa.trim()) {
+      payload.justificativa = justificativa.trim();
+    }
+
+    return payload;
+  };
+
+  // AUTO SAVE
+  useEffect(() => {
+    if (!avaliacao?.idAvaliacao || isReadonly) return;
+
+    const interval = setInterval(() => {
+      const temConteudo = nota > 0 || justificativa.trim() !== "";
+      if (!temConteudo) return;
+
+      console.log(
+        "Payload enviado:",
+        JSON.stringify(montarPayload("EM_RASCUNHO"))
+      );
+      preencherAvaliacaoMentor(montarPayload("EM_RASCUNHO"))
+        .then(() => console.log("Auto save mentor executado"))
+        .catch((err) => console.warn("Erro no autosave mentor:", err));
+    }, 10000); // a cada 10s
+
+    return () => clearInterval(interval);
+  }, [nota, justificativa, avaliacao?.idAvaliacao, isReadonly]);
+
 
   const handleSubmit = async () => {
     const hasError = nota === 0 || justificativa.trim() === "";
@@ -58,23 +95,21 @@ export function MentoringPage() {
 
     if (!avaliacao?.idAvaliacao) return;
 
-    const payload = {
-      idAvaliacao: avaliacao.idAvaliacao,
-      nota,
-      justificativa,
-    };
-
     try {
-      await preencherAvaliacaoMentor(payload);
+      await preencherAvaliacaoMentor(montarPayload("CONCLUIDA"));
       toast.success("Avaliação enviada com sucesso!");
       window.location.reload();
     } catch (err) {
       console.error("Erro ao enviar avaliação:", err);
-      toast.error("Erro ao enviar avaliação.");
+      toast.error("Erro ao enviar a avaliação.");
     }
   };
 
-  if (loading || loadingMentor) {
+  if (
+    loading ||
+    loadingMentor ||
+    avaliacao?.avaliacaoColaboradorMentor == null
+  ) {
     return <LoadingMessage message="Carregando avaliação do mentor..." />;
   }
 

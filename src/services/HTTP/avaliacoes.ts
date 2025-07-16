@@ -63,8 +63,9 @@ export async function preencherAvaliacaoPares(payload: {
 
 export async function preencherAvaliacaoMentor(payload: {
   idAvaliacao: string;
-  nota: number;
-  justificativa: string;
+  status: 'EM_RASCUNHO' | 'CONCLUIDA';
+  nota?: number;
+  justificativa?: string;
 }) {
   return await postRequest(`${baseEndpoint}/preencher-avaliacao-colaborador-mentor`, payload);
 }
