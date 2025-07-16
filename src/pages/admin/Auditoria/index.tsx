@@ -3,7 +3,6 @@ import * as S from "./styles";
 import { Card } from "@/components/Card";
 import { MdArrowBackIosNew, MdArrowForwardIos, MdInfo } from "react-icons/md";
 import { Title } from "@/components/Title";
-import { SearchInput } from "@/components/SearchInput";
 import { formatDateTime } from "@/utils/formatters";
 import Button from "@/components/Button";
 import { useAuditoria } from "@/hooks/useAuditoria";
@@ -13,10 +12,8 @@ const AuditoriaPage: React.FC = () => {
     loading,
     currentPage,
     hasNextPage,
-    searchTerm,
     filteredLogs,
     handlePageChange,
-    handleSearchChange,
   } = useAuditoria();
 
   if (loading) return <p>Carregando...</p>;
