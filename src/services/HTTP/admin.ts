@@ -9,3 +9,11 @@ export async function forceERPSync() {
 export async function updateCycleStatus(idCiclo: string, status: string) {
   return await patchRequest(`${baseEndpoint}/ciclo/${idCiclo}/status`, { status });
 }
+
+export async function changeStatus(idCiclo: string, current_status: string, next_status: string) {
+  return await patchRequest(`ciclo/status`, { 
+    idCiclo, 
+    current_status, 
+    next_status 
+  });
+}

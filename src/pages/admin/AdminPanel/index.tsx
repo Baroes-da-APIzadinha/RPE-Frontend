@@ -19,7 +19,6 @@ const AdminPage: React.FC = () => {
   const { ciclos, loading: ciclosLoading, refetch } = useTodosCiclos();
   
   const [selectedCycle, setSelectedCycle] = useState<string>("");
-  const [selectedStatus, setSelectedStatus] = useState<string>("");
   const [showSyncModal, setShowSyncModal] = useState(false);
   const [showStatusModal, setShowStatusModal] = useState(false);
 
@@ -33,15 +32,6 @@ const AdminPage: React.FC = () => {
       />
     );
   }
-
-  // Opções de status para ciclos
-  const statusOptions = [
-    { label: "Agendado", value: "AGENDADO" },
-    { label: "Em Andamento", value: "EM_ANDAMENTO" },
-    { label: "Em Revisão", value: "EM_REVISAO" },
-    { label: "Em Equalização", value: "EM_EQUALIZACAO" },
-    { label: "Fechado", value: "FECHADO" },
-  ];
 
   // Opções de ciclos
   const cycleOptions = ciclos.map((ciclo: any) => ({
@@ -60,17 +50,23 @@ const AdminPage: React.FC = () => {
   };
 
   const handleStatusChange = async () => {
-    if (!selectedCycle || !selectedStatus) {
-      toast.error("Selecione um ciclo e um status");
+    if (!selectedCycle) {
+      toast.error("Selecione um ciclo");
+      return;
+    }
+
+    // Encontrar o ciclo selecionado para obter o status atual
+    const selectedCycleData = ciclos.find((c: any) => c.idCiclo === selectedCycle);
+    if (!selectedCycleData) {
+      toast.error("Ciclo não encontrado");
       return;
     }
 
     try {
-      await changeCycleStatus(selectedCycle, selectedStatus);
+      await changeCycleStatus(selectedCycle, selectedCycleData.status);
       toast.success("Status do ciclo alterado com sucesso!");
       setShowStatusModal(false);
       setSelectedCycle("");
-      setSelectedStatus("");
       // Recarregar ciclos após alteração
       refetch();
     } catch (error) {
@@ -83,9 +79,48 @@ const AdminPage: React.FC = () => {
     return cycle ? cycle.nomeCiclo : "";
   };
 
-  const getStatusLabel = (status: string) => {
-    const statusOption = statusOptions.find(opt => opt.value === status);
-    return statusOption ? statusOption.label : status;
+  const getNextStatus = () => {
+    const selectedCycleData = ciclos.find((c: any) => c.idCiclo === selectedCycle);
+    if (!selectedCycleData) return "";
+    
+    const statusSequence = [
+      'AGENDADO',
+      'EM_ANDAMENTO', 
+      'EM_REVISAO',
+      'EM_EQUALIZAÇÃO',
+      'FECHADO'
+    ];
+
+    const statusLabels = {
+      'AGENDADO': 'Agendado',
+      'EM_ANDAMENTO': 'Em Andamento',
+      'EM_REVISAO': 'Em Revisão',
+      'EM_EQUALIZAÇÃO': 'Em Equalização',
+      'FECHADO': 'Fechado'
+    };
+
+    const currentIndex = statusSequence.indexOf(selectedCycleData.status);
+    if (currentIndex === -1 || currentIndex === statusSequence.length - 1) {
+      return "";
+    }
+
+    const nextStatus = statusSequence[currentIndex + 1];
+    return statusLabels[nextStatus as keyof typeof statusLabels] || nextStatus;
+  };
+
+  const getCurrentStatus = () => {
+    const selectedCycleData = ciclos.find((c: any) => c.idCiclo === selectedCycle);
+    if (!selectedCycleData) return "";
+    
+    const statusLabels = {
+      'AGENDADO': 'Agendado',
+      'EM_ANDAMENTO': 'Em Andamento',
+      'EM_REVISAO': 'Em Revisão',
+      'EM_EQUALIZAÇÃO': 'Em Equalização',
+      'FECHADO': 'Fechado'
+    };
+
+    return statusLabels[selectedCycleData.status as keyof typeof statusLabels] || selectedCycleData.status;
   };
 
   return (
@@ -101,7 +136,7 @@ const AdminPage: React.FC = () => {
           Alterar Status do Ciclo
         </S.SectionTitle>
         <S.SectionDescription>
-          Altere manualmente o status de um ciclo de avaliação. Use com cuidado, pois esta ação pode afetar o fluxo normal do sistema.
+          Avance o status de um ciclo para a próxima etapa na sequência: Agendado → Em Andamento → Em Revisão → Em Equalização → Fechado
         </S.SectionDescription>
         
         <S.FormGroup>
@@ -115,27 +150,16 @@ const AdminPage: React.FC = () => {
               disabled={ciclosLoading}
             />
           </S.FormItem>
-
-          <S.FormItem>
-            <label>Novo Status</label>
-            <Select
-              placeholder="Escolha o novo status"
-              value={selectedStatus}
-              onChange={(val) => setSelectedStatus(Array.isArray(val) ? val[0] : val)}
-              options={statusOptions}
-              disabled={!selectedCycle}
-            />
-          </S.FormItem>
         </S.FormGroup>
 
         <S.ActionButton>
           <Button
             variant="primary"
             onClick={() => setShowStatusModal(true)}
-            disabled={!selectedCycle || !selectedStatus || loading}
+            disabled={!selectedCycle || loading}
           >
             <MdChangeCircle />
-            Alterar Status
+            Avançar Status
           </Button>
         </S.ActionButton>
       </Card>
@@ -216,7 +240,8 @@ const AdminPage: React.FC = () => {
           </S.WarningText>
           <S.ModalDescription>
             <strong>Ciclo:</strong> {getSelectedCycleName()}<br/>
-            <strong>Novo Status:</strong> {getStatusLabel(selectedStatus)}
+            <strong>Status Atual:</strong> {getCurrentStatus()}<br/>
+            <strong>Próximo Status:</strong> {getNextStatus()}
             <br/><br/>
             Esta ação pode afetar:
             <ul>
