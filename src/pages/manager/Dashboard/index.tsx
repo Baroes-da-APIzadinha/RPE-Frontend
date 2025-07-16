@@ -22,6 +22,12 @@ import { toast } from "sonner";
 
 export function ManagerDashboard() {
 
+  function getVariancia(notas: number[]) {
+    if (notas.length === 0) return 0;
+    const media = notas.reduce((a, b) => a + b, 0) / notas.length;
+    return notas.reduce((acc, nota) => acc + Math.pow(nota - media, 2), 0) / notas.length;
+  }
+
   const { createReminder } = useCollaboratorReminder();
 
   const handleSendReminder = async (idColaborador: string, message: string) => {
@@ -112,8 +118,7 @@ export function ManagerDashboard() {
         <CardBox
           title="Média da Equipe"
           bigSpan={mediaEquipe}
-          miniSpan="+0.1" // Esse pode ser dinâmico depois
-          span="vs anterior"
+          span={'variancia das notas: ' + getVariancia(notasValidas).toFixed(2)}
           icon={<BsGraphUpArrow />}
         />
       </CardContainer>
