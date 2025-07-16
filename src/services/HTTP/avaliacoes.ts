@@ -1,5 +1,6 @@
 // src/services/HTTP/avaliacoes.ts
 
+import type { LideradosPorCicloResponse } from "@/types/AvaliacaoLider";
 import { getRequest, postRequest } from "./requests";
 
 export interface CriterioPreenchido {
@@ -54,5 +55,30 @@ export async function preencherAvaliacaoMentor(payload: {
   justificativa: string;
 }) {
   return await postRequest(`${baseEndpoint}/preencher-avaliacao-colaborador-mentor`, payload);
+}
+
+// Lider endpoints
+
+export async function getLideradosPorCiclo(
+  idColaborador: string,
+  idCiclo: string
+): Promise<LideradosPorCicloResponse> {
+  return await getRequest(`${baseEndpoint}/meus-liderados/${idColaborador}/${idCiclo}`);
+}
+
+export async function getAvaliacaoLiderByUserId(userId: string) {
+  return await getRequest(`${baseEndpoint}/tipo/usuario/${userId}?tipoAvaliacao=LIDER_COLABORADOR`);
+}
+
+export async function getFormLiderColaborador(idAvaliacao: string) {
+  return await getRequest(`${baseEndpoint}/forms-lider-colaborador/${idAvaliacao}`);
+}
+
+export async function preencherAvaliacaoLider(payload: PreencherAutoAvaliacaoDto) {
+  return await postRequest(`${baseEndpoint}/preencher-lider-colaborador`, payload);
+}
+
+export async function preencherRascunhoLider(payload: PreencherAutoAvaliacaoDto) {
+  return await postRequest(`${baseEndpoint}/rascunho-lider-colaborador`, payload);
 }
 

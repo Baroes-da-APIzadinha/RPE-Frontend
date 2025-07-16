@@ -116,14 +116,11 @@ export const InfoWrapper = styled.div`
 `;
 
 export const InfoGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 2rem;
-
-  @media (max-width: 768px) {
-    grid-template-columns: 1fr;
-  }
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 `;
+
 
 export const Label = styled.h4`
   font-size: ${theme.font.sizes.small};
@@ -154,12 +151,12 @@ export const Badge = styled.span<{ $status: string }>`
   color: ${theme.colors.text.primary};
 
   ${({ $status, theme }) =>
-    $status === "concluida"
+    $status === "CONCLUIDA"
       ? css`
           background: ${theme.colors.success.light};
           color: ${theme.colors.success.default};
         `
-      : $status === "andamento"
+      : $status === "EM_RASCUNHO"
       ? css`
           background: ${theme.colors.secondary.light};
           color: ${theme.colors.secondary.default};
@@ -187,7 +184,52 @@ export const Tag = styled.span`
 
 export const FooterButtons = styled.div`
   display: flex;
+  gap: 1rem;
   justify-content: flex-end;
-  gap: 1.2rem;
-  margin-top: 1rem;
+  margin-top: 1.5rem;
 `;
+
+
+
+///Filtros
+
+export const FiltersWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1.2rem;
+  margin-top: 1.2rem;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: stretch;
+  }
+`;
+
+export const FilterItem = styled.div<{ $grow?: boolean }>`
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  flex: ${({ $grow }) => ($grow ? 1 : "initial")};
+  min-width: ${({ $grow }) => ($grow ? "0" : "12rem")};
+
+
+  label {
+    font-size: ${theme.font.sizes.xsmall};
+    color: ${theme.colors.text.secondary};
+    font-weight: ${theme.font.medium};
+  }
+`;
+
+
+// Card Styles
+export const Title = styled.h1`
+  font-size: ${theme.font.sizes.xlarge};
+  font-weight: ${theme.font.bold};
+  color: ${theme.colors.text.primary};
+`
+export const Subtitle = styled.h2`
+  font-size: ${theme.font.sizes.medium};
+  font-weight: ${theme.font.medium};
+  color: ${theme.colors.text.secondary};
+`

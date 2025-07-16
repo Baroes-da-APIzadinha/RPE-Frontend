@@ -4,13 +4,32 @@ import { Card } from "@/components/Card";
 import Button from "@/components/Button";
 import { SearchInput } from "@/components/SearchInput";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useOutletContext } from "react-router-dom";
 import { MdOutlineHistory, MdOutlineModeEdit } from "react-icons/md";
 import { ExpandableCard } from "@/components/ExpandableCard";
-import { equipeMock } from "@/data/manegerTeamMock";
-
+import { Select } from "@/components/Select";
+import { useQuery } from "@tanstack/react-query";
+import { getLideradosPorCiclo } from "@/services/HTTP/avaliacoes";
+import type { PerfilData } from "@/types/PerfilData";
+import { useCicloAtual } from "@/hooks/useCicloAtual";
+import { formatar } from "@/utils/formatters";
 
 export function ManagerTeam() {
+  const { perfil } = useOutletContext<{ perfil: PerfilData }>();
+  const idColaborador = perfil?.userId;
+
+  const { cicloAtual } = useCicloAtual();
+  const idCiclo = cicloAtual?.id;
+
+  const { data, isLoading } = useQuery({
+    queryKey: ["liderados", idColaborador, idCiclo],
+    queryFn: () => getLideradosPorCiclo(idColaborador, idCiclo),
+    enabled: !!idColaborador && !!idCiclo,
+  });
+
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("todos");
+
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
   const navigate = useNavigate();
 
@@ -18,15 +37,66 @@ export function ManagerTeam() {
     setExpandedIndex((prev) => (prev === index ? null : index));
   };
 
+  const liderados = data?.liderados ?? [];
+
+  const filteredEquipe = liderados.filter((colab) => {
+    const matchesSearch = colab.nomeCompleto
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase());
+
+    const gestorPreencheu =
+      colab.notaLider !== null &&
+      colab.notaLider !== undefined &&
+      colab.notaLider !== 0;
+
+    const matchesStatus =
+      statusFilter === "todos" ||
+      (statusFilter === "preenchida" && gestorPreencheu) ||
+      (statusFilter === "nao-preenchida" && !gestorPreencheu);
+
+    return matchesSearch && matchesStatus;
+  });
+
+  if (isLoading || !cicloAtual) return <p>Carregando dados...</p>;
+
   return (
     <>
       <S.Header>
         <Title>Minha Equipe</Title>
-        <SearchInput placeholder="Buscar membro da equipe..." />
       </S.Header>
 
       <Card>
-        {equipeMock.map((colab, index) => {
+        <S.Title>Filtros</S.Title>
+        <S.FiltersWrapper>
+          <S.FilterItem $grow>
+            <label>Buscar por ciclo</label>
+            <SearchInput
+              placeholder="Buscar membro da equipe..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </S.FilterItem>
+
+          <S.FilterItem>
+            <label>Status da avaliação</label>
+            <Select
+              placeholder="Todos"
+              value={statusFilter}
+              onChange={(val) =>
+                setStatusFilter(Array.isArray(val) ? val[0] : val)
+              }
+              options={[
+                { label: "Todos", value: "todos" },
+                { label: "Preenchida", value: "preenchida" },
+                { label: "Não preenchida", value: "nao-preenchida" },
+              ]}
+            />
+          </S.FilterItem>
+        </S.FiltersWrapper>
+      </Card>
+
+      <Card>
+        {filteredEquipe.map((colab, index) => {
           const isExpanded = expandedIndex === index;
 
           return (
@@ -39,21 +109,20 @@ export function ManagerTeam() {
                   <S.UserInfo>
                     <S.Avatar />
                     <div>
-                      <S.Name>{colab.nome}</S.Name>
-                      <S.Role>{colab.cargo}</S.Role>
-                      <S.Since>
-                        Trabalha com você há {colab.tempoEquipe}
-                      </S.Since>
+                      <S.Name>{colab.nomeCompleto}</S.Name>
+                      <S.Role>{formatar(colab.cargo as string)}</S.Role>
                     </div>
                   </S.UserInfo>
                   <S.UserActions>
                     <S.ScoreContainer>
                       <S.ScoreLabel>Autoavaliação</S.ScoreLabel>
-                      <S.ScoreValue>{colab.autoavaliacao ?? "-"}</S.ScoreValue>
+                      <S.ScoreValue>
+                        {colab.notaAutoavaliacao ?? "-"}
+                      </S.ScoreValue>
                     </S.ScoreContainer>
                     <S.ScoreContainer>
                       <S.ScoreLabel>Nota gestor</S.ScoreLabel>
-                      <S.ScoreValue>{colab.notaGestor ?? "-"}</S.ScoreValue>
+                      <S.ScoreValue>{colab.notaLider ?? "-"}</S.ScoreValue>
                     </S.ScoreContainer>
                   </S.UserActions>
                 </S.UserHeader>
@@ -65,44 +134,37 @@ export function ManagerTeam() {
                     <S.Label>Status das Avaliações</S.Label>
                     <S.StatusLine>
                       <S.StatusLabel>Autoavaliação:</S.StatusLabel>
-                      <S.Badge $status={colab.statusAvaliacoes.autoavaliacao}>
-                        {colab.statusAvaliacoes.autoavaliacao}
+                      <S.Badge $status={colab.statusAutoavaliacao}>
+                        {colab.statusAutoavaliacao}
                       </S.Badge>
                     </S.StatusLine>
                     <S.StatusLine>
                       <S.StatusLabel>Avaliação 360°:</S.StatusLabel>
-                      <S.Badge $status={colab.statusAvaliacoes.avaliacao360}>
-                        {colab.statusAvaliacoes.avaliacao360}
+                      <S.Badge $status={colab.statusAvaliacao360}>
+                        {colab.statusAvaliacao360}
                       </S.Badge>
                     </S.StatusLine>
-                  </div>
-                  <div>
-                    <S.Label>Pontos Fortes</S.Label>
-                    <S.TagList>
-                      {colab.pontosFortes.map((ponto, i) => (
-                        <S.Tag key={i}>{ponto}</S.Tag>
-                      ))}
-                    </S.TagList>
-                  </div>
-                  <div>
-                    <S.Label>Pontos de atenção</S.Label>
-                    <S.TagList>
-                      {colab.pontosAtencao.map((ponto, i) => (
-                        <S.Tag key={i}>{ponto}</S.Tag>
-                      ))}
-                    </S.TagList>
                   </div>
                 </S.InfoGrid>
                 <S.FooterButtons>
                   <Button
                     variant="outline"
-                    onClick={() => console.log("Editar Avaliação")}
+                    onClick={() => console.log("Histórico Avaliação")}
                   >
                     <MdOutlineHistory /> Histórico
                   </Button>
                   <Button
-                    variant="outline"
-                    onClick={() => navigate("/gestor/collaborator/review")}
+                    onClick={() =>
+                      navigate("/gestor/collaborator/review", {
+                        state: {
+                          idColaborador: colab.idColaborador,
+                          idAvaliacaoLider: colab.idAvaliacaoLider,
+                          nome: colab.nomeCompleto,
+                          statusAvaliacaoLider: colab.statusAvaliacaoLider,
+                          cardsPreenchidos: colab.cardsPreenchidos,
+                        },
+                      })
+                    }
                   >
                     <MdOutlineModeEdit /> Editar Avaliação
                   </Button>

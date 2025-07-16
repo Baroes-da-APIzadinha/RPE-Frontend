@@ -12,43 +12,13 @@ import {
   MdOutlineCheckCircle,
   MdTrackChanges,
 } from "react-icons/md";
-import { PiTargetBold } from "react-icons/pi";
 import { Card } from "@/components/Card/index.tsx";
-import ReactApexChart from "react-apexcharts";
-import type ApexCharts from "apexcharts";
 import { useTheme } from "styled-components";
 import Button from "@/components/Button/index.tsx";
 import { AlertList } from "@/components/AlertList/index.tsx";
 
 export function MananegerDashboard() {
   const theme = useTheme();
-  const chartOptions: ApexCharts.ApexOptions = {
-    chart: {
-      type: "radialBar" as const,
-      sparkline: { enabled: true },
-    },
-    plotOptions: {
-      radialBar: {
-        hollow: { size: "60%" },
-        dataLabels: {
-          name: { show: false },
-          value: {
-            fontSize: "2.25rem",
-            fontWeight: 700,
-            offsetY: 10,
-            color: "#000",
-          },
-        },
-        track: {
-          background: "#E0E0E0",
-        },
-      },
-    },
-    stroke: { lineCap: "round" },
-    colors: [theme.colors.secondary.default],
-  };
-
-  const chartSeries = [70];
 
   const colaboradores = [
     {
@@ -83,98 +53,64 @@ export function MananegerDashboard() {
 
   return (
     <>
-      <>
+      <S.Header>
         <Title>Página Inicial</Title>
+      </S.Header>
 
-        <CardContainer>
-          <CardBox
-            title="Total da Equipe"
-            bigSpan="8"
-            span="colaboradores diretos"
-            icon={<MdGroup />}
-          />
-
-          <CardBox
-            title="Progresso Geral"
-            bigSpan="63%"
-            progress={63}
-            icon={<MdTrackChanges />}
-          />
-
-          <CardBox
-            title="Média da Equipe"
-            bigSpan="4.2"
-            miniSpan="+0.1"
-            span="vs anterior"
-            icon={<BsGraphUpArrow />}
-          />
-
-          <CardBox
-            title="Meta do Ciclo"
-            bigSpan="4.3"
-            span="Objetivo"
-            alertSpan="Em progresso"
-            icon={<PiTargetBold />}
-          />
-        </CardContainer>
-
-        {/* <Card>
-          <S.PendingWrapper>
-            <S.LeftWrapper>
-              <S.CircleWrapper>
-                <ReactApexChart
-                  options={chartOptions}
-                  series={chartSeries}
-                  type="radialBar"
-                  height={190}
-                  width={190}
-                />
-              </S.CircleWrapper>
-              <S.People>
-                <MdGroup size={64} />
-                <span>3</span>
-              </S.People>
-            </S.LeftWrapper>
-            <S.Divider />
-            <S.InfoWrapper>
-              <S.Description>
-                Você tem <strong>3 Revisões pendentes</strong>
-              </S.Description>
-            </S.InfoWrapper>
-          </S.PendingWrapper>
-        </Card> */}
-
-        <AlertList
-          title="Alertas e Ações Necessárias"
-          subtitle="Itens que requerem sua atenção"
-          items={[
-            {
-              type: "red",
-              icon: <MdErrorOutline />,
-              title: "Carla Mendes não iniciou avaliação",
-              description: "Sem progresso há 3 semanas",
-              buttonLabel: "Enviar Lembrete",
-              onClick: () => console.log("Enviar Lembrete"),
-            },
-            {
-              type: "yellow",
-              icon: <MdOutlineAccessTime />,
-              title: "Pedro Santos precisa de suporte",
-              description: "Progresso lento na autoavaliação",
-              buttonLabel: "Agendar 1:1",
-              onClick: () => console.log("Agendar 1:1"),
-            },
-            {
-              type: "green",
-              icon: <MdOutlineCheckCircle />,
-              title: "João Silva completou todas as avaliações",
-              description: "Primeiro da equipe a finalizar o ciclo",
-              buttonLabel: "Parabenizar",
-              onClick: () => console.log("Parabenizar"),
-            },
-          ]}
+      <CardContainer>
+        <CardBox
+          title="Total da Equipe"
+          bigSpan="8"
+          span="colaboradores diretos"
+          icon={<MdGroup />}
         />
-      </>
+
+        <CardBox
+          title="Progresso Geral"
+          bigSpan="63%"
+          progress={63}
+          icon={<MdTrackChanges />}
+        />
+
+        <CardBox
+          title="Média da Equipe"
+          bigSpan="4.2"
+          miniSpan="+0.1"
+          span="vs anterior"
+          icon={<BsGraphUpArrow />}
+        />
+      </CardContainer>
+
+      <AlertList
+        title="Alertas e Ações Necessárias"
+        subtitle="Itens que requerem sua atenção"
+        items={[
+          {
+            type: "red",
+            icon: <MdErrorOutline />,
+            title: "Carla Mendes não iniciou avaliação",
+            description: "Sem progresso há 3 semanas",
+            buttonLabel: "Enviar Lembrete",
+            onClick: () => console.log("Enviar Lembrete"),
+          },
+          {
+            type: "yellow",
+            icon: <MdOutlineAccessTime />,
+            title: "Pedro Santos precisa de suporte",
+            description: "Progresso lento na autoavaliação",
+            buttonLabel: "Agendar 1:1",
+            onClick: () => console.log("Agendar 1:1"),
+          },
+          {
+            type: "green",
+            icon: <MdOutlineCheckCircle />,
+            title: "João Silva completou todas as avaliações",
+            description: "Primeiro da equipe a finalizar o ciclo",
+            buttonLabel: "Parabenizar",
+            onClick: () => console.log("Parabenizar"),
+          },
+        ]}
+      />
 
       <Card>
         <S.HeaderRow>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import * as S from "./styles";
 import { Title } from "@/components/Title";
 import { Card } from "@/components/Card";
@@ -8,42 +8,95 @@ import { MdKeyboardArrowDown, MdKeyboardArrowUp } from "react-icons/md";
 import EvaluationFrame from "@/components/EvaluationFrame";
 import RowProgressBox from "@/components/RowProgressBox";
 import { toast } from "sonner";
-import { criteriosMock, autoavaliacaoMock } from "@/data/collaboratorReview";
-
-// Agrupamento dos critérios por pilar
-const criteriosPorPilar = [
-  {
-    titulo: "Postura",
-    criterios: criteriosMock.filter((c) => ["1", "2"].includes(c.id)),
-    autoavaliacao: autoavaliacaoMock.filter((c) => ["1", "2"].includes(c.id)),
-  },
-  {
-    titulo: "Logistica",
-    criterios: criteriosMock.filter((c) => ["3", "4"].includes(c.id)),
-    autoavaliacao: autoavaliacaoMock.filter((c) => ["3", "4"].includes(c.id)),
-  },
-  {
-    titulo: "Gestão e Liderança",
-    criterios: criteriosMock.filter((c) => ["5"].includes(c.id)),
-    autoavaliacao: autoavaliacaoMock.filter((c) => ["5"].includes(c.id)),
-  },
-];
+import { useLocation, useNavigate } from "react-router-dom";
+import {
+  getAutoAvaliacaoByUserId,
+  getFormLiderColaborador,
+  preencherAvaliacaoLider,
+  preencherRascunhoLider,
+} from "@/services/HTTP/avaliacoes";
+import { useQuery } from "@tanstack/react-query";
+import type { FormularioLiderColaborador } from "@/types/AvaliacaoLider";
+import ButtonFrame from "@/components/ButtonFrame";
+import Button from "@/components/Button";
 
 export function CollaboratorReview() {
-  const [open, setOpen] = useState<string[]>([criteriosMock[0].id]);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { idColaborador, idAvaliacaoLider, nome } = location.state || {};
+  const [isReadonly, setIsReadonly] = useState(false);
 
-  // Estado para avaliações do gestor, inicializando vazio para cada critério
-  const [avaliacaoGestor, setAvaliacaoGestor] = useState(() =>
-    criteriosMock.reduce((acc, criterio) => {
-      acc[criterio.id] = { nota: 0, justificativa: "" };
+  const [open, setOpen] = useState<string[]>([]);
+  const [avaliacaoGestor, setAvaliacaoGestor] = useState<
+    Record<string, { nota: number; justificativa: string }>
+  >({});
+
+  // Validação básica:
+  useEffect(() => {
+    if (!idAvaliacaoLider) {
+      toast.error("Avaliação inválida.");
+      navigate("/gestor/minha-equipe");
+    }
+  }, []);
+
+  const { data: criteriosPorPilar, isLoading } =
+    useQuery<FormularioLiderColaborador>({
+      queryKey: ["form-lider-colaborador", idAvaliacaoLider],
+      queryFn: () => getFormLiderColaborador(idAvaliacaoLider),
+      enabled: !!idAvaliacaoLider,
+    });
+
+  const { data: autoavaliacao } = useQuery({
+    queryKey: ["autoavaliacao", idColaborador],
+    queryFn: () => getAutoAvaliacaoByUserId(idColaborador),
+    enabled: !!idColaborador,
+  });
+
+  // console.log("autoavaliacao:", autoavaliacao);
+
+  useEffect(() => {
+    if (!criteriosPorPilar) return;
+
+    const todosCriterios = Object.values(criteriosPorPilar).flat();
+
+    const initialState = todosCriterios.reduce((acc, criterio) => {
+      acc[criterio.nomeCriterio] = { nota: 0, justificativa: "" };
       return acc;
-    }, {} as Record<string, { nota: number; justificativa: string }>)
-  );
+    }, {} as Record<string, { nota: number; justificativa: string }>);
 
-  const totalCriterios = criteriosMock.length;
+    setAvaliacaoGestor(initialState);
+    setOpen([todosCriterios[0]?.nomeCriterio]); // abre o primeiro
+  }, [criteriosPorPilar]);
+
+  useEffect(() => {
+    if (location.state?.statusAvaliacaoLider === "CONCLUIDA") {
+      setIsReadonly(true);
+    }
+  }, []);
+
+  const totalCriterios = Object.values(criteriosPorPilar || {}).flat().length;
+
   const criteriosPreenchidos = Object.values(avaliacaoGestor).filter(
     (a) => a.nota > 0 && a.justificativa.trim() !== ""
   ).length;
+
+  const autoMap = useMemo(() => {
+    const map: Record<string, { nota: number; justificativa: string }> = {};
+
+    const cards =
+      autoavaliacao?.avaliacoes?.[0]?.autoAvaliacao?.cardAutoAvaliacoes;
+
+    if (Array.isArray(cards)) {
+      cards.forEach((card: any) => {
+        map[card.nomeCriterio] = {
+          nota: Number(card.nota) ?? 0,
+          justificativa: card.justificativa ?? "",
+        };
+      });
+    }
+
+    return map;
+  }, [autoavaliacao]);
 
   const handleAccordion = (id: string) => {
     setOpen((prev) =>
@@ -51,14 +104,66 @@ export function CollaboratorReview() {
     );
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (criteriosPreenchidos < totalCriterios) {
       toast.error("Preencha todos os critérios antes de enviar.");
       return;
     }
-    toast.success("Avaliação enviada com sucesso!");
-    console.log("Avaliação enviada:", avaliacaoGestor);
+
+    try {
+      const criterios = Object.entries(avaliacaoGestor).map(
+        ([nome, { nota, justificativa }]) => ({
+          nome,
+          nota,
+          justificativa,
+        })
+      );
+
+      await preencherAvaliacaoLider({
+        idAvaliacao: idAvaliacaoLider,
+        criterios,
+      });
+
+      toast.success("Avaliação enviada com sucesso!");
+      setIsReadonly(true);
+    } catch (err) {
+      toast.error("Erro ao enviar avaliação.");
+    }
   };
+
+  const handleAutoSave = async () => {
+    if (isReadonly) return;
+
+    try {
+      const criterios = Object.entries(avaliacaoGestor).map(
+        ([nome, { nota, justificativa }]) => ({
+          nome,
+          nota,
+          justificativa,
+        })
+      );
+
+      await preencherRascunhoLider({
+        idAvaliacao: idAvaliacaoLider,
+        criterios,
+      });
+
+      toast.success("Rascunho salvo com sucesso");
+    } catch (error) {
+      toast.error("Erro ao salvar rascunho");
+    }
+  };
+
+  useEffect(() => {
+    const handleUnload = (event: BeforeUnloadEvent) => {
+      handleAutoSave();
+    };
+
+    window.addEventListener("beforeunload", handleUnload);
+    return () => {
+      window.removeEventListener("beforeunload", handleUnload);
+    };
+  }, [avaliacaoGestor]);
 
   const handleGestorNotaChange = (id: string, nota: number) => {
     setAvaliacaoGestor((prev) => ({
@@ -77,10 +182,14 @@ export function CollaboratorReview() {
     }));
   };
 
+  if (isLoading || !criteriosPorPilar) {
+    return <p>Carregando critérios...</p>;
+  }
+
   return (
     <>
       <>
-        <Title>Revisão de notas: Aryelly serafim</Title>
+        <Title>Revisão de notas:{nome}</Title>
         <RowProgressBox
           title="Progresso da revisão"
           bars={[
@@ -91,32 +200,26 @@ export function CollaboratorReview() {
           ]}
         />
 
-        {criteriosPorPilar.map((pilar) => (
-          <EvaluationFrame key={pilar.titulo} title={pilar.titulo}>
-            {pilar.criterios.map((criterio) => {
-              const isOpen = open.includes(criterio.id);
+        {Object.entries(criteriosPorPilar || {}).map(([pilar, criterios]) => (
+          <EvaluationFrame key={pilar} title={pilar}>
+            {criterios.map((criterio) => {
+              const isOpen = open.includes(criterio.nomeCriterio);
               return (
-                <Card key={criterio.id}>
+                <Card key={criterio.nomeCriterio}>
                   <S.CriterioHeader>
-                    <S.SectionTitle>{criterio.nome}</S.SectionTitle>
+                    <S.SectionTitle>{criterio.nomeCriterio}</S.SectionTitle>
                     <div style={{ display: "flex", alignItems: "center" }}>
                       <S.NotaBadge $visible={!isOpen}>
-                        {(
-                          pilar.autoavaliacao.find((a) => a.id === criterio.id)
-                            ?.nota ?? 0
-                        ).toFixed(1)}
+                        {(autoMap[criterio.nomeCriterio]?.nota ?? 0).toFixed(1)}
                       </S.NotaBadge>
                       <S.NotaBadge $visible={!isOpen}>
-                        {(avaliacaoGestor[criterio.id]?.nota ?? 0).toFixed(1)}
+                        {(
+                          avaliacaoGestor[criterio.nomeCriterio]?.nota ?? 0
+                        ).toFixed(1)}
                       </S.NotaBadge>
                       <S.ToggleIcon
                         $open={isOpen}
-                        onClick={() => handleAccordion(criterio.id)}
-                        tabIndex={0}
-                        role="button"
-                        aria-label={
-                          isOpen ? "Fechar critério" : "Abrir critério"
-                        }
+                        onClick={() => handleAccordion(criterio.nomeCriterio)}
                       >
                         {isOpen ? (
                           <MdKeyboardArrowUp size={36} />
@@ -126,9 +229,9 @@ export function CollaboratorReview() {
                       </S.ToggleIcon>
                     </div>
                   </S.CriterioHeader>
+
                   {isOpen && (
                     <S.CriteriaContent>
-                      {/* Colaborador */}
                       <S.CriteriaSection>
                         <div
                           style={{
@@ -140,32 +243,24 @@ export function CollaboratorReview() {
                           <S.Subtitle>Avaliação do colaborador</S.Subtitle>
                           <S.NotaBadge style={{ marginLeft: "auto" }}>
                             {(
-                              pilar.autoavaliacao.find(
-                                (a) => a.id === criterio.id
-                              )?.nota ?? 0
+                              autoMap[criterio.nomeCriterio]?.nota ?? 0
                             ).toFixed(1)}
                           </S.NotaBadge>
                         </div>
                         <StarRating
-                          value={
-                            pilar.autoavaliacao.find(
-                              (a) => a.id === criterio.id
-                            )?.nota ?? 0
-                          }
+                          value={autoMap[criterio.nomeCriterio]?.nota ?? 0}
                           readOnly
                         />
                         <TextArea
                           value={
-                            pilar.autoavaliacao.find(
-                              (a) => a.id === criterio.id
-                            )?.justificativa || ""
+                            autoMap[criterio.nomeCriterio]?.justificativa ?? ""
                           }
                           readOnly
                           placeholder="Justificativa do colaborador"
                           rows={4}
                         />
                       </S.CriteriaSection>
-                      {/* Gestor */}
+
                       <S.CriteriaSection>
                         <div
                           style={{
@@ -176,29 +271,32 @@ export function CollaboratorReview() {
                         >
                           <S.Subtitle>Sua avaliação</S.Subtitle>
                           <S.NotaBadge style={{ marginLeft: "auto" }}>
-                            {(avaliacaoGestor[criterio.id]?.nota ?? 0).toFixed(
-                              1
-                            )}
+                            {(
+                              avaliacaoGestor[criterio.nomeCriterio]?.nota ?? 0
+                            ).toFixed(1)}
                           </S.NotaBadge>
                         </div>
                         <StarRating
-                          value={avaliacaoGestor[criterio.id]?.nota ?? 0}
-                          onChange={(nota: number) =>
-                            handleGestorNotaChange(criterio.id, nota)
+                          value={
+                            avaliacaoGestor[criterio.nomeCriterio]?.nota ?? 0
                           }
+                          onChange={(nota: number) =>
+                            handleGestorNotaChange(criterio.nomeCriterio, nota)
+                          }
+                          readOnly={isReadonly}
                         />
                         <TextArea
                           value={
-                            avaliacaoGestor[criterio.id]?.justificativa || ""
+                            avaliacaoGestor[criterio.nomeCriterio]
+                              ?.justificativa || ""
                           }
-                          onChange={(
-                            e: React.ChangeEvent<HTMLTextAreaElement>
-                          ) =>
+                          onChange={(e) =>
                             handleGestorJustificativaChange(
-                              criterio.id,
+                              criterio.nomeCriterio,
                               e.target.value
                             )
                           }
+                          disabled={isReadonly}
                           placeholder="Justifique sua nota"
                           rows={4}
                         />
@@ -210,7 +308,12 @@ export function CollaboratorReview() {
             })}
           </EvaluationFrame>
         ))}
-        <S.Button onClick={handleSubmit}>Concluir e enviar</S.Button>
+
+        <ButtonFrame>
+          <Button onClick={handleSubmit} disabled={isReadonly}>
+            Concluir e enviar
+          </Button>
+        </ButtonFrame>
       </>
     </>
   );
