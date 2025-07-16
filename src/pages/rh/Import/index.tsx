@@ -8,10 +8,12 @@ import { useState } from "react";
 import { Modal } from "@/components/Modal/index.tsx";
 import { ToggleBar } from "@/components/ToggleBar/index.tsx";
 import { DropdownActions } from "@/components/DropdownActions/index.tsx";
+import { useExportacaoTemplate } from "@/hooks/rh/useExportacaoTemplate";
 
 type TipoImportacao = "colaboradores" | "avaliacoes" | "criterios";
 
 export function Import() {
+  const { downloadTemplate, loading: templateLoading } = useExportacaoTemplate();
 
   const [showModal, setShowModal] = useState(false);
   const [tipo, setTipo] = useState<TipoImportacao>("colaboradores");
@@ -83,7 +85,7 @@ export function Import() {
             title="Importar Dados"
             subtitle="Importe todos os dados em massa através de planilha Excel"
             formatoEsperado="xlsx, xls, csv"
-            onDownloadTemplate={() => console.log("Baixar template")}
+            onDownloadTemplate={downloadTemplate}
             onFileSelect={(file) => console.log("Selecionado:", file)}
           />
           <CardImportHistory

@@ -1,3 +1,4 @@
+import api from "../axios";
 import { getRequest } from "./requests";
 
 const baseEndpoint = '/rh';
@@ -24,4 +25,8 @@ export async function getConclusionProgressByUnit(idCiclo: string) {
 
 export async function getConclusionProgressByBoard(idCiclo: string) {
     return await getRequest(`${baseEndpoint}/progresso/trilha/ciclo/${idCiclo}`);
+}
+
+export async function getExportacaoTemplate() {
+  return await api.get('importacao/template', { responseType: 'blob' });
 }
