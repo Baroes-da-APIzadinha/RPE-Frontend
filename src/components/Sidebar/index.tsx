@@ -16,6 +16,7 @@ import {
   MdClose,
   MdMenu,
   MdOutlineBalance,
+  MdAdminPanelSettings,
 } from "react-icons/md";
 import * as S from "./styles";
 import { useState, type ReactNode } from "react";
@@ -113,6 +114,11 @@ export function Sidebar({ roles, mainRole, userName }: SidebarProps) {
       },
     ],
     admin: [
+      {
+        to: "/admin/painel",
+        label: "Painel Administrativo",
+        icon: <MdAdminPanelSettings size={24} />,
+      },
       {
         to: "/admin/auditoria",
         label: "Logs de Auditoria",

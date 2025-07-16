@@ -27,6 +27,7 @@ import { CollaboratorEqualization } from "@/pages/comite/CollaboratorEqualizatio
 import { CollaboratorDiscrepancy } from "@/pages/comite/collaboratorDiscrepancy";
 import AuditoriaPage from "@/pages/admin/Auditoria";
 import { AuditoriaRolesPage } from "@/pages/admin/auditoria-roles";
+import AdminPage from "@/pages/admin/AdminPanel";
 import PerfilPage from "@/pages/perfil";
 import { FirstLogin } from "@/pages/FirstLogin";
 
@@ -101,6 +102,7 @@ function AppRoutes() {
 
             {/* Admin */}
             <Route path="/admin">
+              <Route path="painel" element={<AdminPage />} />
               <Route path="auditoria" element={<AuditoriaPage />} />
               <Route path="auditoria-roles" element={<AuditoriaRolesPage />} />
             </Route>
