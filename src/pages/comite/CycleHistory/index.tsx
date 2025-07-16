@@ -14,6 +14,7 @@ import { Title } from "@/components/Title/index.tsx";
 import { EmptyMessage } from "@/components/EmptyMensage/index.tsx";
 import { useOutletContext } from "react-router-dom";
 import type { PerfilData } from "@/types/PerfilData.tsx";
+import { useEqualizacaoCiclo } from '@/hooks/comite/useEqualizacaoCiclo';
 
 type Ciclo = {
   id: string;
@@ -31,6 +32,7 @@ export function CycleHistory() {
   const { cicloAtual } = useCicloAtual();
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("todos");
+  const { downloadCycleData, loading, error } = useEqualizacaoCiclo();
 
   useEffect(() => {
     const fetchCiclos = async () => {
@@ -173,9 +175,9 @@ export function CycleHistory() {
                 <Button
                   variant="outline"
                   onClick={() => {
-                    console.log(`Exportando ciclo ${ciclo.nome}...`);
+                    downloadCycleData(ciclo.id);
                   }}
-                  disabled={ciclo.status === "AGENDADO"}
+                  disabled={ciclo.status === "AGENDADO" || loading}
                 >
                   <MdFileDownload /> Exportar
                 </Button>
@@ -232,9 +234,7 @@ export function CycleHistory() {
             <Button
               variant="secondary"
               onClick={() => {
-                console.log(
-                  `Exportando ciclo ${selectedCycle} mesmo incompleto...`
-                );
+                downloadCycleData(cicloAtual?.id || "");
                 setShowExportModal(false);
               }}
             >
