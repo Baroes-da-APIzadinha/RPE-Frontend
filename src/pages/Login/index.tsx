@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import * as S from "./styles.ts";
-import { MdRocketLaunch } from "react-icons/md";
 import Input from "@/components/Input";
 import Button from "@/components/Button/index.tsx";
 import { useNavigate } from "react-router-dom";
@@ -8,6 +7,9 @@ import { handleLogin } from "@/services/Auth/login.ts";
 import { getPerfil } from "@/services/HTTP/perfil";
 import { getColaboradorById } from "@/services/HTTP/colaboradores";
 import { toast } from "sonner";
+import logo from "@/assets/DefaultLogo.svg"; 
+import textTitle from "@/assets/DefaultTitle.svg"; 
+
 
 export function Login() {
   const [email, setEmail] = useState("");
@@ -60,11 +62,12 @@ export function Login() {
       <S.Form onSubmit={handleSubmit}>
         <S.Header>
           <S.IconWrapper>
-            <MdRocketLaunch size={48} />
+            <img src={logo} alt="Logo" width={90} height={90} />
           </S.IconWrapper>
           <div>
-            <S.Title>RPE</S.Title>
-            <S.Subtitle>Rocket Performance &amp; Engagement</S.Subtitle>
+            <img src={textTitle} alt="Rocket Corp" width={350} height={90} />
+            {/* <S.Title>RPE</S.Title> */}
+            {/* <S.Subtitle>Rocket Performance &amp; Engagement</S.Subtitle> */}
           </div>
         </S.Header>
         <Input
@@ -85,7 +88,7 @@ export function Login() {
           placeholder="Digite sua senha"
           label="Senha"
         />
-        <Button variant="default" type="submit">
+        <Button variant="primary" type="submit">
           Entrar
         </Button>
       </S.Form>

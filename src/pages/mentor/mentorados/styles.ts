@@ -159,7 +159,7 @@ export const DesempenhoValue = styled.span<{ $color: 'success' | 'warning' | 'er
       case 'success':
         return theme.colors.success.default;
       case 'warning':
-        return theme.colors.secondary.default;
+        return theme.colors.warning.default;
       case 'error':
         return theme.colors.error.default;
       case 'neutral':
@@ -189,7 +189,7 @@ export const StatusBadge = styled.span<{ $color: 'success' | 'warning' | 'error'
       case 'success':
         return theme.colors.success.light;
       case 'warning':
-        return theme.colors.secondary.light;
+        return theme.colors.warning.light;
       case 'error':
         return theme.colors.error.light;
       default:
@@ -201,7 +201,7 @@ export const StatusBadge = styled.span<{ $color: 'success' | 'warning' | 'error'
       case 'success':
         return theme.colors.success.default;
       case 'warning':
-        return theme.colors.secondary.default;
+        return theme.colors.warning.default;
       case 'error':
         return theme.colors.error.default;
       default:
