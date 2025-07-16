@@ -73,6 +73,7 @@ function AppRoutes() {
             <Route path="/mentor">
               <Route path="mentorados" element={<MentoradosPage />} />
               <Route path="brutal-facts/:id" element={<BrutalFactsPage />} />
+              <Route path="mentorado/evolução" element={<ColaboradorEvolution />} />
             </Route>
 
             {/* RH */}

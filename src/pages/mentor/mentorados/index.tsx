@@ -16,14 +16,15 @@ import { usePerfil } from "@/hooks/usePerfil";
 export function MentoradosPage() {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
-  
+
   // Hooks para buscar dados reais
   const { perfil } = usePerfil();
   const { cicloAtual } = useCicloAtual();
-  const { data: mentorados, loading, error } = useMentorados(
-    perfil?.userId || "", 
-    cicloAtual?.id || ""
-  );
+  const {
+    data: mentorados,
+    loading,
+    error,
+  } = useMentorados(perfil?.userId || "", cicloAtual?.id || "");
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
@@ -34,7 +35,7 @@ export function MentoradosPage() {
     if (mediaFinal === null) {
       return { label: "Pendente", color: "neutral" as const };
     }
-    
+
     if (mediaFinal < 2) {
       return { label: "Atenção", color: "error" as const };
     }
@@ -44,20 +45,23 @@ export function MentoradosPage() {
     if (mediaFinal >= 4) {
       return { label: "OK", color: "success" as const };
     }
-    
+
     return { label: "Pendente", color: "neutral" as const };
   };
 
-  const sortedMentorados = mentorados ? [...mentorados].sort((a, b) => {
-    const mediaA = a.mediaFinal || 0;
-    const mediaB = b.mediaFinal || 0;
-    return mediaB - mediaA;
-  }) : [];
+  const sortedMentorados = mentorados
+    ? [...mentorados].sort((a, b) => {
+        const mediaA = a.mediaFinal || 0;
+        const mediaB = b.mediaFinal || 0;
+        return mediaB - mediaA;
+      })
+    : [];
 
   const filteredMentorados = sortedMentorados.filter((mentorado) => {
-    const matchesSearch = `${mentorado.nomeMentorado} ${mentorado.cargoMentorado}`
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase());
+    const matchesSearch =
+      `${mentorado.nomeMentorado} ${mentorado.cargoMentorado}`
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase());
     return matchesSearch;
   });
 
@@ -85,21 +89,27 @@ export function MentoradosPage() {
     navigate(`/mentor/brutal-facts/${encodeURIComponent(mentoradoId)}`);
   };
 
-  const handleViewProfile = (mentoradoId: string) => {
-    navigate(`/mentor/mentorado-profile/${encodeURIComponent(mentoradoId)}`);
+  const handleViewProfile = (idMentorado: string, nomeMentorado: string) => {
+    navigate("/mentor/mentorado/evolução", {
+      state: {
+        idColaborador: idMentorado,
+        nome: nomeMentorado,
+      },
+    });
   };
 
   const getActionOptions = (mentorado: any) => [
     {
-      label: "Ver Perfil",
+      label: "Ver Evolução",
       icon: <IoPersonOutline />,
-      onClick: () => handleViewProfile(mentorado.idMentorado)
+      onClick: () =>
+        handleViewProfile(mentorado.idMentorado, mentorado.nomeMentorado),
     },
     {
       label: "Brutal Facts",
       icon: <MdMoreVert />,
-      onClick: () => handleBrutalFacts(mentorado.idMentorado)
-    }
+      onClick: () => handleBrutalFacts(mentorado.idMentorado),
+    },
   ];
 
   return (
@@ -112,7 +122,10 @@ export function MentoradosPage() {
             <S.StatLabel>Total de Mentorados</S.StatLabel>
           </S.StatCard>
           <S.StatCard>
-            <S.StatNumber>{mentorados?.filter(m => (m.mediaFinal || 0) >= 4.0).length || 0}</S.StatNumber>
+            <S.StatNumber>
+              {mentorados?.filter((m) => (m.mediaFinal || 0) >= 4.0).length ||
+                0}
+            </S.StatNumber>
             <S.StatLabel>Alto Desempenho</S.StatLabel>
           </S.StatCard>
         </S.StatsContainer>
@@ -140,16 +153,15 @@ export function MentoradosPage() {
             <IoPersonOutline size={48} />
             <S.EmptyTitle>Nenhum mentorado encontrado</S.EmptyTitle>
             <S.EmptySubtitle>
-              {searchTerm 
-                ? "Tente ajustar os filtros de busca" 
-                : "Você ainda não possui mentorados ativos"
-              }
+              {searchTerm
+                ? "Tente ajustar os filtros de busca"
+                : "Você ainda não possui mentorados ativos"}
             </S.EmptySubtitle>
           </S.EmptyState>
         ) : (
           filteredMentorados.map((mentorado) => {
             const statusInfo = getStatusInfo(mentorado.mediaFinal);
-            
+
             return (
               <S.MentoradoRow key={mentorado.idMentorado}>
                 <S.MentoradoInfo>
@@ -158,11 +170,15 @@ export function MentoradosPage() {
                   </S.Avatar>
                   <S.MentoradoDetails>
                     <S.MentoradoNome>{mentorado.nomeMentorado}</S.MentoradoNome>
-                    <S.MentoradoCargo>{formatar(mentorado.cargoMentorado)}</S.MentoradoCargo>
-                    <S.MentoradoUnidade>{formatar(mentorado.trilhaMentorado)}</S.MentoradoUnidade>
+                    <S.MentoradoCargo>
+                      {formatar(mentorado.cargoMentorado)}
+                    </S.MentoradoCargo>
+                    <S.MentoradoUnidade>
+                      {formatar(mentorado.trilhaMentorado)}
+                    </S.MentoradoUnidade>
                   </S.MentoradoDetails>
                 </S.MentoradoInfo>
-                
+
                 <S.DesempenhoSection>
                   <S.DesempenhoLabel>Média Final</S.DesempenhoLabel>
                   <S.DesempenhoValue $color={statusInfo.color}>
@@ -172,7 +188,10 @@ export function MentoradosPage() {
 
                 <S.StatusSection>
                   <S.UltimaAvaliacao>
-                    Status: <S.StatusBadge $color={statusInfo.color}>{statusInfo.label}</S.StatusBadge>
+                    Status:{" "}
+                    <S.StatusBadge $color={statusInfo.color}>
+                      {statusInfo.label}
+                    </S.StatusBadge>
                   </S.UltimaAvaliacao>
                 </S.StatusSection>
 

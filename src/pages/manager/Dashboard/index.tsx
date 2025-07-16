@@ -19,6 +19,8 @@ import { useOutletContext } from "react-router-dom";
 import { useCicloAtual } from "@/hooks/useCicloAtual";
 import { useLideradosComAvaliacao } from "@/hooks/avaliacoes/useLideradosComAvaliacao";
 import type { PerfilData } from "@/types/PerfilData";
+import { LoadingMessage } from "@/components/LoadingMessage/index.tsx";
+import { EmptyMessage } from "@/components/EmptyMensage/index.tsx";
 
 export function ManagerDashboard() {
   const theme = useTheme();
@@ -46,7 +48,10 @@ export function ManagerDashboard() {
       ).length,
     0
   );
-  const progresso = totalCriterios === 0 ? 0 : Math.round((totalPreenchido / totalCriterios) * 100);
+  const progresso =
+    totalCriterios === 0
+      ? 0
+      : Math.round((totalPreenchido / totalCriterios) * 100);
 
   // Cálculo da média geral
   const notasValidas = liderados
@@ -55,8 +60,24 @@ export function ManagerDashboard() {
 
   const mediaEquipe =
     notasValidas.length > 0
-      ? (notasValidas.reduce((a, b) => a + b, 0) / notasValidas.length).toFixed(1)
+      ? (notasValidas.reduce((a, b) => a + b, 0) / notasValidas.length).toFixed(
+          1
+        )
       : "0.0";
+
+  if (isLoading || !idCiclo) {
+    return <LoadingMessage message="Carregando dados..." />;
+  }
+
+  if (liderados.length === 0) {
+    return (
+      <EmptyMessage
+        icon={<MdGroup size={32} />}
+        title="Sem colaboradores"
+        description="Sua equipe ainda não possui colaboradores neste ciclo."
+      />
+    );
+  }
 
   return (
     <>
@@ -99,7 +120,8 @@ export function ManagerDashboard() {
             title: `${colab.nomeCompleto} não iniciou a autoavaliação`,
             description: "Sem progresso detectado",
             buttonLabel: "Enviar Lembrete",
-            onClick: () => console.log("Enviar lembrete para", colab.nomeCompleto),
+            onClick: () =>
+              console.log("Enviar lembrete para", colab.nomeCompleto),
           }))
           .concat(
             liderados
@@ -110,7 +132,8 @@ export function ManagerDashboard() {
                 title: `${colab.nomeCompleto} está em andamento`,
                 description: "Pode precisar de suporte",
                 buttonLabel: "Agendar 1:1",
-                onClick: () => console.log("Agendar reunião com", colab.nomeCompleto),
+                onClick: () =>
+                  console.log("Agendar reunião com", colab.nomeCompleto),
               }))
           )
           .concat(
