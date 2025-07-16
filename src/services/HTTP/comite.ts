@@ -1,5 +1,5 @@
 import { getRequest, patchRequest } from './requests';
-
+import api from '../axios.ts';
 const baseEndpoint1 = '/avaliacoes/';
 const baseEndpoint2 = '/equalizacao/';
 
@@ -29,4 +29,8 @@ export async function sendEqualizacao(
       status: status
     });
 
+}
+
+export async function getExportacaoCiclo(idCiclo: string) {
+  return await api.get(`exportacao/ciclo/${idCiclo}`, { responseType: 'blob' });
 }

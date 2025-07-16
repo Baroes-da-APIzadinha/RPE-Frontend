@@ -34,13 +34,18 @@ export function Login() {
 
       let destination = "/colaborador/home";
 
-      if (roles.includes("ADMIN") || roles.includes("RH")) {
+      if (roles.includes("RH")) {
         destination = "/rh/dashboard";
-      } else if (roles.includes("GESTOR")) {
+      } else if (roles.includes("LIDER")) {
         destination = "/gestor/dashboard";
       } else if (roles.includes("MEMBRO_COMITE")) {
         destination = "/comite/equalization";
+      } else if (roles.includes("ADMIN")) {
+        destination = "/admin/auditoria";
+      } else if (roles.includes("MENTOR")) {
+        destination = "/mentor/mentorados";
       }
+
       toast.success("Login realizado com sucesso!");
       navigate(destination);
     } catch (error) {

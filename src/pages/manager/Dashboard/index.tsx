@@ -4,16 +4,12 @@ import CardContainer from "@/components/CardContainer";
 import CardBox from "@/components/CardBox";
 import { BsGraphUpArrow } from "react-icons/bs";
 import {
-  MdAccountCircle,
-  MdArrowForward,
   MdErrorOutline,
   MdGroup,
   MdOutlineAccessTime,
   MdOutlineCheckCircle,
   MdTrackChanges,
 } from "react-icons/md";
-import { useTheme } from "styled-components";
-import Button from "@/components/Button";
 import { AlertList } from "@/components/AlertList";
 import { useOutletContext } from "react-router-dom";
 import { useCicloAtual } from "@/hooks/useCicloAtual";
@@ -21,9 +17,27 @@ import { useLideradosComAvaliacao } from "@/hooks/avaliacoes/useLideradosComAval
 import type { PerfilData } from "@/types/PerfilData";
 import { LoadingMessage } from "@/components/LoadingMessage/index.tsx";
 import { EmptyMessage } from "@/components/EmptyMensage/index.tsx";
+import { useCollaboratorReminder } from "@/hooks/useCollaboratorReminder";
+import { toast } from "sonner";
 
 export function ManagerDashboard() {
-  const theme = useTheme();
+
+  function getVariancia(notas: number[]) {
+    if (notas.length === 0) return 0;
+    const media = notas.reduce((a, b) => a + b, 0) / notas.length;
+    return notas.reduce((acc, nota) => acc + Math.pow(nota - media, 2), 0) / notas.length;
+  }
+
+  const { createReminder } = useCollaboratorReminder();
+
+  const handleSendReminder = async (idColaborador: string, message: string) => {
+    try {
+      await createReminder(idColaborador, message);
+      toast.success("Lembrete enviado com sucesso!");
+    } catch (error) {
+      console.error('Erro ao enviar lembrete:', error);
+    }
+  };
   const { perfil } = useOutletContext<{ perfil: PerfilData }>();
   const idColaborador = perfil?.userId;
 
@@ -34,7 +48,7 @@ export function ManagerDashboard() {
     idColaborador,
     idCiclo!
   );
-
+  
   // Total da equipe
   const totalEquipe = liderados.length;
 
@@ -68,6 +82,7 @@ export function ManagerDashboard() {
   if (isLoading || !idCiclo) {
     return <LoadingMessage message="Carregando dados..." />;
   }
+
 
   if (liderados.length === 0) {
     return (
@@ -103,8 +118,7 @@ export function ManagerDashboard() {
         <CardBox
           title="Média da Equipe"
           bigSpan={mediaEquipe}
-          miniSpan="+0.1" // Esse pode ser dinâmico depois
-          span="vs anterior"
+          span={'variancia das notas: ' + getVariancia(notasValidas).toFixed(2)}
           icon={<BsGraphUpArrow />}
         />
       </CardContainer>
@@ -112,6 +126,7 @@ export function ManagerDashboard() {
       <AlertList
         title="Alertas e Ações Necessárias"
         subtitle="Itens que requerem sua atenção"
+        // @ts-ignore
         items={liderados
           .filter((colab) => colab.statusAutoavaliacao === "PENDENTE")
           .map((colab) => ({
@@ -120,8 +135,10 @@ export function ManagerDashboard() {
             title: `${colab.nomeCompleto} não iniciou a autoavaliação`,
             description: "Sem progresso detectado",
             buttonLabel: "Enviar Lembrete",
-            onClick: () =>
-              console.log("Enviar lembrete para", colab.nomeCompleto),
+            onClick: () => handleSendReminder(
+              colab.idColaborador, 
+              "Sua autoavaliação ainda não foi iniciada. Solicitamos que realize o preenchimento o quanto antes para cumprir os prazos estabelecidos."
+            ),
           }))
           .concat(
             liderados
@@ -131,9 +148,11 @@ export function ManagerDashboard() {
                 icon: <MdOutlineAccessTime />,
                 title: `${colab.nomeCompleto} está em andamento`,
                 description: "Pode precisar de suporte",
-                buttonLabel: "Agendar 1:1",
-                onClick: () =>
-                  console.log("Agendar reunião com", colab.nomeCompleto),
+                buttonLabel: "Enviar Lembrete",
+                onClick: () => handleSendReminder(
+                  colab.idColaborador,
+                  "Notamos que você iniciou sua autoavaliação, mas ela ainda não foi concluída. Se precisar de suporte, estaremos disponíveis para ajudar."
+                ),
               }))
           )
           .concat(
@@ -145,7 +164,10 @@ export function ManagerDashboard() {
                 title: `${colab.nomeCompleto} concluiu a autoavaliação`,
                 description: "Parabenize pelo comprometimento",
                 buttonLabel: "Parabenizar",
-                onClick: () => console.log("Parabenizar", colab.nomeCompleto),
+                onClick: () => handleSendReminder(
+                  colab.idColaborador,
+                  "Parabéns por concluir sua autoavaliação! Seu comprometimento e dedicação são fundamentais para o sucesso da equipe."
+                ),
               }))
           )}
       />

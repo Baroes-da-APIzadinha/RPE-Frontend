@@ -89,3 +89,29 @@ export function useCiclos() {
   return { cicloAtivo, historico, refetch }; 
 }
 
+export function useTodosCiclos() {
+  const [ciclos, setCiclos] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchCiclos = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const fetchedCiclos = await getCiclos();
+      setCiclos(fetchedCiclos);
+    } catch (err) {
+      console.error('Erro ao buscar ciclos:', err);
+      setError(err instanceof Error ? err.message : 'Erro ao buscar ciclos');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchCiclos();
+  }, [fetchCiclos]);
+
+  return { ciclos, loading, error, refetch: fetchCiclos };
+}
+
