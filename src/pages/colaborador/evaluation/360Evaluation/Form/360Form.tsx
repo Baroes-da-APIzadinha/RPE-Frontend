@@ -36,8 +36,11 @@ const EvaluationDetails: React.FC<Props> = ({ id, onBack }) => {
     id
   );
   const idAvaliado = avaliacao?.idAvaliado ?? "";
+  console.log("idAvaliado:", idAvaliado);
   const { colaborador: colaboradorCompleto, loading: loadingColaborador } =
-    useColaboradorById(idAvaliado);
+    useColaboradorById(
+      idAvaliado && idAvaliado !== "" ? idAvaliado : undefined
+    );
 
   const [nota, setNota] = useState(0);
   const [melhoria, setMelhoria] = useState("");
@@ -54,6 +57,7 @@ const EvaluationDetails: React.FC<Props> = ({ id, onBack }) => {
     melhoria: false,
   });
 
+  // Se já foi avaliado
   useEffect(() => {
     if (avaliacao?.avaliacaoPares) {
       const pares = avaliacao.avaliacaoPares;
@@ -67,12 +71,51 @@ const EvaluationDetails: React.FC<Props> = ({ id, onBack }) => {
   const colaborador = avaliacao?.avaliado ?? null;
 
   const motivacoes = [
+    { value: "Não Se Aplica", label: "Não Se Aplica" },
     { value: "Discordo Totalmente", label: "Discordo Totalmente" },
     { value: "Discordo Parcialmente", label: "Discordo Parcialmente" },
     { value: "Neutro", label: "Neutro" },
     { value: "Concordo Parcialmente", label: "Concordo Parcialmente" },
     { value: "Concordo Totalmente", label: "Concordo Totalmente" },
   ];
+
+  const montarPayload = (status: "EM_RASCUNHO" | "CONCLUIDA") => {
+    const payload = {
+      idAvaliacao: avaliacao?.idAvaliacao ?? "",
+      status,
+      nota: isNaN(nota) ? 0 : nota,
+      motivacao:
+        motivacao && motivacoes.some((m) => m.value === motivacao)
+          ? motivacao
+          : undefined,
+      pontosFortes: forte ?? "",
+      pontosFracos: melhoria ?? "",
+    };
+
+    return payload;
+  };
+
+  // AutoSave
+  useEffect(() => {
+    if (!avaliacao?.idAvaliacao || status === "CONCLUIDA") return;
+
+    const interval = setInterval(() => {
+      // Só envia rascunho se algum campo foi preenchido
+      const temConteudo =
+        nota > 0 ||
+        (motivacao && motivacao.trim() !== "") ||
+        forte.trim() !== "" ||
+        melhoria.trim() !== "";
+
+      if (!temConteudo) return;
+
+      preencherAvaliacaoPares(montarPayload("EM_RASCUNHO"))
+        .then(() => console.log("Auto save executado"))
+        .catch((err) => console.warn("Erro no autosave:", err));
+    }, 10000); // salva a cada 15s
+
+    return () => clearInterval(interval);
+  }, [nota, motivacao, forte, melhoria, avaliacao?.idAvaliacao, status]);
 
   const handleSubmit = async () => {
     const newErrors = {
@@ -91,19 +134,11 @@ const EvaluationDetails: React.FC<Props> = ({ id, onBack }) => {
     }
 
     try {
-      const payload = {
-        idAvaliacao: avaliacao.idAvaliacao,
-        nota: nota,
-        motivacao: motivacao,
-        pontosFortes: forte,
-        pontosFracos: melhoria,
-      };
-
-      await preencherAvaliacaoPares(payload);
+      await preencherAvaliacaoPares(montarPayload("CONCLUIDA"));
       toast.success("Avaliação enviada com sucesso!");
       window.location.reload();
     } catch (err) {
-      console.error(err);
+      console.error("Erro no envio:", err);
       toast.error("Erro ao enviar a avaliação.");
     }
   };
@@ -147,10 +182,11 @@ const EvaluationDetails: React.FC<Props> = ({ id, onBack }) => {
       </S.HeaderCard>
 
       <S.InfoCard>
-        <MdOutlineInfo size={20} />
+        <MdOutlineInfo size={24} />
         <span>
-          <strong>Importante:</strong> Avalie com base no trabalho conjunto nos
-          últimos 6 meses. Seja específico e construtivo em suas justificativas.
+          <strong>Importante:</strong> Avalie com base na sua experiência real
+          de trabalho com o colaborador. Seja específico e construtivo em suas
+          justificativas.
         </span>
       </S.InfoCard>
 
@@ -181,7 +217,7 @@ const EvaluationDetails: React.FC<Props> = ({ id, onBack }) => {
                 </S.Label>
                 <Select
                   placeholder="Selecione uma opção"
-                  value={motivacao}
+                  value={motivacao ?? null}
                   onChange={(val) => setMotivacao(val as string)}
                   options={motivacoes}
                   error={errors.motivacao}

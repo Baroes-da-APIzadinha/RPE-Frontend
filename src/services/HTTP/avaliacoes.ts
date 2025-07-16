@@ -53,7 +53,7 @@ export async function preencherRascunhoAutoAvaliacao(payload: PreencherAutoAvali
 export async function preencherAvaliacaoPares(payload: {
   idAvaliacao: string;
   nota: number;
-  motivacao: string;
+  motivacao: string | undefined;
   pontosFortes: string;
   pontosFracos: string;
   status: 'EM_RASCUNHO' | 'CONCLUIDA';

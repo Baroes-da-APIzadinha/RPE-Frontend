@@ -48,6 +48,7 @@ export const formatDateTime = (dateStr: string) => {
 export const formatStatus = (status: string): TableRowBoxProps["status"] => {
   const STATUS_MAP: Record<string, TableRowBoxProps["status"]> = {
     CONCLUIDA: "Avaliado",
+    EM_RASCUNHO: "Andamento",
     EM_ANDAMENTO: "Andamento",
     PENDENTE: "Pendente",
     EM_REVISAO: "Em revisão",

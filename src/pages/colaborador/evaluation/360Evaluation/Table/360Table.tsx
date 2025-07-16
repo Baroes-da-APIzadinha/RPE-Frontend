@@ -23,9 +23,7 @@ const Table360: React.FC<Table360Props> = ({ onSelect }) => {
 
   const total = avaliacoes.length;
   const concluidas = avaliacoes.filter((a) => a.status === "CONCLUIDA").length;
-  const andamento = avaliacoes.filter(
-    (a) => a.status === "EM_ANDAMENTO"
-  ).length;
+  const andamento = avaliacoes.filter((a) => a.status === "EM_RASCUNHO").length;
   const pendentes = total - concluidas - andamento;
 
   const progresso = total > 0 ? Math.round((concluidas / total) * 100) : 0;
