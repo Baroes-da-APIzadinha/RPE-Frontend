@@ -180,7 +180,6 @@ export function RhDashboard() {
     let title = "";
     let description = "";
     let daysCheck = Number(days[0] + days[1]) 
-    console.log("Ciclo Atual:", daysCheck);
     if (!days.includes("dias")) {
       type = "red";
       title = "Urgente: Prazo se aproximando";

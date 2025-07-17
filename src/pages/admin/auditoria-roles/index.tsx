@@ -105,7 +105,6 @@ export function AuditoriaRolesPage() {
       const originalPerfis = colaboradorSelecionado.roles.map(
         (role) => roleToPerfilMap[role]
       );
-      console.log("Perfis originais:", colaboradorSelecionado.id);
       // Perfis selecionados no modal
       const selectedPerfis = rolesTemporarias.map(
         (role) => roleToPerfilMap[role]

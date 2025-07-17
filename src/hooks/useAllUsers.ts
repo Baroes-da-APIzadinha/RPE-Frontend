@@ -21,14 +21,12 @@ export function useAllUsers() {
 
     try {
       const response = await getAllUsers();
-      console.log('Response completo:', response);
 
      const usersData = response?.users;
       if (!Array.isArray(usersData)) {
         throw new Error('Formato inesperado na resposta da API');
       }
 
-      console.log('Users extraídos:', usersData);
       setUsers(usersData);
     } catch (err) {
       console.error('Erro ao buscar usuários:', err);

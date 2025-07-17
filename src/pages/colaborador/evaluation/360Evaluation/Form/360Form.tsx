@@ -37,7 +37,6 @@ const EvaluationDetails: React.FC<Props> = ({ id, onBack }) => {
     id
   );
   const idAvaliado = avaliacao?.idAvaliado ?? "";
-  console.log("idAvaliado:", idAvaliado);
   const { colaborador: colaboradorCompleto, loading: loadingColaborador } =
     useColaboradorById(
       idAvaliado && idAvaliado !== "" ? idAvaliado : undefined

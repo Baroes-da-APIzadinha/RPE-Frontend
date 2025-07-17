@@ -85,8 +85,6 @@ export function useGetBrutalFacts(idColaborador: string, idCiclo: string): UseGe
       mensagemColaborador,
       textoCompleto
     };
-
-    console.log("Parsed brutal facts:", result);
     
     return result;
   };
@@ -102,7 +100,6 @@ export function useGetBrutalFacts(idColaborador: string, idCiclo: string): UseGe
       setError(null);
       
       const response = await getBrutalFacts(idColaborador, idCiclo);
-      console.log("Brutal facts response:", response);
       const textoCompleto = response.toString() || '';
       
       const processedData = processApiResponse(textoCompleto);

@@ -27,16 +27,6 @@ export function useCreateColaborador() {
         unidade: data.unidade,
       });
 
-      console.log({
-        nomeCompleto: data.nomeCompleto,
-        cargo: data.cargo,
-        email: data.email,
-        senha: data.senha,
-        trilhaCarreira: data.trilhaCarreira,
-        unidade: data.unidade,
-        });
-
-
       const idColaborador = colaborador?.idColaborador;
 
       for (const tipo of data.tiposPerfil) {

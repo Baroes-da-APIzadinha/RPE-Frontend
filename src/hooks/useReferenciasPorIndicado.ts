@@ -59,7 +59,6 @@ export function useReferenciasPorIndicado(idIndicado: string): UseReferenciasPor
       setError(null);
       
       const response = await listarReferenciasPorIndicado(idIndicado);
-      console.log('Referências por indicado:', response);
       setReferencias(response || []);
     } catch (err) {
       console.error('Erro ao buscar referências por indicado:', err);

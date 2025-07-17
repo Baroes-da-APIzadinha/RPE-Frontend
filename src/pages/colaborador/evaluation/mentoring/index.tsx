@@ -68,12 +68,8 @@ export function MentoringPage() {
       const temConteudo = nota > 0 || justificativa.trim() !== "";
       if (!temConteudo) return;
 
-      console.log(
-        "Payload enviado:",
-        JSON.stringify(montarPayload("EM_RASCUNHO"))
-      );
       preencherAvaliacaoMentor(montarPayload("EM_RASCUNHO"))
-        .then(() => console.log("Auto save mentor executado"))
+        .then(() => console.log("Auto save executado"))
         .catch((err) => console.warn("Erro no autosave mentor:", err));
     }, 10000); // a cada 10s
 

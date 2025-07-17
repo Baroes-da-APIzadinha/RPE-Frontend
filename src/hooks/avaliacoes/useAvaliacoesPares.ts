@@ -41,7 +41,6 @@ export function useAvaliacoesPares(idColaborador: string) {
       try {
         const res = await getAvaliacoesPorTipoUsuario(idColaborador, "AVALIACAO_PARES");
         setAvaliacoes(res.avaliacoes || []);
-        console.log("Avaliações recebidas", res)
       } catch (err) {
         console.error("Erro ao buscar avaliações de pares:", err);
       } finally {

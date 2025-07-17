@@ -85,7 +85,6 @@ export function CollaboratorDiscrepancy() {
     loading: loadingAvaliacoes,
     error: errorAvaliacoes,
   } = useGetAvaliacoes(colaboradorId, idCiclo);
-  console.log("Avaliações carregadas:", errorAvaliacoes);
   // Hook para buscar avaliação da IA - só carrega quando shouldLoadIA for true
   const {
     data: avaliacaoIA,

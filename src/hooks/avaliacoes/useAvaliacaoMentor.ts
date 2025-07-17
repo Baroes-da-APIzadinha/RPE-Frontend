@@ -15,7 +15,6 @@ export function useAvaliacaoMentor(idUsuario: string) {
         if (res.avaliacoes && res.avaliacoes.length > 0) {
           setAvaliacao(res.avaliacoes[0]);
         }
-        console.log("Response:", res)
       } catch (err) {
         console.error("Erro ao buscar avaliação de mentor:", err);
       } finally {

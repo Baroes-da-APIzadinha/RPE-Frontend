@@ -105,7 +105,6 @@ export function RhCyclePage() {
         duracaoEmEqualizacaoDias: diasEntre(equalizacao, fim),
       };
 
-      console.log("Payload enviado para o backend:", cicloData);
       await createCiclo(cicloData);
       await refetch();
 
@@ -196,7 +195,6 @@ export function RhCyclePage() {
                 status={getStatusLabel(cicloAtivo.status) as any}
                 icon={<MdHistory size={64} />}
                 onClick={() => {
-                    console.log("Valor de cicloAtivo antes da navegação:", cicloAtivo);
                     navigate("/rh/cycle/criteria", { state: { cicloAtivo } });
                 }}
               />

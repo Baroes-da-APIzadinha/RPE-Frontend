@@ -126,7 +126,6 @@ const PerfilPage: React.FC = () => {
 
       const updateData = getOnlyModifiedFields(originalData, formData);
 
-      console.log("Update payload", updateData);
       await atualizarColaborador(perfil.userId, updateData);
       setFormData((prev) => ({
         ...prev,
