@@ -9,86 +9,95 @@ import {
 import { SearchInput } from "@/components/SearchInput";
 import { useListColaboradores } from "@/hooks/colaboradores/useListColaboradores.ts";
 import { formatar } from "@/utils/formatters.ts";
+import { Card } from "@/components/Card/index.tsx";
 
 export function RhCollaborator() {
   const { colaboradores, loading: loadingList } = useListColaboradores();
   const [busca, setBusca] = useState("");
   const searchTerm = busca.toLowerCase();
 
+  const colaboradoresFiltrados = colaboradores.filter((c) =>
+    [c.nomeCompleto, c.email, c.cargo, c.trilhaCarreira, c.unidade].some(
+      (field) => field.toLowerCase().includes(searchTerm)
+    )
+  );
+
   if (loadingList) return <div>Carregando...</div>;
 
   return (
     <>
-      <>
-        <S.Header>
-          <Title>Gerenciar Colaboradores</Title>
-        </S.Header>
+      <S.Header>
+        <Title>Gerenciar Colaboradores</Title>
+      </S.Header>
 
-        <S.CardContainer>
-          <S.TableContainer>
-            <S.FiltersRow>
-              <div>
-                <S.Title>Colaboradores</S.Title>
-                <S.Subtitle>Gerencie os usuários do sistema RPE</S.Subtitle>
-              </div>
-              <S.Actions>
-                <SearchInput
-                  placeholder="Buscar Colaboradores..."
-                  value={busca}
-                  onChange={(e) => setBusca(e.target.value)}
-                />
-              </S.Actions>
-            </S.FiltersRow>
+      <Card>
+        <S.FiltersSection>
+          <S.FilterItem>
+            <label>Buscar Colaborador</label>
+            <SearchInput
+            placeholder="Buscar Colaboradores..."
+            value={busca}
+            onChange={(e) => setBusca(e.target.value)}
+          />
+          </S.FilterItem>
+        </S.FiltersSection>
+      </Card>
 
-            <S.Table>
-              <thead>
-                <tr>
-                  <th>Colaborador</th>
-                  <th>Cargo</th>
-                  <th>Trilha</th>
-                  <th>Unidade</th>
-                </tr>
-              </thead>
-              <tbody>
-                {colaboradores
-                  .filter((c) =>
-                    [
-                      c.nomeCompleto,
-                      c.email,
-                      c.cargo,
-                      c.trilhaCarreira,
-                      c.unidade,
-                    ].some((field) => field.toLowerCase().includes(searchTerm))
-                  )
-                  .map((c) => (
-                    <S.Row key={c.id}>
-                      <S.Colaborador>
-                        <MdAccountCircle size={64} />
-                        <S.Info>
-                          <p>{c.nomeCompleto}</p>
-                          <span>{c.email}</span>
-                        </S.Info>
-                      </S.Colaborador>
-                      <td>{formatar(c.cargo)}</td>
-                      <td>
-                        <S.Track>
-                          <MdInsertDriveFile size={24} />
-                          {formatar(c.trilhaCarreira)}
-                        </S.Track>
-                      </td>
-                      <td>
-                        <S.Unit>
-                          <MdApartment size={24} />
-                          {formatar(c.unidade)}
-                        </S.Unit>
-                      </td>
-                    </S.Row>
-                  ))}
-              </tbody>
-            </S.Table>
-          </S.TableContainer>
-        </S.CardContainer>
-      </>
+      <Card>
+        <S.FiltersRow>
+          <div>
+            <S.Title>Colaboradores</S.Title>
+            <S.Subtitle>
+              {colaboradoresFiltrados.length} colaboradores encontrados
+            </S.Subtitle>
+          </div>
+        </S.FiltersRow>
+
+        <S.Grid>
+          {colaboradores
+            .filter((c) =>
+              [
+                c.nomeCompleto,
+                c.email,
+                c.cargo,
+                c.trilhaCarreira,
+                c.unidade,
+              ].some((field) => field.toLowerCase().includes(searchTerm))
+            )
+            .map((c) => (
+              <S.UserCard key={c.id}>
+                <S.UserHeader>
+                  <MdAccountCircle size={48} />
+                  <S.UserInfo>
+                    <strong>{c.nomeCompleto}</strong>
+                    <span>{c.email}</span>
+                  </S.UserInfo>
+                </S.UserHeader>
+
+                <S.UserDetail>
+                  <span>Cargo:</span>
+                  <p>{formatar(c.cargo)}</p>
+                </S.UserDetail>
+
+                <S.UserDetail>
+                  <span>Trilha:</span>
+                  <p>
+                    <MdInsertDriveFile size={18} />
+                    {formatar(c.trilhaCarreira)}
+                  </p>
+                </S.UserDetail>
+
+                <S.UserDetail>
+                  <span>Unidade:</span>
+                  <p>
+                    <MdApartment size={18} />
+                    {formatar(c.unidade)}
+                  </p>
+                </S.UserDetail>
+              </S.UserCard>
+            ))}
+        </S.Grid>
+      </Card>
     </>
   );
 }

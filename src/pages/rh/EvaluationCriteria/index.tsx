@@ -6,7 +6,6 @@ import { Select } from "@/components/Select";
 import { Modal } from "@/components/Modal";
 import { Title } from "@/components/Title";
 import { MdAdd, MdAssignment } from "react-icons/md";
-import { Checkbox } from "@/components/CheckBox/index.tsx";
 import { Card } from "@/components/Card/index.tsx";
 import { ToggleBar } from "@/components/ToggleBar/index.tsx";
 import { DropdownActions } from "@/components/DropdownActions/index.tsx";
@@ -21,7 +20,6 @@ export function EvaluationCriteria() {
   const [descricao, setDescricao] = useState("");
   const [categoria, setCategoria] = useState<string | null>(null);
   const [peso, setPeso] = useState<string | null>(null);
-  const [trilhas, setTrilhas] = useState<string[]>([]);
   const [editId, setEditId] = useState<string | null>(null);
   const [tipo, setTipo] = useState("comportamento");
   const [camposErro, setCamposErro] = useState({
@@ -69,21 +67,11 @@ export function EvaluationCriteria() {
     { label: "2.0", value: "2.0" },
   ];
 
-  const trilhasDisponiveis = [
-    "Tecnologia",
-    "Design",
-    "Gestão",
-    "Produto",
-    "Dados",
-    "Liderança",
-  ];
-
   const resetForm = () => {
     setNome("");
     setDescricao("");
     setCategoria(null);
     setPeso(null);
-    setTrilhas([]);
     setEditId(null);
     setCamposErro({
       nome: false,
@@ -91,14 +79,6 @@ export function EvaluationCriteria() {
       categoria: false,
       peso: false,
     });
-  };
-
-  const toggleTrilha = (trilha: string) => {
-    setTrilhas((prev) =>
-      prev.includes(trilha)
-        ? prev.filter((t) => t !== trilha)
-        : [...prev, trilha]
-    );
   };
 
   const handleSubmit = async () => {
@@ -186,7 +166,7 @@ export function EvaluationCriteria() {
           <Title>Gerenciamento de Critérios</Title>
           <S.HeaderButtons>
             <S.DesktopButtons>
-              <Button onClick={() => setShowModal(true)}>
+              <Button variant="primary" onClick={() => setShowModal(true)}>
                 <MdAdd /> Adicionar Critério
               </Button>
             </S.DesktopButtons>
@@ -369,7 +349,7 @@ export function EvaluationCriteria() {
             >
               Cancelar
             </Button>
-            <Button onClick={editId ? handleSaveEdit : handleSubmit}>
+            <Button variant="primary" onClick={editId ? handleSaveEdit : handleSubmit}>
               {editId ? "Salvar" : "Adicionar"}
             </Button>
           </S.ModalButtons>

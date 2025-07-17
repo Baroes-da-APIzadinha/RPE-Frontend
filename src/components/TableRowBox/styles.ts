@@ -44,7 +44,7 @@ export const WorkTime = styled.span`
 
 `;
 
-export const StatusContainer = styled.div<{ $status: 'Avaliado' | 'Andamento' | 'Pendente' | 'Finalizado' | 'Em revisão' | 'Em equalização' }>`
+export const StatusContainer = styled.div<{ $status: 'Avaliado' | 'Andamento' | 'Pendente' | 'Finalizado' | 'Em revisão' | 'Em equalização'  | 'Fechado'}>`
   border: 2px solid
     ${({ $status, theme }) =>
     ($status === 'Avaliado' || $status === 'Finalizado')
@@ -59,7 +59,7 @@ export const StatusContainer = styled.div<{ $status: 'Avaliado' | 'Andamento' | 
   justify-content: center;
 `;
 
-export const Status = styled.span<{$status: 'Avaliado' | 'Andamento' | 'Pendente' | 'Finalizado' | 'Em revisão' | 'Em equalização'}>`
+export const Status = styled.span<{$status: 'Avaliado' | 'Andamento' | 'Pendente' | 'Finalizado' | 'Em revisão' | 'Em equalização' | 'Fechado'}>`
   font-size: 1rem;
   font-weight: bold;
   color:     ${({ $status, theme }) =>
