@@ -39,7 +39,7 @@ export const Container = styled.aside<{ $open?: boolean }>`
   width: 260px;
   height: 100vh;
   background-color: ${theme.colors.surface.default};
-  padding: 2.4rem 1.6rem;
+  padding: 2rem 1.6rem;
   display: flex;
   flex-direction: column;
   border-right: 1px solid ${theme.colors.border};
