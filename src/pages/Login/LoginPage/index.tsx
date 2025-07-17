@@ -7,9 +7,8 @@ import { handleLogin } from "@/services/Auth/login.ts";
 import { getPerfil } from "@/services/HTTP/perfil";
 import { getColaboradorById } from "@/services/HTTP/colaboradores";
 import { toast } from "sonner";
-import logo from "@/assets/DefaultLogo.svg"; 
-import textTitle from "@/assets/DefaultTitle.svg"; 
-
+import logo from "@/assets/DefaultLogo.svg";
+import textTitle from "@/assets/DefaultTitle.svg";
 
 export function Login() {
   const [email, setEmail] = useState("");

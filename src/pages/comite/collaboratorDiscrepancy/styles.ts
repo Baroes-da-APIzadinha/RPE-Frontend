@@ -136,12 +136,6 @@ export const Evaluation360Container = styled.div`
   flex-direction: column;
 `;
 
-export const ColleagueEvaluation = styled.div`
-  background: ${({ theme }) => theme.colors.surface.default};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: 12px;
-  padding: 2rem;
-`;
 
 export const ColleagueName = styled.h4`
   color: ${({ theme }) => theme.colors.text.primary};
@@ -158,26 +152,6 @@ export const ColleagueRole = styled.span`
   font-weight: normal;
 `;
 
-export const ScoreOverview = styled.div`
-  background: ${({ theme }) => theme.colors.surface.alt};
-  border-radius: 8px;
-  padding: 1rem;
-  margin-bottom: 1.5rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-`;
-
-export const ScoreLabel = styled.span`
-  color: ${({ theme }) => theme.colors.text.secondary};
-  font-size: 0.9rem;
-`;
-
-export const ScoreValue = styled.span`
-  color: ${({ theme }) => theme.colors.primary.default};
-  font-weight: 600;
-  font-size: 1.2rem;
-`;
 
 // Estilos adicionais do CollaboratorReview
 export const CriteriaContent = styled.div`

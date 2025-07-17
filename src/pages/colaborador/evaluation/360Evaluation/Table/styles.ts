@@ -1,29 +1,6 @@
 import styled from "styled-components";
 
 
-export const Header = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-`;
-
-export const Title = styled.h2`
-  font-size: ${({ theme }) => theme.font.sizes.large};
-  font-weight: ${({ theme }) => theme.font.bold};
-  color: ${({ theme }) => theme.colors.text.primary};
-`;
-
-export const Subtitle = styled.p`
-  font-size: ${({ theme }) => theme.font.sizes.small};
-  color: ${({ theme }) => theme.colors.text.secondary};
-  margin-top: 0.4rem;
-`;
-
-export const Label = styled.p`
-  font-size: ${({ theme }) => theme.font.sizes.xsmall};
-  color: ${({ theme }) => theme.colors.text.secondary};
-`;
-
 
 export const SummaryRow = styled.div`
   display: flex;

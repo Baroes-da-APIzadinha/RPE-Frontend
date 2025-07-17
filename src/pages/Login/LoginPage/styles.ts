@@ -31,25 +31,3 @@ export const IconWrapper = styled.div`
   margin-right: 1.2rem;
   color: ${({ theme }) => theme.colors.primary.default};
 `;
-
-export const Title = styled.h2`
-  margin: 0;
-  color: ${({ theme }) => theme.colors.text.primary};
-  font-size: 2.4rem;
-  font-weight: 700;
-  line-height: 1;
-`;
-
-export const Subtitle = styled.p`
-  margin: 0.3rem 0 0 0;
-  color: ${({ theme }) => theme.colors.text.secondary};
-  font-size: 1.1rem;
-  font-weight: 400;
-  line-height: 1.2;
-`
-
-export const Label = styled.label`
-  margin-bottom: 0.5rem;
-  color: ${({ theme }) => theme.colors.text.secondary};
-  font-size: 1rem;
-`

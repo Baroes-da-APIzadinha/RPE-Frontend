@@ -21,36 +21,6 @@ export const Header = styled.div`
   }
 `;
 
-export const StatsContainer = styled.div`
-  display: flex;
-  gap: 1rem;
-
-  @media (max-width: 768px) {
-    justify-content: center;
-  }
-`;
-
-export const StatCard = styled.div`
-  background: ${({ theme }) => theme.colors.surface.default};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: ${({ theme }) => theme.border.radius.medium};
-  padding: 1rem 1.5rem;
-  text-align: center;
-  min-width: 120px;
-`;
-
-export const StatNumber = styled.div`
-  font-size: 2rem;
-  font-weight: ${({ theme }) => theme.font.bold};
-  color: ${({ theme }) => theme.colors.primary.default};
-  line-height: 1;
-`;
-
-export const StatLabel = styled.div`
-  font-size: ${({ theme }) => theme.font.sizes.xsmall};
-  color: ${({ theme }) => theme.colors.text.secondary};
-  margin-top: 0.25rem;
-`;
 
 export const FiltersSection = styled.div`
   display: flex;

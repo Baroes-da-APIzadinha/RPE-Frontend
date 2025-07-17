@@ -1,4 +1,3 @@
-import { Modal } from '@/components/Modal';
 import theme from '@/styles/theme'
 import styled from 'styled-components'
 
@@ -15,11 +14,6 @@ export const Header = styled.div`
     align-items: flex-start;
   }
 `
-export const HeaderButtons = styled.div`
-  display: flex;
-  gap: 1.2rem;
-`
-
 // Filter Styles
 
 export const FiltersWrapper = styled.div`
@@ -162,19 +156,11 @@ export const ModalButtons = styled.div`
   justify-content: flex-end;
   gap: 1rem;
 `
-export const ModalRow = styled.div`
-  display: flex;
-  gap: 1.2rem;
-`;
+
 export const ModalDiv = styled.div`
   flex: 1; 
 `
-export const ModalText = styled.p`
-  font-size: ${({theme}) => theme.font.sizes.xsmall};
-  font-weight: ${({theme}) => theme.font.semibold};
-  color: ${({theme}) => theme.colors.text.primary};
-  margin-bottom: 0.4rem;
-`
+
 export const ModalAlert = styled.p`
   font-size: ${({theme}) => theme.font.sizes.medium};
   font-weight: ${({theme}) => theme.font.bold};

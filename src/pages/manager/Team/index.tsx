@@ -200,7 +200,7 @@ export function ManagerTeam() {
                       })
                     }
                   >
-                    <MdOutlineModeEdit /> Editar Avaliação
+                    <MdOutlineModeEdit /> Fazer Avaliação
                   </Button>
                 </S.FooterButtons>
               </S.InfoWrapper>

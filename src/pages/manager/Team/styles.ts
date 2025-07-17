@@ -8,10 +8,6 @@ export const Header = styled.div`
   margin-bottom: 4vh;
   gap: 1.2rem;
 `
-export const HeaderButtons = styled.div`
-  display: flex;
-  gap: 1.2rem;
-`
 
 // Card styles
 
@@ -29,18 +25,6 @@ export const UserHeader = styled.div`
   }
 `;
 
-export const DropButton = styled.button`
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  padding: 0.4rem;
-  display: flex;
-  align-items: center;
-
-  @media (max-width: 768px) {
-    margin-left: 0;
-  }
-`;
 
 export const UserInfo = styled.div`
   display: flex;
@@ -66,11 +50,6 @@ export const Name = styled.h3`
 export const Role = styled.p`
   font-size: ${theme.font.sizes.xsmall};
   font-weight: ${theme.font.semibold};
-  color: ${theme.colors.text.secondary};
-`;
-
-export const Since = styled.p`
-  font-size: ${theme.font.sizes.xsmall};
   color: ${theme.colors.text.secondary};
 `;
 
@@ -170,21 +149,6 @@ export const Badge = styled.span<{ $status: string }>`
         `}
 `;
 
-export const TagList = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-`;
-
-export const Tag = styled.span`
-  background: ${theme.colors.text.primary};
-  color: ${theme.colors.background};
-  padding: 0.4rem 0.8rem;
-  border-radius: ${theme.border.radius.full};
-  font-size: ${theme.font.sizes.xxsmall};
-  font-weight: ${theme.font.normal};
-`;
-
 export const FooterButtons = styled.div`
   display: flex;
   gap: 1rem;
@@ -230,9 +194,4 @@ export const Title = styled.h1`
   font-size: ${theme.font.sizes.xlarge};
   font-weight: ${theme.font.bold};
   color: ${theme.colors.text.primary};
-`
-export const Subtitle = styled.h2`
-  font-size: ${theme.font.sizes.medium};
-  font-weight: ${theme.font.medium};
-  color: ${theme.colors.text.secondary};
 `

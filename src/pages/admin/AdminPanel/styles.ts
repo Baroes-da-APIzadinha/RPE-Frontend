@@ -62,7 +62,7 @@ export const ModalContent = styled.div`
 `;
 
 export const WarningText = styled.p`
-  color: ${({ theme }) => theme.colors.warning};
+  color: ${({ theme }) => theme.colors.warning.default};
   font-weight: 600;
   margin: 0 0 16px 0;
 `;

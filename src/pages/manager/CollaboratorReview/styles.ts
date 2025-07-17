@@ -14,12 +14,6 @@ export const HeaderButtons = styled.div`
   gap: 1.2rem;
 `
 
-// export const CriteriaList = styled(EvaluationFrame)`
-//   display: flex;
-//   flex-direction: column;
-//   gap: 1rem;
-// `;
-
 export const CriteriaContent = styled.div`
   display: flex;
   flex-wrap: wrap;
@@ -58,21 +52,7 @@ export const Subtitle = styled.span`
   margin-bottom: .5rem;
 `;
 
-export const Button = styled.button`
-  background-color: ${theme.colors.primary.default};
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 16px;
-  font-weight: 500;
-  transition: background 0.2s;
-  margin-top: 32px;
-  &:hover {
-    background-color: ${theme.colors.primary.hover};
-  }
-`;
+
 
 export const CriterioHeader = styled.div`
   display: flex;
@@ -118,26 +98,6 @@ export const ModalDescription = styled.p`
   font-size: 1rem;
   line-height: 1.5;
   color: ${theme.colors.text.primary};
-`;
-
-export const ModalSummary = styled.div`
-  background: ${theme.colors.surface.default};
-  padding: 1rem;
-  border-radius: 8px;
-  border: 1px solid ${theme.colors.border};
-`;
-
-export const ModalSummaryTitle = styled.p`
-  margin: 0 0 0.5rem 0;
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: ${theme.colors.text.primary};
-`;
-
-export const ModalSummaryText = styled.p`
-  margin: 0;
-  font-size: 0.875rem;
-  color: ${theme.colors.text.secondary};
 `;
 
 export const ModalActions = styled.div`

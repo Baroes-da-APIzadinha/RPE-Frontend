@@ -1,7 +1,6 @@
 import Button from "@/components/Button";
 import * as S from "./styles.ts";
 import {
-  MdAccountCircle,
   MdAdd,
   MdError,
   MdOutlineAdd,

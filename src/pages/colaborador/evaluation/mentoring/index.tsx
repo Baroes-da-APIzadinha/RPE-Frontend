@@ -1,5 +1,5 @@
 import * as S from "./styles.ts";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Card } from "@/components/Card";
 import Button from "@/components/Button";
 import ButtonFrame from "@/components/ButtonFrame";
@@ -101,14 +101,6 @@ export function MentoringPage() {
     }
   };
 
-  if (
-    loading ||
-    loadingMentor ||
-    avaliacao?.avaliacaoColaboradorMentor == null
-  ) {
-    return <LoadingMessage message="Carregando avaliação do mentor..." />;
-  }
-
   if (!avaliacao) {
     return (
       <EmptyMessage
@@ -117,6 +109,14 @@ export function MentoringPage() {
         description="Verifique com sua liderança se você foi incluído no ciclo atual."
       />
     );
+  }
+
+  if (
+    loading ||
+    loadingMentor ||
+    avaliacao?.avaliacaoColaboradorMentor == null
+  ) {
+    return <LoadingMessage message="Carregando avaliação do mentor..." />;
   }
 
   return (

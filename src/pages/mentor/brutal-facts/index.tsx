@@ -2,7 +2,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import * as S from "./styles";
 import { Title } from "@/components/Title";
 import Button from "@/components/Button";
-import { MdAccountCircle, MdArrowBack, MdFileDownload } from "react-icons/md";
+import { MdAccountCircle, MdArrowBack } from "react-icons/md";
 import { formatar } from "@/utils/formatters";
 import { useGetBrutalFacts } from "@/hooks/IA/useGetBrutalFacts";
 import { useColaboradorById } from "@/hooks/colaboradores/useColaboradorById";

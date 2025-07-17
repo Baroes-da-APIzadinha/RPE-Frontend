@@ -12,38 +12,6 @@ export const Header = styled.div`
 `;
 
 
-export const FiltersWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
-  margin: 2rem 0;
-`;
-
-export const FilterItem = styled.div`
-  display: flex;
-  flex-direction: column;
-  min-width: 200px;
-  gap: 0.4rem;
-
-  label {
-    font-size: ${({ theme }) => theme.font.sizes.xsmall};
-    color: ${({ theme }) => theme.colors.text.secondary};
-    font-weight: ${({ theme }) => theme.font.medium};
-  }
-`;
-
-
-export const TitleCard = styled.h1`
-  font-size: ${({ theme }) => theme.font.sizes.xlarge};
-  font-weight: ${({ theme }) => theme.font.bold};
-  color: ${({ theme }) => theme.colors.text.primary};
-  word-break: break-word;
-
-  @media (max-width: 480px) {
-    font-size: ${({ theme }) => theme.font.sizes.large};
-  }
-`;
-
 export const TableContainer = styled.div`
   background: ${({ theme }) => theme.colors.surface};
   border-radius: 8px;
