@@ -23,6 +23,16 @@ export const ColabInfo = styled.div`
   flex: 1;
 `;
 
+export const Avatar = styled.div`
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+    background-color: ${({ theme }) => theme.colors.lightGray};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
 export const ColabNome = styled.h2`
   font-size: ${theme.font.sizes.large};
   font-weight: ${theme.font.bold};

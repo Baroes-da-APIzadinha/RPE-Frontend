@@ -1,6 +1,7 @@
 import React from "react";
 import * as S from "./styles.ts";
 import { MdAccountCircle, MdArrowForward } from "react-icons/md";
+import { IoMdPerson } from "react-icons/io";
 
 export interface TableRowBoxProps {
   name: string;
@@ -24,17 +25,21 @@ const TableRowBox: React.FC<TableRowBoxProps> = ({
   workTime,
   status,
   onClick,
-  icon = <MdAccountCircle size={64} />,
+  icon = (
+    <S.Avatar>
+      <IoMdPerson size={32} />
+    </S.Avatar>
+  ),
 }) => {
   return (
     <S.Container>
       <S.InfoContainer>
         {icon}
-        <div>
+        <S.TextContainer>
           <S.Name>{name}</S.Name>
           <S.Role>{role}</S.Role>
           <S.WorkTime>{workTime}</S.WorkTime>
-        </div>
+        </S.TextContainer>
       </S.InfoContainer>
 
       <S.RightContent>

@@ -10,6 +10,7 @@ import { SearchInput } from "@/components/SearchInput";
 import { useListColaboradores } from "@/hooks/colaboradores/useListColaboradores.ts";
 import { formatar } from "@/utils/formatters.ts";
 import { Card } from "@/components/Card/index.tsx";
+import { IoMdPerson } from "react-icons/io";
 
 export function RhCollaborator() {
   const { colaboradores, loading: loadingList } = useListColaboradores();
@@ -35,10 +36,10 @@ export function RhCollaborator() {
           <S.FilterItem>
             <label>Buscar Colaborador</label>
             <SearchInput
-            placeholder="Buscar Colaboradores..."
-            value={busca}
-            onChange={(e) => setBusca(e.target.value)}
-          />
+              placeholder="Buscar Colaboradores..."
+              value={busca}
+              onChange={(e) => setBusca(e.target.value)}
+            />
           </S.FilterItem>
         </S.FiltersSection>
       </Card>
@@ -67,7 +68,9 @@ export function RhCollaborator() {
             .map((c) => (
               <S.UserCard key={c.id}>
                 <S.UserHeader>
-                  <MdAccountCircle size={48} />
+                  <S.Avatar>
+                    <IoMdPerson size={32} />
+                  </S.Avatar>
                   <S.UserInfo>
                     <strong>{c.nomeCompleto}</strong>
                     <span>{c.email}</span>

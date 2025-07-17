@@ -18,6 +18,7 @@ import { formatar } from "@/utils/formatters";
 import { useLideradosComAvaliacao } from "@/hooks/avaliacoes/useLideradosComAvaliacao";
 import { LoadingMessage } from "@/components/LoadingMessage";
 import { EmptyMessage } from "@/components/EmptyMensage";
+import { IoMdPerson } from "react-icons/io";
 
 export function ManagerTeam() {
   const { perfil } = useOutletContext<{ perfil: PerfilData }>();
@@ -131,7 +132,9 @@ export function ManagerTeam() {
               header={
                 <S.UserHeader>
                   <S.UserInfo>
-                    <S.Avatar />
+                    <S.Avatar>
+                      <IoMdPerson size={32} />
+                    </S.Avatar>
                     <div>
                       <S.Name>{colab.nomeCompleto}</S.Name>
                       <S.Role>{formatar(colab.cargo as string)}</S.Role>

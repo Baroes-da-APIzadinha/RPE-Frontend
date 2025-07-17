@@ -228,6 +228,16 @@ export const UserDetail = styled.div`
   }
 `;
 
+export const Avatar = styled.div`
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+    background-color: ${({ theme }) => theme.colors.lightGray};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
 export const FiltersSection = styled.div`
   display: flex;
   gap: 1rem;

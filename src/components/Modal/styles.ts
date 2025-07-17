@@ -108,7 +108,7 @@ export const Icon = styled.div<{
       : color === "success"
       ? theme.colors.success.default
       : color === "warning"
-      ? theme.colors.warning
+      ? theme.colors.warning.default
       : color === "error"
       ? theme.colors.error.default
       : theme.colors.text.primary};

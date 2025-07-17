@@ -16,6 +16,7 @@ import { formatar } from "@/utils/formatters.ts";
 import { LoadingMessage } from "@/components/LoadingMessage/index.tsx";
 import { EmptyMessage } from "@/components/EmptyMensage/index.tsx";
 import { Modal } from "@/components/Modal/index.tsx";
+import { IoMdPerson } from "react-icons/io";
 
 export function MentoringPage() {
   const { perfil } = useOutletContext<{ perfil: PerfilData }>();
@@ -79,7 +80,6 @@ export function MentoringPage() {
     return () => clearInterval(interval);
   }, [nota, justificativa, avaliacao?.idAvaliacao, isReadonly]);
 
-
   const handleSubmit = async () => {
     const hasError = nota === 0 || justificativa.trim() === "";
 
@@ -126,7 +126,9 @@ export function MentoringPage() {
   return (
     <S.Container>
       <S.HeaderCard>
-        <MdAccountCircle size={64} />
+        <S.Avatar>
+          <IoMdPerson size={32} />
+        </S.Avatar>
         <S.ColabInfo>
           <S.ColabNome>
             Mentor:{" "}

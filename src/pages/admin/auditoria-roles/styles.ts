@@ -102,8 +102,13 @@ export const ColaboradorInfo = styled.div`
 `;
 
 export const Avatar = styled.div`
-  color: ${({ theme }) => theme.colors.text.secondary};
-  flex-shrink: 0;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background-color: ${({ theme }) => theme.colors.lightGray};
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 
 export const ColaboradorDetails = styled.div`
@@ -334,4 +339,5 @@ export const ModalActions = styled.div`
   }
   
 `;
+
 

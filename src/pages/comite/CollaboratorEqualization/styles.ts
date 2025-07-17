@@ -257,7 +257,7 @@ export const DiscrepancyValue = styled.span<{ $value: number | null }>`
   color: ${({ $value, theme }) => {
     if ($value === null || isNaN($value)) return theme.colors.text.secondary;
     if ($value >= 2.0) return theme.colors.error.default;
-    if ($value >= 1.0) return theme.colors.secondary.default;
+    if ($value >= 1.0) return theme.colors.warning.default;
     return theme.colors.success.default;
   }};
 `;
