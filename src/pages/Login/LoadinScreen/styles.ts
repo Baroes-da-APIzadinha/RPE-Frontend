@@ -6,7 +6,7 @@ export const Container = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-color: #fff; // ou use o tema, ex: ${({ theme }) => theme.colors.background}
+  background-color:  ${({ theme }) => theme.colors.background}; 
 `;
 
 
@@ -19,8 +19,8 @@ const spin = keyframes`
 export const Spinner = styled.div`
   width: 40px;
   height: 40px;
-  border: 4px solid #ccc;
-  border-top-color: #007bff; // azul base, ou use do tema
+  border: 4px solid  ${({ theme }) => theme.colors.border};
+  border-top-color:  ${({ theme }) => theme.colors.primary.default};
   border-radius: 50%;
   animation: ${spin} 0.8s linear infinite;
   margin-bottom: 16px;
@@ -28,6 +28,6 @@ export const Spinner = styled.div`
 
 export const Text = styled.span`
   font-size: 1.25rem;
-  color: #555;
+  color:  ${({ theme }) => theme.colors.text.primary};
   font-weight: 500;
 `;

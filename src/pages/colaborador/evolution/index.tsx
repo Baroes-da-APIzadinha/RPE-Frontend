@@ -7,7 +7,6 @@ import { IoMdTrophy } from "react-icons/io";
 import ReactApexChart from "react-apexcharts";
 import ChartBox from "@/components/ChartBox/index.tsx";
 import { useTheme } from "styled-components";
-import { usePerfil } from "@/hooks/usePerfil";
 import { useColaboradorNotasHistorico } from "@/hooks/colaboradores/useColaboradorNotasHistorico";
 import { useColaboradorPilarNotas } from "@/hooks/colaboradores/useColaboradorPilarNotas";
 import type { CicloPilarNotas, PilarNota } from "@/types/PilarNota.ts";
@@ -20,24 +19,29 @@ import type { PerfilData } from "@/types/PerfilData";
 import Button from "@/components/Button";
 
 function getHigherPilar(pilarNotas: CicloPilarNotas[]) {
-  // Pega o último ciclo
   const lastCycle = pilarNotas[pilarNotas.length - 1];
-  if (!lastCycle) return { name: "Nenhum", nota: 0 }; // Caso não haja ciclos
+  if (!lastCycle || !lastCycle.notas || lastCycle.notas.length === 0) {
+    return { name: "Nenhum", nota: 0 };
+  }
 
-  // Pega as notas do último ciclo
-  const Notas = lastCycle.notas.map((item: PilarNota) => ({
-    name: item.pilarNome,
-    nota: item.pilarNota || 0, // Garante que não haja valores nulos
-  }));
+  const Notas = lastCycle.notas
+    .filter((item: PilarNota) => item.pilarNome) // só pega se tiver nome
+    .map((item: PilarNota) => ({
+      name: item.pilarNome,
+      nota: item.pilarNota || 0,
+    }));
 
-  // Ordena por nota decrescente, depois por nome crescente
+  if (!Notas.length) return { name: "Nenhum", nota: 0 };
+
   Notas.sort((a, b) => {
     if (b.nota !== a.nota) return b.nota - a.nota;
     return a.name.localeCompare(b.name);
   });
 
-  // Retorna o pilar com maior nota
-  return { name: Notas[0].name, nota: Notas[0].nota };
+  return {
+    name: Notas[0]?.name ?? "Nenhum",
+    nota: Notas[0]?.nota ?? 0,
+  };
 }
 
 export function ColaboradorEvolution() {
@@ -47,23 +51,12 @@ export function ColaboradorEvolution() {
   const { idColaborador, nome } = location.state || {};
 
   const colaboradorId = idColaborador || perfil?.userId;
-
   const navigate = useNavigate();
   const isGestorVisualizandoOutro = perfil?.userId !== colaboradorId;
 
   const { notasHistorico } = useColaboradorNotasHistorico(colaboradorId);
   const { pilarNotas } = useColaboradorPilarNotas(colaboradorId);
   const { countAvaliacoes } = useCountAvaliacoes(colaboradorId);
-
-  const higherPilar = getHigherPilar(pilarNotas);
-  const notas = notasHistorico.map((item) => item.cicloNota);
-
-  const last = notas[notas.length - 1] || 0; // undefined se array vazio
-  const before = notas[notas.length - 2] || 0; // undefined se < 2 itens
-
-  const currentNote = last;
-  const previousNote = before;
-  const differNote = (currentNote - previousNote).toFixed(2);
 
   const [chartWidth, setChartWidth] = useState("300%");
 
@@ -78,7 +71,24 @@ export function ColaboradorEvolution() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  if (!colaboradorId) {
+  const loading =
+    !notasHistorico || !pilarNotas || !countAvaliacoes || !colaboradorId;
+  const semHistorico = notasHistorico?.length === 0 || pilarNotas?.length === 0;
+
+  if (loading || semHistorico) {
+    const mensagem = isGestorVisualizandoOutro
+      ? "Este colaborador ainda não participou de ciclos avaliativos."
+      : "Você ainda não participou de ciclos avaliativos.";
+    return (
+      <EmptyMessage
+        icon={<MdAccountCircle size={32} />}
+        title="Sem informações disponíveis"
+        description={mensagem}
+      />
+    );
+  }
+
+    if (!colaboradorId) {
     return (
       <EmptyMessage
         icon={<MdAccountCircle size={32} />}
@@ -88,13 +98,21 @@ export function ColaboradorEvolution() {
     );
   }
 
+  const notas = notasHistorico.map((item) => item.cicloNota);
+  const higherPilar = getHigherPilar(pilarNotas);
+  const last = notas[notas.length - 1] || 0; // undefined se array vazio
+  const before = notas[notas.length - 2] || 0; // undefined se < 2 itens
+  const currentNote = last;
+  const previousNote = before;
+  const differNote = (currentNote - previousNote).toFixed(2);
+
   return (
     <>
       <S.Header>
         <Title>
           {" "}
           {isGestorVisualizandoOutro
-            ? `Evolução do seu liderado: ${nome}`
+            ? `Evolução de: ${nome}`
             : "Sua evolução na RocketCorp"}
         </Title>
         {isGestorVisualizandoOutro && (

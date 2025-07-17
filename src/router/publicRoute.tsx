@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { checkAuth } from "@/hooks/checkAuth";
 import { getPerfil } from "@/services/HTTP/perfil";
 import type { ReactNode } from "react";
-import { LoadingScreen } from "@/pages/LoadinScreen";
+import { LoadingScreen } from "@/pages/Login/LoadinScreen";
 
 const PublicRoute = ({ children }: { children: ReactNode }) => {
   const [redirectPath, setRedirectPath] = useState<string | null>(null);

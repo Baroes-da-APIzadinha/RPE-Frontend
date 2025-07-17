@@ -3,6 +3,7 @@ import * as S from "./styles.ts";
 import {
   MdAccountCircle,
   MdAdd,
+  MdError,
   MdOutlineAdd,
   MdOutlineCode,
   MdOutlineDelete,
@@ -219,9 +220,9 @@ export function ReferencesPage() {
   if (avaliados.length <= 0) {
     return (
       <EmptyMessage
-        icon={<MdAccountCircle size={32} />}
-        title="Acesso restrito"
-        description="Esta funcionalidade está disponível apenas para colaboradores."
+        icon={<MdError size={32} />}
+        title="Erro ao carregar referências"
+        description="Verifique com o seu Lider se você foi adicionado ao ciclo avaliativo atual."
       />
     );
   }

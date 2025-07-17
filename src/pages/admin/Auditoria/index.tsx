@@ -6,6 +6,7 @@ import { Title } from "@/components/Title";
 import { formatDateTime } from "@/utils/formatters";
 import Button from "@/components/Button";
 import { useAuditoria } from "@/hooks/useAuditoria";
+import { LoadingMessage } from "@/components/LoadingMessage";
 
 const AuditoriaPage: React.FC = () => {
   const {
@@ -16,7 +17,7 @@ const AuditoriaPage: React.FC = () => {
     handlePageChange,
   } = useAuditoria();
 
-  if (loading) return <p>Carregando...</p>;
+  if (loading) return <LoadingMessage message="Carregando..." />;
 
   return (
     <>

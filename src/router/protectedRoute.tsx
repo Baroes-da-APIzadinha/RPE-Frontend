@@ -1,7 +1,7 @@
 import { Navigate, Outlet } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { checkAuth } from "@/hooks/checkAuth";
-import { LoadingScreen } from "@/pages/LoadinScreen";
+import { LoadingScreen } from "@/pages/Login/LoadinScreen";
 
 const ProtectedRoute = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
