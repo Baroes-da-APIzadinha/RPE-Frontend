@@ -1,26 +1,18 @@
 import * as S from "./styles.ts";
-import Button from "@/components/Button/index.tsx";
 import { Title } from "@/components/Title/index.tsx";
-import { MdAssignment, MdChecklist, MdGroup, MdHistory } from "react-icons/md";
-import { CardImportHistory } from "@/components/CardImportHistory/index.tsx";
 import { CardImportData } from "@/components/CardImportData/index.tsx";
-import { useState } from "react";
 import { useEffect } from "react";
-import { Modal } from "@/components/Modal/index.tsx";
-import { ToggleBar } from "@/components/ToggleBar/index.tsx";
-import { DropdownActions } from "@/components/DropdownActions/index.tsx";
 import { useExportacaoTemplate } from "@/hooks/rh/useExportacaoTemplate";
 import { useImportacaoAvaliacoes } from "@/hooks/rh/useImportacaoAvaliacoes";
 import { toast } from "sonner";
 
-type TipoImportacao = "colaboradores" | "avaliacoes" | "criterios";
-
 export function Import() {
   const { downloadTemplate } = useExportacaoTemplate();
-  const { importAvaliacoes, error: importError, success: importSuccess } = useImportacaoAvaliacoes();
-
-  const [showModal, setShowModal] = useState(false);
-  const [tipo, setTipo] = useState<TipoImportacao>("colaboradores");
+  const {
+    importAvaliacoes,
+    error: importError,
+    success: importSuccess,
+  } = useImportacaoAvaliacoes();
 
   // Monitorar mudanças no estado da importação
   useEffect(() => {
@@ -32,71 +24,11 @@ export function Import() {
     }
   }, [importSuccess, importError]);
 
-  const labels = {
-    colaboradores: "Importar Colaboradores",
-    avaliacoes: "Importar Avaliações",
-    criterios: "Importar Critérios",
-  };
-
-  const descricoes = {
-    colaboradores:
-      "Importe dados de colaboradores em massa através de planilha Excel",
-    avaliacoes:
-      "Importe dados de avaliações de ciclos anteriores para análise de tendências",
-    criterios:
-      "Importe critérios de avaliação específicos por trilha ou unidade",
-  };
-
-  const formatos = {
-    colaboradores: "Nome, Email, Cargo, Trilha, Unidade, Gestor",
-    avaliacoes: "Colaborador, Ciclo, Critério, Nota, Justificativa, Avaliador",
-    criterios: "Nome, Descrição, Categoria, Peso, Trilhas Aplicáveis",
-  };
-
-  const handleSelect = async (file: File) => {
-    if (tipo === "avaliacoes") {
-      await importAvaliacoes(file);
-    } else {
-      console.log(`Importando ${tipo}:`, file);
-      toast.info(`Função de importação para ${tipo} não implementada ainda`);
-    }
-  };
-
-
   return (
     <>
       <>
         <S.Header>
           <Title>Importação de Dados</Title>
-          {/* <S.HeaderButtons>
-            <S.DesktopButtons>
-              <Button variant="outline">
-                <MdHistory /> Ver Histórico
-              </Button>
-              <Button onClick={() => setShowModal(true)}>
-                Import Específico
-              </Button>
-            </S.DesktopButtons>
-
-            <S.MobileActions>
-              <DropdownActions
-                title="Opções"
-                orientation="vertical"
-                position="bottom"
-                actions={[
-                  {
-                    label: "Ver Histórico",
-                    onClick: () => console.log("Ver histórico"),
-                    icon: <MdHistory />,
-                  },
-                  {
-                    label: "Import Específico",
-                    onClick: () => setShowModal(true),
-                  },
-                ]}
-              />
-            </S.MobileActions>
-          </S.HeaderButtons> */}
         </S.Header>
 
         <S.CardContainer>
@@ -110,7 +42,9 @@ export function Import() {
               await importAvaliacoes(file);
             }}
           />
-          <CardImportHistory
+        </S.CardContainer>
+
+        {/* <CardImportHistory
             data={[
               {
                 arquivo: "colaboradores_2024_q3.xlsx",
@@ -137,47 +71,8 @@ export function Import() {
                 erros: 12,
               },
             ]}
-          />
-        </S.CardContainer>
+          /> */}
       </>
-      <Modal
-        open={showModal}
-        onClose={() => setShowModal(false)}
-        title="Importar dados"
-        description="Escolha o tipo de importação que deseja realizar"
-        icon={<MdChecklist />}
-        iconColor="info"
-      >
-        <ToggleBar
-          value={tipo}
-          onChange={(value) => setTipo(value as TipoImportacao)}
-          items={[
-            {
-              value: "colaboradores",
-              label: "Colaboradores",
-              icon: <MdGroup />,
-            },
-            {
-              value: "avaliacoes",
-              label: "Avaliações",
-              icon: <MdAssignment />,
-            },
-            {
-              value: "criterios",
-              label: "Critérios",
-              icon: <MdChecklist />,
-            },
-          ]}
-        />
-
-        <CardImportData
-          title={labels[tipo]}
-          subtitle={descricoes[tipo]}
-          formatoEsperado={formatos[tipo]}
-          onDownloadTemplate={() => console.log("Baixar template")}
-          onFileSelect={handleSelect}
-        />
-      </Modal>
     </>
   );
 }

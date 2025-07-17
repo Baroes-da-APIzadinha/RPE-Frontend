@@ -12,7 +12,8 @@ export interface TableRowBoxProps {
     | "Pendente"
     | "Finalizado"
     | "Em revisão"
-    | "Em equalização";
+    | "Em equalização"
+    | "Fechado";
   onClick?: () => void;
   icon?: React.ReactNode;
 }

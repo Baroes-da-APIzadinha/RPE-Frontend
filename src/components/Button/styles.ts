@@ -64,11 +64,11 @@ export const ButtonContainer = styled.button<ButtonProps>`
           }
         `
       : css`
-          background-color: ${theme.colors.button.solid.default};
-          color: ${theme.colors.button.solid.text};
+          background-color: ${theme.colors.primary.default};
+          color: ${theme.colors.primary.onPrimary};
 
           &:hover {
-            background-color: ${theme.colors.button.solid.hover};
+            background-color: ${theme.colors.primary.hover};
           }
         `}
 `

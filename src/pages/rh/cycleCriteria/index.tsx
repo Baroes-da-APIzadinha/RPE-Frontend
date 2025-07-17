@@ -13,6 +13,7 @@ import { useCriterios } from "@/hooks/useCriterios";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAssociacoesCriterioCiclo } from "@/hooks/useAssociacoesCriterioCiclo";
 import { toast } from "sonner";
+import { formatar, formatStatus } from "@/utils/formatters";
 
 export function CycleCriteriaPage() {
   const location = useLocation();
@@ -139,31 +140,6 @@ export function CycleCriteriaPage() {
   const trilhasOptions = [{ value: "ALL", label: "Todas" }, ...trilhas];
   const unidadesOptions = [{ value: "ALL", label: "Todas" }, ...unidades];
 
-  function formatar(str: string) {
-    if (!str) return "";
-
-    const SIGLAS = ["QA", "RH", "UX"];
-    const NOMES_CORRIGIDOS: Record<string, string> = {
-      "sao paulo": "São Paulo",
-      florianopolis: "Florianópolis",
-      recife: "Recife",
-      "rio de janeiro": "Rio de Janeiro",
-    };
-
-    const texto = str
-      .toLowerCase()
-      .replace(/_/g, " ")
-      .split(" ")
-      .map((palavra) => {
-        const upper = palavra.toUpperCase();
-        if (SIGLAS.includes(upper)) return upper;
-        return palavra.charAt(0).toUpperCase() + palavra.slice(1);
-      })
-      .join(" ");
-
-    const chave = texto.toLowerCase();
-    return NOMES_CORRIGIDOS[chave] || texto;
-  }
 
   function isCriterioAtivoNoCiclo(id: string): boolean {
     const selecionado = criteriosSelecionados[id];
@@ -280,7 +256,7 @@ export function CycleCriteriaPage() {
             {" "}
             Status:{" "}
             <span className="infos">
-              {ciclo.status.toLocaleUpperCase()}
+              {formatStatus(ciclo.status.toLocaleUpperCase())}
             </span>{" "}
           </div>
           |

@@ -52,7 +52,8 @@ export const formatStatus = (status: string): TableRowBoxProps["status"] => {
     EM_ANDAMENTO: "Andamento",
     PENDENTE: "Pendente",
     EM_REVISAO: "Em revisão",
-    EM_EQUALIZACAO: "Em equalização",
+    EM_EQUALIZAÇÃO: "Em equalização",
+    FECHADO: "Fechado",
     FINALIZADA: "Finalizado",
   };
 
