@@ -1,0 +1,43 @@
+
+export const collaboratorsMock = [
+  {
+    nome: "João Silva",
+    cargo: "Desenvolvedor Backend Sênior",
+    desde: "2022-03-15",
+    autoavaliacao: 4.3,
+    avaliacao360: 3.2,
+    discrepancy: 0.6,
+    notaGestor: 4.0,
+    equalization: "pendente",
+  },
+  {
+    nome: "Ana Costa",
+    cargo: "Product Owner",
+    desde: "2023-01-10",
+    autoavaliacao: 4.1,
+    avaliacao360: 3.2,
+    discrepancy: 1.6,
+    notaGestor: null,
+    equalization: "pendente",
+  },
+  {
+    nome: "Pedro Santos",
+    cargo: "Desenvolvedor Backend Júnior",
+    desde: "2023-08-01",
+    autoavaliacao: null,
+    avaliacao360: 3.2,
+    discrepancy: 0.7,
+    notaGestor: null,
+    equalization: "pendente",
+  },
+  {
+    nome: "Carla Mendes",
+    cargo: "QA Analyst",
+    desde: "2022-09-20",
+    autoavaliacao: null,
+    avaliacao360: 3.2,
+    discrepancy: 0.1,
+    notaGestor: null,
+    equalization: "pendente",
+  },
+];

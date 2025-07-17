@@ -12,18 +12,31 @@
     "commit": "cz"
   },
   "config": {
-  "commitizen": {
-    "path": "cz-conventional-changelog"
-  }
-},
+    "commitizen": {
+      "path": "cz-conventional-changelog"
+    }
+  },
   "dependencies": {
+    "@hookform/resolvers": "^5.1.1",
+    "@tanstack/react-query": "^5.80.7",
+    "apexcharts": "^4.7.0",
+    "axios": "^1.10.0",
+    "js-cookie": "^3.0.5",
     "react": "^19.1.0",
-    "react-dom": "^19.1.0"
+    "react-apexcharts": "^1.7.0",
+    "react-dom": "^19.1.0",
+    "react-hook-form": "^7.58.0",
+    "react-icons": "^5.5.0",
+    "react-router-dom": "^7.6.2",
+    "sonner": "^2.0.5",
+    "styled-components": "^6.1.19",
+    "zod": "^3.25.64"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.8.1",
     "@commitlint/config-conventional": "^19.8.1",
     "@eslint/js": "^9.25.0",
+    "@types/js-cookie": "^3.0.6",
     "@types/react": "^19.1.2",
     "@types/react-dom": "^19.1.2",
     "@vitejs/plugin-react": "^4.4.1",
