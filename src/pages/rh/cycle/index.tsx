@@ -12,7 +12,6 @@ import { useNavigate } from "react-router-dom";
 import { useCiclos } from "@/hooks/useTodosCiclos";
 import { createCiclo } from "@/services/HTTP/ciclos";
 import { toast } from "sonner";
-// import { Card } from '@/components/Card';
 
 function getStatusLabel(status: string): string {
   switch (status) {

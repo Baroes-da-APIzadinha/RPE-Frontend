@@ -43,35 +43,6 @@ export function Import() {
             }}
           />
         </S.CardContainer>
-
-        {/* <CardImportHistory
-            data={[
-              {
-                arquivo: "colaboradores_2024_q3.xlsx",
-                tipo: "Colaboradores",
-                data: "2024-10-15",
-                status: "Sucesso",
-                registros: 248,
-                erros: 0,
-              },
-              {
-                arquivo: "avaliacoes_historicas_2023.xlsx",
-                tipo: "Avaliações Históricas",
-                data: "2024-10-10",
-                status: "Em Andamento",
-                registros: 1456,
-                erros: 3,
-              },
-              {
-                arquivo: "criterios_personalizados.xlsx",
-                tipo: "Critérios",
-                data: "2024-10-05",
-                status: "Erro",
-                registros: 0,
-                erros: 12,
-              },
-            ]}
-          /> */}
       </>
     </>
   );

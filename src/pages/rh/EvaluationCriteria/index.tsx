@@ -313,32 +313,6 @@ export function EvaluationCriteria() {
             </S.ModalSelect>
           </S.ModalSelectsRow>
 
-          {/* <div>
-              <S.ModalText>Aplicável às Trilhas</S.ModalText>
-              <S.ModalSubText>Selecione no mínimo 1 opção.</S.ModalSubText>
-              <S.ModalCheckbox>
-                {trilhasDisponiveis.map((trilha) => (
-                  <Checkbox
-                    key={trilha}
-                    label={trilha}
-                    checked={trilhas.includes(trilha)}
-                    onChange={() => toggleTrilha(trilha)}
-                  />
-                ))}
-                <Checkbox
-                  label="Todas as trilhas"
-                  checked={trilhas.length === trilhasDisponiveis.length}
-                  onChange={() =>
-                    setTrilhas((prev) =>
-                      prev.length === trilhasDisponiveis.length
-                        ? []
-                        : trilhasDisponiveis
-                    )
-                  }
-                />
-              </S.ModalCheckbox>
-            </div> */}
-
           <S.ModalButtons>
             <Button
               variant="outline"

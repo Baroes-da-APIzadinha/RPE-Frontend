@@ -1,11 +1,5 @@
 import styled from "styled-components";
 
-export const Container = styled.div`
-  padding: 2rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-`;
 
 export const Header = styled.div`
   display: flex;
@@ -14,11 +8,6 @@ export const Header = styled.div`
   gap: 1rem;
 `;
 
-export const Title = styled.h1`
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: ${({ theme }) => theme.colors.text};
-`;
 
 export const FormWrapper = styled.div`
   display: flex;

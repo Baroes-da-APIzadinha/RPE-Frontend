@@ -2,7 +2,6 @@ import * as S from "./styles.ts";
 import { Title } from "@/components/Title/index.tsx";
 import { useState } from "react";
 import {
-  MdAccountCircle,
   MdApartment,
   MdInsertDriveFile,
 } from "react-icons/md";

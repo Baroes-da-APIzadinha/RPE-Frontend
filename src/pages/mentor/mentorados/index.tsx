@@ -6,7 +6,7 @@ import { Card } from "@/components/Card";
 import { TableBase } from "@/components/TableBase";
 import { SearchInput } from "@/components/SearchInput";
 import { DropdownActions } from "@/components/DropdownActions";
-import { MdAccountCircle, MdMoreVert } from "react-icons/md";
+import { MdMoreVert } from "react-icons/md";
 import { IoPersonOutline } from "react-icons/io5";
 import { formatar } from "@/utils/formatters";
 import { useMentorados } from "@/hooks/mentor/useMentorados";

@@ -1,9 +1,7 @@
 import * as S from "./styles.ts";
 import { Title } from "@/components/Title";
-import Button from "@/components/Button";
 import {
   MdErrorOutline,
-  MdFileDownload,
   MdGroups,
   MdInfoOutline,
   MdOutlineHomeWork,
@@ -34,7 +32,7 @@ import { useSetReminder } from "@/hooks/useSetReminder";
 import { toast } from "sonner";
 import { useNotasDistribuicao } from "@/hooks/rh/useNotasDistribuicao";
 
-function getStatusPercentage(statusCount: number, total: number) : number {
+function getStatusPercentage(statusCount: number, total: number): number {
   if (total === 0) return 0;
 
   const percentage = Number(((statusCount / total) * 100).toFixed(2));
@@ -42,39 +40,52 @@ function getStatusPercentage(statusCount: number, total: number) : number {
   return percentage;
 }
 
-
 export function RhDashboard() {
-  const [activeTab, setActiveTab] = useState<'overview' | 'analytics'>('overview');
-  const { cicloAtual, treatTimeRemaining } = useCicloAtual();  
+  const [activeTab, setActiveTab] = useState<"overview" | "analytics">(
+    "overview"
+  );
+  const { cicloAtual, treatTimeRemaining } = useCicloAtual();
   const { count } = useCollaboratorsCount(cicloAtual?.id ?? "");
   const { unitCount } = useUnidadesCount();
-  const { quantConcluidas, quantPendentes, quantEmAndamento } = useEvaluationStatusCount(cicloAtual?.id ?? "");
-  const total = (quantConcluidas) + (quantPendentes) + (quantEmAndamento);
-  const concludedPercentage = getStatusPercentage((quantConcluidas), total);
+  const { quantConcluidas, quantPendentes, quantEmAndamento } =
+    useEvaluationStatusCount(cicloAtual?.id ?? "");
+  const total = quantConcluidas + quantPendentes + quantEmAndamento;
+  const concludedPercentage = getStatusPercentage(quantConcluidas, total);
   const { perfil } = usePerfil();
-  const dadosUnidade = useConclusionProgressByUnit(cicloAtual?.id ?? "")
-  const dadosTrilha = useConclusionProgressByBoard(cicloAtual?.id ?? "")
+  const dadosUnidade = useConclusionProgressByUnit(cicloAtual?.id ?? "");
+  const dadosTrilha = useConclusionProgressByBoard(cicloAtual?.id ?? "");
   const { setReminder } = useSetReminder();
-  const { data: notasDistribuicaoAuto } = useNotasDistribuicao(cicloAtual?.id ?? "", 'AUTOAVALIACAO');
-  const { data: notasDistribuicaoLider } = useNotasDistribuicao(cicloAtual?.id ?? "", 'AVALIACAO_LIDER');
-  const { data: notasDistribuicaoPares } = useNotasDistribuicao(cicloAtual?.id ?? "", 'AVALIACAO_PARES');
+  const { data: notasDistribuicaoAuto } = useNotasDistribuicao(
+    cicloAtual?.id ?? "",
+    "AUTOAVALIACAO"
+  );
+  const { data: notasDistribuicaoLider } = useNotasDistribuicao(
+    cicloAtual?.id ?? "",
+    "AVALIACAO_LIDER"
+  );
+  const { data: notasDistribuicaoPares } = useNotasDistribuicao(
+    cicloAtual?.id ?? "",
+    "AVALIACAO_PARES"
+  );
   const toggleOptions = [
-    { value: 'overview', label: 'Visão Geral', icon: <MdDashboard /> },
-    { value: 'analytics', label: 'Análises', icon: <MdBarChart /> }
+    { value: "overview", label: "Visão Geral", icon: <MdDashboard /> },
+    { value: "analytics", label: "Análises", icon: <MdBarChart /> },
   ];
-  const [detailedTab, setDetailedTab] = useState<'unidade' | 'trilha'>('unidade');
+  const [detailedTab, setDetailedTab] = useState<"unidade" | "trilha">(
+    "unidade"
+  );
 
   const handleSendReminder = async () => {
     if (!cicloAtual) return;
-    
+
     const days = treatTimeRemaining(cicloAtual.tempoRestante);
     const message = `Lembrete: O ciclo de avaliação "${cicloAtual.nome}" está se aproximando do fim. Restam apenas ${days} para conclusão.`;
-    
+
     try {
       await setReminder(message);
       toast.success("Lembrete enviado com sucesso!");
     } catch (error) {
-      console.error('Erro ao enviar lembrete:', error);
+      console.error("Erro ao enviar lembrete:", error);
     }
   };
 
@@ -97,7 +108,9 @@ export function RhDashboard() {
       };
     }
 
-    const allAboveThreshold = unidadesData.every((unit) => unit.participacao > 80);
+    const allAboveThreshold = unidadesData.every(
+      (unit) => unit.participacao > 80
+    );
     if (allAboveThreshold) {
       return null;
     }
@@ -138,7 +151,9 @@ export function RhDashboard() {
       };
     }
 
-    const allAboveThreshold = trilhasData.every((trilha) => trilha.participacao > 80);
+    const allAboveThreshold = trilhasData.every(
+      (trilha) => trilha.participacao > 80
+    );
     if (allAboveThreshold) {
       return null;
     }
@@ -174,25 +189,22 @@ export function RhDashboard() {
     if (!cicloAtual) return null;
 
     const timeRemaining = cicloAtual.tempoRestante;
-    const days = (treatTimeRemaining(timeRemaining))
-    
+    const days = treatTimeRemaining(timeRemaining);
+
     let type: "red" | "yellow" | "blue" = "blue";
     let title = "";
     let description = "";
-    let daysCheck = Number(days[0] + days[1]) 
+    let daysCheck = Number(days[0] + days[1]);
     if (!days.includes("dias")) {
       type = "red";
       title = "Urgente: Prazo se aproximando";
-    }
-    else if (daysCheck >= 30) {
+    } else if (daysCheck >= 30) {
       type = "blue";
       title = "Tempo suficiente para o ciclo";
-    } 
-    else if (daysCheck >= 10) {
+    } else if (daysCheck >= 10) {
       type = "yellow";
       title = "Atenção: Prazo se aproximando";
-    } 
-    else {
+    } else {
       type = "red";
       title = "Urgente: Prazo se aproximando";
     }
@@ -225,8 +237,8 @@ export function RhDashboard() {
           icon={<MdOutlineTaskAlt />}
           title="Progresso Geral"
           bigSpan={`${concludedPercentage}%`}
-          progress={(concludedPercentage)}
-          span= {`${quantConcluidas} concluídas de ${total} avaliações`}
+          progress={concludedPercentage}
+          span={`${quantConcluidas} concluídas de ${total} avaliações`}
         />
 
         <CardBox
@@ -270,25 +282,31 @@ export function RhDashboard() {
             series={[
               {
                 name: "Autoavaliação",
-                data: Object.entries(notasDistribuicaoAuto).map(([faixa, quantidade]) => ({
-                  x: faixa,
-                  y: quantidade
-                }))
+                data: Object.entries(notasDistribuicaoAuto).map(
+                  ([faixa, quantidade]) => ({
+                    x: faixa,
+                    y: quantidade,
+                  })
+                ),
               },
               {
                 name: "Avaliação do Líder",
-                data: Object.entries(notasDistribuicaoLider).map(([faixa, quantidade]) => ({
-                  x: faixa,
-                  y: quantidade
-                }))
+                data: Object.entries(notasDistribuicaoLider).map(
+                  ([faixa, quantidade]) => ({
+                    x: faixa,
+                    y: quantidade,
+                  })
+                ),
               },
               {
                 name: "Avaliação de Pares",
-                data: Object.entries(notasDistribuicaoPares).map(([faixa, quantidade]) => ({
-                  x: faixa,
-                  y: quantidade
-                }))
-              }
+                data: Object.entries(notasDistribuicaoPares).map(
+                  ([faixa, quantidade]) => ({
+                    x: faixa,
+                    y: quantidade,
+                  })
+                ),
+              },
             ]}
             options={{
               chart: {
@@ -305,44 +323,48 @@ export function RhDashboard() {
                   formatter: (val: string) => val,
                   rotate: 0,
                   style: {
-                    fontSize: '11px'
-                  }
+                    fontSize: "11px",
+                  },
                 },
                 tickAmount: Object.keys(notasDistribuicaoAuto).length,
                 axisBorder: {
-                  show: true
+                  show: true,
                 },
                 axisTicks: {
-                  show: true
-                }
+                  show: true,
+                },
               },
               yaxis: {
                 title: { text: "Quantidade de Avaliações" },
-                min: 0
+                min: 0,
               },
-              colors: [theme.colors.chart.purple, theme.colors.chart.blue, theme.colors.chart.green],
-              legend: { 
+              colors: [
+                theme.colors.chart.purple,
+                theme.colors.chart.blue,
+                theme.colors.chart.green,
+              ],
+              legend: {
                 position: "bottom",
                 height: 30,
                 offsetY: -5,
-                fontSize: "11px"
+                fontSize: "11px",
               },
-              dataLabels: { 
-                enabled: false
+              dataLabels: {
+                enabled: false,
               },
               grid: { show: true },
               tooltip: {
                 shared: true,
                 intersect: false,
                 y: {
-                  formatter: (val: number) => `${val} avaliações`
-                }
+                  formatter: (val: number) => `${val} avaliações`,
+                },
               },
               plotOptions: {
                 bar: {
                   horizontal: false,
-                }
-              }
+                },
+              },
             }}
           />
         </ChartBox>
@@ -351,11 +373,11 @@ export function RhDashboard() {
           subtitle="Status atual de todas as avaliações do ciclo"
         >
           <ReactApexChart
-            key={[quantConcluidas, quantEmAndamento, quantPendentes].join('-')}
+            key={[quantConcluidas, quantEmAndamento, quantPendentes].join("-")}
             type="pie"
             height={"100%"}
             width={"100%"}
-            series={[ quantConcluidas, quantEmAndamento, quantPendentes ]}
+            series={[quantConcluidas, quantEmAndamento, quantPendentes]}
             options={{
               labels: ["Concluídas", "Em Andamento", "Pendentes"],
               chart: { toolbar: { show: false } },
@@ -370,17 +392,16 @@ export function RhDashboard() {
               },
               dataLabels: {
                 enabled: true,
-                 formatter: (val: number) => {
+                formatter: (val: number) => {
                   return `${val.toFixed(0)}%`;
                 },
-
               },
             }}
           />
         </ChartBox>
       </CardContainer>
 
-      <DetailedProgress title="Progresso Detalhado" value={detailedTab}/>
+      <DetailedProgress title="Progresso Detalhado" value={detailedTab} />
     </S.MainContent>
   );
 
@@ -388,21 +409,16 @@ export function RhDashboard() {
     <>
       <S.Header>
         <Title>Bem vindo(a), {perfil?.userName}</Title>
-        <S.HeaderButtons>
-          <Button variant="outline">
-            <MdFileDownload /> Exportar Relatório
-          </Button>
-        </S.HeaderButtons>
       </S.Header>
 
       <ToggleBar
         items={toggleOptions}
         value={activeTab}
-        onChange={(value) => setActiveTab(value as 'overview' | 'analytics')}
+        onChange={(value) => setActiveTab(value as "overview" | "analytics")}
       />
 
       <S.TabContent>
-        {activeTab === 'overview' ? renderOverviewTab() : renderAnalyticsTab()}
+        {activeTab === "overview" ? renderOverviewTab() : renderAnalyticsTab()}
       </S.TabContent>
     </>
   );
