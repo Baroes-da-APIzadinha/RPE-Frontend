@@ -168,10 +168,13 @@ export const ReferenceCard = styled.div`
 `;
 
 export const Avatar = styled.div`
-  width: 48px;
-  height: 48px;
+  width: 56px;
+  height: 56px;
   border-radius: 50%;
-  background: #aaa;
+    background-color: ${({ theme }) => theme.colors.lightGray};
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 
 export const UserData = styled.div`

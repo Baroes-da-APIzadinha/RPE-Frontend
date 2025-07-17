@@ -13,6 +13,7 @@ import { useAllUsers } from "@/hooks/useAllUsers";
 import { useManageProfiles } from "@/hooks/useManageProfiles";
 import type { Role } from "@/types/PerfilData";
 import { toast } from "sonner";
+import { IoMdPerson } from "react-icons/io";
 
 // Roles disponíveis do sistema
 const rolesDisponiveis = [
@@ -22,7 +23,7 @@ const rolesDisponiveis = [
   { value: "comite", label: "Comitê" },
   { value: "lider", label: "Líder" },
   { value: "mentor", label: "Mentor" },
-  { value: "admin", label: "Admin" }
+  { value: "admin", label: "Admin" },
 ];
 
 interface ColaboradorData {
@@ -37,11 +38,16 @@ interface ColaboradorData {
 export function AuditoriaRolesPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
-  const [colaboradorSelecionado, setColaboradorSelecionado] = useState<ColaboradorData | null>(null);
+  const [colaboradorSelecionado, setColaboradorSelecionado] =
+    useState<ColaboradorData | null>(null);
   const [rolesTemporarias, setRolesTemporarias] = useState<Role[]>([]);
-  
+
   const { users, loading, error } = useAllUsers();
-  const { manageProfiles, loading: manageLoading, error: manageError } = useManageProfiles();
+  const {
+    manageProfiles,
+    loading: manageLoading,
+    error: manageError,
+  } = useManageProfiles();
   // Transformar dados da API para o formato esperado
   const colaboradores: ColaboradorData[] = users.map((user) => ({
     id: user.idColaborador,
@@ -49,19 +55,19 @@ export function AuditoriaRolesPage() {
     cargo: user.cargos[0] || "",
     trilha: user.trilha,
     unidade: user.unidade,
-    roles: user.cargos.map(cargo => {
+    roles: user.cargos.map((cargo) => {
       // Mapear cargos para roles
       const roleMap: Record<string, Role> = {
-        'COLABORADOR_COMUM': 'colaborador',
-        'GESTOR': 'gestor',
-        'RH': 'rh',
-        'MEMBRO_COMITE': 'comite',
-        'ADMIN': 'admin',
-        'LIDER': 'lider',
-        'MENTOR': 'mentor'
+        COLABORADOR_COMUM: "colaborador",
+        GESTOR: "gestor",
+        RH: "rh",
+        MEMBRO_COMITE: "comite",
+        ADMIN: "admin",
+        LIDER: "lider",
+        MENTOR: "mentor",
       };
-      return roleMap[cargo] || 'colaborador';
-    })
+      return roleMap[cargo] || "colaborador";
+    }),
   }));
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -76,9 +82,9 @@ export function AuditoriaRolesPage() {
 
   const handleRoleChange = (role: Role, checked: boolean) => {
     if (checked) {
-      setRolesTemporarias(prev => [...prev, role]);
+      setRolesTemporarias((prev) => [...prev, role]);
     } else {
-      setRolesTemporarias(prev => prev.filter(r => r !== role));
+      setRolesTemporarias((prev) => prev.filter((r) => r !== role));
     }
   };
 
@@ -86,24 +92,32 @@ export function AuditoriaRolesPage() {
     if (colaboradorSelecionado) {
       // Mapear roles para perfis da API
       const roleToPerfilMap: Record<Role, string> = {
-        'colaborador': 'COLABORADOR_COMUM',
-        'gestor': 'GESTOR',
-        'rh': 'RH',
-        'comite': 'MEMBRO_COMITE',
-        'admin': 'ADMIN',
-        'lider': 'LIDER',
-        'mentor': 'MENTOR'
+        colaborador: "COLABORADOR_COMUM",
+        gestor: "GESTOR",
+        rh: "RH",
+        comite: "MEMBRO_COMITE",
+        admin: "ADMIN",
+        lider: "LIDER",
+        mentor: "MENTOR",
       };
 
       // Perfis originais do colaborador
-      const originalPerfis = colaboradorSelecionado.roles.map(role => roleToPerfilMap[role]);
-      console.log('Perfis originais:', colaboradorSelecionado.id);
+      const originalPerfis = colaboradorSelecionado.roles.map(
+        (role) => roleToPerfilMap[role]
+      );
+      console.log("Perfis originais:", colaboradorSelecionado.id);
       // Perfis selecionados no modal
-      const selectedPerfis = rolesTemporarias.map(role => roleToPerfilMap[role]);
+      const selectedPerfis = rolesTemporarias.map(
+        (role) => roleToPerfilMap[role]
+      );
 
       // Arrays para desassociar e associar
-      const arrayToDisassociate = originalPerfis.filter(perfil => !selectedPerfis.includes(perfil));
-      const arrayToAssociate = selectedPerfis.filter(perfil => !originalPerfis.includes(perfil));
+      const arrayToDisassociate = originalPerfis.filter(
+        (perfil) => !selectedPerfis.includes(perfil)
+      );
+      const arrayToAssociate = selectedPerfis.filter(
+        (perfil) => !originalPerfis.includes(perfil)
+      );
       if (arrayToDisassociate.length === 0 && arrayToAssociate.length === 0) {
         toast.info("Nenhuma alteração detectada nos perfis.");
         handleCloseModal();
@@ -111,13 +125,13 @@ export function AuditoriaRolesPage() {
       }
       try {
         await manageProfiles(
-          colaboradorSelecionado.id, 
-          arrayToAssociate as any[], 
+          colaboradorSelecionado.id,
+          arrayToAssociate as any[],
           arrayToDisassociate as any[]
         );
         toast.success("Perfis atualizados com sucesso!");
       } catch (err) {
-        console.error('Erro ao atualizar perfis:', err);
+        console.error("Erro ao atualizar perfis:", err);
         toast.error("Erro ao atualizar perfis");
       }
     }
@@ -135,18 +149,19 @@ export function AuditoriaRolesPage() {
     {
       label: "Editar Perfil",
       icon: <MdEdit />,
-      onClick: () => handleEditProfile(colaborador)
-    }
+      onClick: () => handleEditProfile(colaborador),
+    },
   ];
 
   const filteredColaboradores = colaboradores.filter((colaborador) => {
-    const matchesSearch = `${colaborador.nome} ${colaborador.cargo} ${colaborador.trilha} ${colaborador.unidade}`
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase());
+    const matchesSearch =
+      `${colaborador.nome} ${colaborador.cargo} ${colaborador.trilha} ${colaborador.unidade}`
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase());
     return matchesSearch;
   });
 
-  const sortedColaboradores = [...filteredColaboradores].sort((a, b) => 
+  const sortedColaboradores = [...filteredColaboradores].sort((a, b) =>
     a.nome.localeCompare(b.nome)
   );
 
@@ -154,7 +169,6 @@ export function AuditoriaRolesPage() {
     <S.Container>
       <S.Header>
         <Title>Gerência de Auditoria e Roles</Title>
-       
       </S.Header>
 
       <TableBase
@@ -187,21 +201,24 @@ export function AuditoriaRolesPage() {
           <S.EmptyState>
             <IoPersonOutline size={48} />
             <S.EmptyTitle>Nenhum colaborador encontrado</S.EmptyTitle>
-            <S.EmptySubtitle>
-              Tente ajustar os filtros de busca
-            </S.EmptySubtitle>
+            <S.EmptySubtitle>Tente ajustar os filtros de busca</S.EmptySubtitle>
           </S.EmptyState>
         ) : (
           sortedColaboradores.map((colaborador) => (
             <S.ColaboradorRow key={colaborador.id}>
               <S.ColaboradorInfo>
                 <S.Avatar>
-                  <MdAccountCircle size={48} />
+                  <IoMdPerson size={32} />
                 </S.Avatar>
                 <S.ColaboradorDetails>
                   <S.ColaboradorNome>{colaborador.nome}</S.ColaboradorNome>
-                  <S.ColaboradorCargo>{formatar(colaborador.cargo)}</S.ColaboradorCargo>
-                  <S.ColaboradorTrilha>{formatar(colaborador.trilha)} • {formatar(colaborador.unidade)}</S.ColaboradorTrilha>
+                  <S.ColaboradorCargo>
+                    {formatar(colaborador.cargo)}
+                  </S.ColaboradorCargo>
+                  <S.ColaboradorTrilha>
+                    {formatar(colaborador.trilha)} •{" "}
+                    {formatar(colaborador.unidade)}
+                  </S.ColaboradorTrilha>
                 </S.ColaboradorDetails>
               </S.ColaboradorInfo>
 
@@ -210,7 +227,8 @@ export function AuditoriaRolesPage() {
                 <S.RolesContainer>
                   {colaborador.roles.map((role) => (
                     <S.RoleBadge key={role} $role={role}>
-                      {rolesDisponiveis.find(r => r.value === role)?.label || role}
+                      {rolesDisponiveis.find((r) => r.value === role)?.label ||
+                        role}
                     </S.RoleBadge>
                   ))}
                 </S.RolesContainer>
@@ -243,8 +261,12 @@ export function AuditoriaRolesPage() {
                 <MdAccountCircle size={56} />
               </S.Avatar>
               <S.ModalColaboradorInfo>
-                <S.ModalColaboradorNome>{colaboradorSelecionado.nome}</S.ModalColaboradorNome>
-                <S.ModalColaboradorCargo>{formatar(colaboradorSelecionado.cargo)}</S.ModalColaboradorCargo>
+                <S.ModalColaboradorNome>
+                  {colaboradorSelecionado.nome}
+                </S.ModalColaboradorNome>
+                <S.ModalColaboradorCargo>
+                  {formatar(colaboradorSelecionado.cargo)}
+                </S.ModalColaboradorCargo>
               </S.ModalColaboradorInfo>
             </S.ModalHeader>
           )}
@@ -253,34 +275,38 @@ export function AuditoriaRolesPage() {
             <S.RolesTitle>Perfis Disponíveis</S.RolesTitle>
 
             <section className="roles-grid">
-            <S.RoleCheckboxItem key="todos">
-              <Checkbox
-                checked={rolesTemporarias.length === rolesDisponiveis.length}
-                onChange={() => {
-                  const allRoles = rolesDisponiveis.map(role => role.value as Role);
-                  if (rolesTemporarias.length === rolesDisponiveis.length) {
-                    setRolesTemporarias([]);
-                  } else {
-                    setRolesTemporarias(allRoles);
-                  }
-                }}
-              />
-              <S.RoleLabel>Todos</S.RoleLabel>
-            </S.RoleCheckboxItem>
-
-            {rolesDisponiveis.map((role) => (
-              <S.RoleCheckboxItem key={role.value}>
+              <S.RoleCheckboxItem key="todos">
                 <Checkbox
-                  checked={rolesTemporarias.includes(role.value as Role)}
-                  onChange={() => handleRoleChange(role.value as Role, !rolesTemporarias.includes(role.value as Role))}
+                  checked={rolesTemporarias.length === rolesDisponiveis.length}
+                  onChange={() => {
+                    const allRoles = rolesDisponiveis.map(
+                      (role) => role.value as Role
+                    );
+                    if (rolesTemporarias.length === rolesDisponiveis.length) {
+                      setRolesTemporarias([]);
+                    } else {
+                      setRolesTemporarias(allRoles);
+                    }
+                  }}
                 />
-                <S.RoleLabel>
-                  {role.label}
-                </S.RoleLabel>
+                <S.RoleLabel>Todos</S.RoleLabel>
               </S.RoleCheckboxItem>
-            ))}
-            </section>
 
+              {rolesDisponiveis.map((role) => (
+                <S.RoleCheckboxItem key={role.value}>
+                  <Checkbox
+                    checked={rolesTemporarias.includes(role.value as Role)}
+                    onChange={() =>
+                      handleRoleChange(
+                        role.value as Role,
+                        !rolesTemporarias.includes(role.value as Role)
+                      )
+                    }
+                  />
+                  <S.RoleLabel>{role.label}</S.RoleLabel>
+                </S.RoleCheckboxItem>
+              ))}
+            </section>
           </S.RolesGrid>
 
           <S.SelectedRolesPreview>
@@ -289,7 +315,8 @@ export function AuditoriaRolesPage() {
               {rolesTemporarias.length > 0 ? (
                 rolesTemporarias.map((role) => (
                   <S.PreviewRoleBadge key={role} $role={role}>
-                    {rolesDisponiveis.find(r => r.value === role)?.label || role}
+                    {rolesDisponiveis.find((r) => r.value === role)?.label ||
+                      role}
                   </S.PreviewRoleBadge>
                 ))
               ) : (
@@ -299,27 +326,26 @@ export function AuditoriaRolesPage() {
           </S.SelectedRolesPreview>
 
           {manageError && (
-            <div style={{ color: 'red', fontSize: '0.875rem', marginTop: '1rem' }}>
+            <div
+              style={{ color: "red", fontSize: "0.875rem", marginTop: "1rem" }}
+            >
               {manageError}
             </div>
           )}
         </S.ModalContent>
-        
+
         <S.ModalActions>
-          <Button 
-            variant="outline" 
-            onClick={handleCloseModal}
-          >
-            <MdClose style={{ marginRight: '0.5rem' }} />
+          <Button variant="outline" onClick={handleCloseModal}>
+            <MdClose style={{ marginRight: "0.5rem" }} />
             Cancelar
           </Button>
-          <Button 
-            variant="primary" 
+          <Button
+            variant="primary"
             onClick={handleSaveRoles}
             disabled={rolesTemporarias.length === 0 || manageLoading}
           >
-            <MdSave style={{ marginRight: '0.5rem' }} />
-            {manageLoading ? 'Salvando...' : 'Salvar Alterações'}
+            <MdSave style={{ marginRight: "0.5rem" }} />
+            {manageLoading ? "Salvando..." : "Salvar Alterações"}
           </Button>
         </S.ModalActions>
       </S.StyledModal>

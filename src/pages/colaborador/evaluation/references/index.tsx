@@ -26,6 +26,7 @@ import { toast } from "sonner";
 import { useReferenciasIndicadas } from "@/hooks/referencias/useReferenciasIndicadas.ts";
 import { Card } from "@/components/Card/index.tsx";
 import { EmptyMessage } from "@/components/EmptyMensage/index.tsx";
+import { IoMdPerson } from "react-icons/io";
 
 type Referencia = {
   id?: string;
@@ -269,7 +270,9 @@ export function ReferencesPage() {
               );
               return (
                 <S.ReferenceCard key={i}>
-                  <S.Avatar />
+                  <S.Avatar>
+                    <IoMdPerson size={32} />
+                  </S.Avatar>
                   <S.UserData>
                     <strong>{r.nome}</strong>
                   </S.UserData>
@@ -307,7 +310,9 @@ export function ReferencesPage() {
               );
               return (
                 <S.ReferenceCard key={i}>
-                  <S.Avatar />
+                  <S.Avatar>
+                    <IoMdPerson size={32} />
+                  </S.Avatar>
                   <S.UserData>
                     <strong>{r.nome}</strong>
                   </S.UserData>

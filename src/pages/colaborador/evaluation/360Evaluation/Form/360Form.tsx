@@ -23,6 +23,7 @@ import { formatar } from "@/utils/formatters.ts";
 import { Modal } from "@/components/Modal/index.tsx";
 import { LoadingMessage } from "@/components/LoadingMessage/index.tsx";
 import { EmptyMessage } from "@/components/EmptyMensage/index.tsx";
+import { IoMdPerson } from "react-icons/io";
 
 interface Props {
   id: string;
@@ -160,7 +161,10 @@ const EvaluationDetails: React.FC<Props> = ({ id, onBack }) => {
   return (
     <S.Container>
       <S.HeaderCard>
-        <MdAccountCircle size={64} />
+        <S.Avatar>
+          <IoMdPerson size={32} />
+        </S.Avatar>
+
         <S.ColabInfo>
           <S.ColabNome>
             Avaliando: <strong>{colaborador?.nomeCompleto}</strong>

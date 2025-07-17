@@ -12,6 +12,7 @@ import { formatar } from "@/utils/formatters";
 import { useMentorados } from "@/hooks/mentor/useMentorados";
 import { useCicloAtual } from "@/hooks/useCicloAtual";
 import { usePerfil } from "@/hooks/usePerfil";
+import { IoMdPerson } from "react-icons/io";
 
 export function MentoradosPage() {
   const navigate = useNavigate();
@@ -166,7 +167,7 @@ export function MentoradosPage() {
               <S.MentoradoRow key={mentorado.idMentorado}>
                 <S.MentoradoInfo>
                   <S.Avatar>
-                    <MdAccountCircle size={48} />
+                    <IoMdPerson size={32} />
                   </S.Avatar>
                   <S.MentoradoDetails>
                     <S.MentoradoNome>{mentorado.nomeMentorado}</S.MentoradoNome>

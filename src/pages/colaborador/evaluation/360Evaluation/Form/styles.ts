@@ -149,3 +149,13 @@ export const ModalActions = styled.div`
   gap: 1rem;
   justify-content: flex-end;
 `;
+
+export const Avatar = styled.div`
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+    background-color: ${({ theme }) => theme.colors.lightGray};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;

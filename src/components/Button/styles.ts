@@ -47,11 +47,11 @@ export const ButtonContainer = styled.button<ButtonProps>`
         `
         : props.variant === "secondary"
       ? css`
-          background-color: ${theme.colors.secondary.default};
-          color: ${theme.colors.secondary.onSecondary};
+          background-color: ${theme.colors.warning.default};
+          color: ${theme.colors.warning.textOnWarning};
 
           &:hover {
-            background-color: ${theme.colors.secondary.hover};
+            background-color: ${theme.colors.warning.hover};
           }
         `
         : props.variant === "danger"

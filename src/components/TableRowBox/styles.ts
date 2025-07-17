@@ -12,16 +12,27 @@ export const Container = styled.div`
 `;
 
 export const InfoContainer = styled.div`
-    & div {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-    
-    }
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+`;
+
+export const TextContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+`;
+
+
+
+export const Avatar = styled.div`
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+    background-color: ${({ theme }) => theme.colors.lightGray};
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 
 export const Name = styled.span`
