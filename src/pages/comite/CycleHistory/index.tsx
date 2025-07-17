@@ -14,7 +14,7 @@ import { Title } from "@/components/Title/index.tsx";
 import { EmptyMessage } from "@/components/EmptyMensage/index.tsx";
 import { useOutletContext } from "react-router-dom";
 import type { PerfilData } from "@/types/PerfilData.tsx";
-import { useEqualizacaoCiclo } from '@/hooks/comite/useExportacaoCiclo.ts';
+import { useEqualizacaoCiclo } from "@/hooks/comite/useExportacaoCiclo.ts";
 
 type Ciclo = {
   id: string;
@@ -137,7 +137,7 @@ export function CycleHistory() {
               <S.CycleCard key={cicloAtual.id}>
                 <S.CycleInfo>
                   <S.CycleAvatar
-                    style={{ backgroundColor: theme.colors.warning }}
+                    style={{ backgroundColor: theme.colors.warning.default }}
                   />
                   <div>
                     <strong>{cicloAtual.nome}</strong>
@@ -188,19 +188,19 @@ export function CycleHistory() {
                         ? theme.colors.text.iconMuted
                         : ciclo.status === "FECHADO"
                         ? theme.colors.info.text
-                        : theme.colors.warning,
+                        : theme.colors.warning.default,
                     borderColor:
                       ciclo.status === "AGENDADO"
                         ? theme.colors.text.iconMuted
                         : ciclo.status === "FECHADO"
                         ? theme.colors.info.text
-                        : theme.colors.warning,
+                        : theme.colors.warning.default,
                     backgroundColor:
                       ciclo.status === "AGENDADO"
                         ? theme.colors.lightGray
                         : ciclo.status === "FECHADO"
                         ? theme.colors.info.light
-                        : theme.colors.warning,
+                        : theme.colors.warning.default,
                   }}
                 >
                   {ciclo.status}

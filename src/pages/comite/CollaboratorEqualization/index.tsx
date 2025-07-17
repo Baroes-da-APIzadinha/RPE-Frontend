@@ -405,15 +405,17 @@ export function CollaboratorEqualization() {
   });
 
   if (loading) {
-    return <LoadingMessage message="Carregando dados..." />;
+    return (
+      <LoadingMessage message="Carregando colaboradores para equalização..." />
+    );
   }
 
   if (error) {
     return (
       <EmptyMessage
         icon={<MdError size={32} />}
-        title="Erro"
-        description={error}
+        title="Erro ao carregar dados"
+        description="Ocorreu um problema ao buscar os dados de equalização. Tente novamente mais tarde ou entre em contato com o suporte."
       />
     );
   }
@@ -424,6 +426,16 @@ export function CollaboratorEqualization() {
         icon={<MdAccountCircle size={32} />}
         title="Acesso restrito"
         description="Esta página está disponível apenas para membros do comitê."
+      />
+    );
+  }
+
+  if (sortedCollaborators.length === 0) {
+    return (
+      <EmptyMessage
+        icon={<MdOutlineCheckCircleOutline size={32} />}
+        title="Nenhum colaborador pendente"
+        description="Todos os colaboradores já foram equalizados neste ciclo. Parabéns pelo trabalho!"
       />
     );
   }
@@ -501,7 +513,11 @@ export function CollaboratorEqualization() {
           <Button variant="outline" onClick={handleCancelApproval}>
             Cancelar
           </Button>
-          <Button variant="primary" onClick={handleConfirmApproval} disabled={isApproving}>
+          <Button
+            variant="primary"
+            onClick={handleConfirmApproval}
+            disabled={isApproving}
+          >
             Confirmar Aprovação
           </Button>
         </S.ModalActions>

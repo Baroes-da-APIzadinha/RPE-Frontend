@@ -7,6 +7,7 @@ import { formatDateTime } from "@/utils/formatters";
 import Button from "@/components/Button";
 import { useAuditoria } from "@/hooks/useAuditoria";
 import { LoadingMessage } from "@/components/LoadingMessage";
+import { EmptyMessage } from "@/components/EmptyMensage";
 
 const AuditoriaPage: React.FC = () => {
   const {
@@ -17,7 +18,18 @@ const AuditoriaPage: React.FC = () => {
     handlePageChange,
   } = useAuditoria();
 
-  if (loading) return <LoadingMessage message="Carregando..." />;
+  if (loading) return <LoadingMessage message="Carregando registros de auditoria..." />;
+
+  if (!filteredLogs.length) {
+  return (
+    <EmptyMessage
+      icon={<MdInfo size={32} />}
+      title="Nenhuma ação registrada"
+      description="Nenhuma atividade sensível foi registrada até o momento. Os logs de auditoria aparecerão aqui conforme o uso da plataforma."
+    />
+  );
+}
+
 
   return (
     <>

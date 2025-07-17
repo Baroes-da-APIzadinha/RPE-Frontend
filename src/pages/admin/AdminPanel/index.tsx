@@ -9,15 +9,21 @@ import { EmptyMessage } from "@/components/EmptyMensage";
 import { useOutletContext } from "react-router-dom";
 import { useAdminActions } from "@/hooks/admin/useAdminActions";
 import { useTodosCiclos } from "@/hooks/useTodosCiclos";
-import { MdAdminPanelSettings, MdSync, MdWarning, MdChangeCircle } from "react-icons/md";
+import {
+  MdAdminPanelSettings,
+  MdSync,
+  MdWarning,
+  MdChangeCircle,
+} from "react-icons/md";
 import { toast } from "sonner";
 import type { PerfilData } from "@/types/PerfilData";
+import { LoadingMessage } from "@/components/LoadingMessage/index.tsx";
 
 const AdminPage: React.FC = () => {
   const { perfil } = useOutletContext<{ perfil: PerfilData }>();
   const { loading, forceSync, changeCycleStatus } = useAdminActions();
   const { ciclos, loading: ciclosLoading, refetch } = useTodosCiclos();
-  
+
   const [selectedCycle, setSelectedCycle] = useState<string>("");
   const [showSyncModal, setShowSyncModal] = useState(false);
   const [showStatusModal, setShowStatusModal] = useState(false);
@@ -29,6 +35,22 @@ const AdminPage: React.FC = () => {
         icon={<MdAdminPanelSettings size={32} />}
         title="Acesso Negado"
         description="Esta página está disponível apenas para administradores do sistema."
+      />
+    );
+  }
+
+  if (ciclosLoading) {
+    return (
+      <LoadingMessage message="Carregando ciclos de avaliação e permissões administrativas..." />
+    );
+  }
+
+  if (ciclos.length === 0) {
+    return (
+      <EmptyMessage
+        icon={<MdChangeCircle size={32} />}
+        title="Nenhum ciclo encontrado"
+        description="Não há ciclos de avaliação cadastrados no momento. Aguarde a configuração inicial ou sincronize com o ERP."
       />
     );
   }
@@ -56,7 +78,9 @@ const AdminPage: React.FC = () => {
     }
 
     // Encontrar o ciclo selecionado para obter o status atual
-    const selectedCycleData = ciclos.find((c: any) => c.idCiclo === selectedCycle);
+    const selectedCycleData = ciclos.find(
+      (c: any) => c.idCiclo === selectedCycle
+    );
     if (!selectedCycleData) {
       toast.error("Ciclo não encontrado");
       return;
@@ -80,23 +104,25 @@ const AdminPage: React.FC = () => {
   };
 
   const getNextStatus = () => {
-    const selectedCycleData = ciclos.find((c: any) => c.idCiclo === selectedCycle);
+    const selectedCycleData = ciclos.find(
+      (c: any) => c.idCiclo === selectedCycle
+    );
     if (!selectedCycleData) return "";
-    
+
     const statusSequence = [
-      'AGENDADO',
-      'EM_ANDAMENTO', 
-      'EM_REVISAO',
-      'EM_EQUALIZAÇÃO',
-      'FECHADO'
+      "AGENDADO",
+      "EM_ANDAMENTO",
+      "EM_REVISAO",
+      "EM_EQUALIZAÇÃO",
+      "FECHADO",
     ];
 
     const statusLabels = {
-      'AGENDADO': 'Agendado',
-      'EM_ANDAMENTO': 'Em Andamento',
-      'EM_REVISAO': 'Em Revisão',
-      'EM_EQUALIZAÇÃO': 'Em Equalização',
-      'FECHADO': 'Fechado'
+      AGENDADO: "Agendado",
+      EM_ANDAMENTO: "Em Andamento",
+      EM_REVISAO: "Em Revisão",
+      EM_EQUALIZAÇÃO: "Em Equalização",
+      FECHADO: "Fechado",
     };
 
     const currentIndex = statusSequence.indexOf(selectedCycleData.status);
@@ -109,25 +135,32 @@ const AdminPage: React.FC = () => {
   };
 
   const getCurrentStatus = () => {
-    const selectedCycleData = ciclos.find((c: any) => c.idCiclo === selectedCycle);
+    const selectedCycleData = ciclos.find(
+      (c: any) => c.idCiclo === selectedCycle
+    );
     if (!selectedCycleData) return "";
-    
+
     const statusLabels = {
-      'AGENDADO': 'Agendado',
-      'EM_ANDAMENTO': 'Em Andamento',
-      'EM_REVISAO': 'Em Revisão',
-      'EM_EQUALIZAÇÃO': 'Em Equalização',
-      'FECHADO': 'Fechado'
+      AGENDADO: "Agendado",
+      EM_ANDAMENTO: "Em Andamento",
+      EM_REVISAO: "Em Revisão",
+      EM_EQUALIZAÇÃO: "Em Equalização",
+      FECHADO: "Fechado",
     };
 
-    return statusLabels[selectedCycleData.status as keyof typeof statusLabels] || selectedCycleData.status;
+    return (
+      statusLabels[selectedCycleData.status as keyof typeof statusLabels] ||
+      selectedCycleData.status
+    );
   };
 
   return (
     <>
       <S.Header>
         <Title>Painel de Administração</Title>
-        <S.Subtitle>Comandos exclusivos para administradores do sistema</S.Subtitle>
+        <S.Subtitle>
+          Comandos exclusivos para administradores do sistema
+        </S.Subtitle>
       </S.Header>
 
       <Card>
@@ -136,16 +169,19 @@ const AdminPage: React.FC = () => {
           Alterar Status do Ciclo
         </S.SectionTitle>
         <S.SectionDescription>
-          Avance o status de um ciclo para a próxima etapa na sequência: Agendado → Em Andamento → Em Revisão → Em Equalização → Fechado
+          Avance o status de um ciclo para a próxima etapa na sequência:
+          Agendado → Em Andamento → Em Revisão → Em Equalização → Fechado
         </S.SectionDescription>
-        
+
         <S.FormGroup>
           <S.FormItem>
             <label>Selecionar Ciclo</label>
             <Select
               placeholder="Escolha um ciclo"
               value={selectedCycle}
-              onChange={(val) => setSelectedCycle(Array.isArray(val) ? val[0] : val)}
+              onChange={(val) =>
+                setSelectedCycle(Array.isArray(val) ? val[0] : val)
+              }
               options={cycleOptions}
               disabled={ciclosLoading}
             />
@@ -164,14 +200,14 @@ const AdminPage: React.FC = () => {
         </S.ActionButton>
       </Card>
 
-
       <S.StyledCard>
         <S.SectionTitle>
           <MdSync size={24} />
           Sincronização com ERP
         </S.SectionTitle>
         <S.SectionDescription>
-          Force a sincronização manual dos dados com o sistema ERP. Esta ação pode demorar alguns minutos.
+          Force a sincronização manual dos dados com o sistema ERP. Esta ação
+          pode demorar alguns minutos.
         </S.SectionDescription>
         <S.ActionButton>
           <Button
@@ -184,7 +220,6 @@ const AdminPage: React.FC = () => {
           </Button>
         </S.ActionButton>
       </S.StyledCard>
-
 
       {/* Modal de Confirmação - Sincronização ERP */}
       <Modal
@@ -239,10 +274,13 @@ const AdminPage: React.FC = () => {
             Você está prestes a alterar o status de um ciclo de avaliação.
           </S.WarningText>
           <S.ModalDescription>
-            <strong>Ciclo:</strong> {getSelectedCycleName()}<br/>
-            <strong>Status Atual:</strong> {getCurrentStatus()}<br/>
+            <strong>Ciclo:</strong> {getSelectedCycleName()}
+            <br />
+            <strong>Status Atual:</strong> {getCurrentStatus()}
+            <br />
             <strong>Próximo Status:</strong> {getNextStatus()}
-            <br/><br/>
+            <br />
+            <br />
             Esta ação pode afetar:
             <ul>
               <li>O fluxo normal das avaliações</li>

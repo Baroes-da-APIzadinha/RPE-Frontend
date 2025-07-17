@@ -9,6 +9,7 @@ import { useOutletContext } from "react-router-dom";
 import type { PerfilData } from "@/types/PerfilData";
 import { EmptyMessage } from "@/components/EmptyMensage";
 import { MdAccountCircle } from "react-icons/md";
+import { LoadingMessage } from "@/components/LoadingMessage";
 
 export function ColaboradorHome() {
   const theme = useTheme();
@@ -23,6 +24,20 @@ export function ColaboradorHome() {
     if (value >= 75) return theme.colors.success.default;
     if (value >= 25) return theme.colors.secondary.default;
     return theme.colors.error.default;
+  }
+
+  if (loading) {
+    return <LoadingMessage message="Carregando dados do ciclo..." />;
+  }
+
+  if (isEmpty) {
+    return (
+      <EmptyMessage
+        icon={<MdAccountCircle size={32} />}
+        title="Ainda sem progresso neste ciclo"
+        description="Assim que as avaliações forem liberadas, você poderá acompanhar seu avanço por aqui."
+      />
+    );
   }
 
   if (!perfil.roles.includes("colaborador")) {
@@ -56,7 +71,7 @@ export function ColaboradorHome() {
             },
             {
               label: "Em Equalização",
-              active: cicloAtual?.status === "EM_EQUALIZACAO",
+              active: cicloAtual?.status === "EM_EQUALIZAÇÃO",
             },
           ]}
         />

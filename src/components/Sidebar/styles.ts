@@ -86,7 +86,7 @@ export const Title = styled.h1`
 `
 
 export const Subtitle = styled.p`
-  font-size: ${theme.font.sizes.xsmall};
+  font-size: ${theme.font.sizes.small};
   color: ${theme.colors.text.secondary};
 `
 

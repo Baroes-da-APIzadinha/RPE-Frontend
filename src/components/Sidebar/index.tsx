@@ -169,7 +169,6 @@ export function Sidebar({ roles, mainRole, userName }: SidebarProps) {
           <img src={logo} alt="Logo" width={60} height={60} />
 
           <div>
-            {/* <S.Title>ROCKET</S.Title> */}
             <S.Subtitle>{roleLabels[mainRole]}</S.Subtitle>
           </div>
         </S.Header>

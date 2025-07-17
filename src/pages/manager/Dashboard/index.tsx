@@ -21,11 +21,13 @@ import { useCollaboratorReminder } from "@/hooks/useCollaboratorReminder";
 import { toast } from "sonner";
 
 export function ManagerDashboard() {
-
   function getVariancia(notas: number[]) {
     if (notas.length === 0) return 0;
     const media = notas.reduce((a, b) => a + b, 0) / notas.length;
-    return notas.reduce((acc, nota) => acc + Math.pow(nota - media, 2), 0) / notas.length;
+    return (
+      notas.reduce((acc, nota) => acc + Math.pow(nota - media, 2), 0) /
+      notas.length
+    );
   }
 
   const { createReminder } = useCollaboratorReminder();
@@ -35,7 +37,7 @@ export function ManagerDashboard() {
       await createReminder(idColaborador, message);
       toast.success("Lembrete enviado com sucesso!");
     } catch (error) {
-      console.error('Erro ao enviar lembrete:', error);
+      console.error("Erro ao enviar lembrete:", error);
     }
   };
   const { perfil } = useOutletContext<{ perfil: PerfilData }>();
@@ -48,7 +50,7 @@ export function ManagerDashboard() {
     idColaborador,
     idCiclo!
   );
-  
+
   // Total da equipe
   const totalEquipe = liderados.length;
 
@@ -62,10 +64,11 @@ export function ManagerDashboard() {
       ).length,
     0
   );
+  // Cálculo de progresso com verificação de limite
   const progresso =
     totalCriterios === 0
       ? 0
-      : Math.round((totalPreenchido / totalCriterios) * 100);
+      : Math.min(100, Math.round((totalPreenchido / totalCriterios) * 100));
 
   // Cálculo da média geral
   const notasValidas = liderados
@@ -82,7 +85,6 @@ export function ManagerDashboard() {
   if (isLoading || !idCiclo) {
     return <LoadingMessage message="Carregando dados..." />;
   }
-
 
   if (liderados.length === 0) {
     return (
@@ -118,7 +120,7 @@ export function ManagerDashboard() {
         <CardBox
           title="Média da Equipe"
           bigSpan={mediaEquipe}
-          span={'variancia das notas: ' + getVariancia(notasValidas).toFixed(2)}
+          span={"variancia das notas: " + getVariancia(notasValidas).toFixed(2)}
           icon={<BsGraphUpArrow />}
         />
       </CardContainer>
@@ -135,10 +137,11 @@ export function ManagerDashboard() {
             title: `${colab.nomeCompleto} não iniciou a autoavaliação`,
             description: "Sem progresso detectado",
             buttonLabel: "Enviar Lembrete",
-            onClick: () => handleSendReminder(
-              colab.idColaborador, 
-              "Sua autoavaliação ainda não foi iniciada. Solicitamos que realize o preenchimento o quanto antes para cumprir os prazos estabelecidos."
-            ),
+            onClick: () =>
+              handleSendReminder(
+                colab.idColaborador,
+                "Sua autoavaliação ainda não foi iniciada. Solicitamos que realize o preenchimento o quanto antes para cumprir os prazos estabelecidos."
+              ),
           }))
           .concat(
             liderados
@@ -149,10 +152,11 @@ export function ManagerDashboard() {
                 title: `${colab.nomeCompleto} está em andamento`,
                 description: "Pode precisar de suporte",
                 buttonLabel: "Enviar Lembrete",
-                onClick: () => handleSendReminder(
-                  colab.idColaborador,
-                  "Notamos que você iniciou sua autoavaliação, mas ela ainda não foi concluída. Se precisar de suporte, estaremos disponíveis para ajudar."
-                ),
+                onClick: () =>
+                  handleSendReminder(
+                    colab.idColaborador,
+                    "Notamos que você iniciou sua autoavaliação, mas ela ainda não foi concluída. Se precisar de suporte, estaremos disponíveis para ajudar."
+                  ),
               }))
           )
           .concat(
@@ -164,10 +168,11 @@ export function ManagerDashboard() {
                 title: `${colab.nomeCompleto} concluiu a autoavaliação`,
                 description: "Parabenize pelo comprometimento",
                 buttonLabel: "Parabenizar",
-                onClick: () => handleSendReminder(
-                  colab.idColaborador,
-                  "Parabéns por concluir sua autoavaliação! Seu comprometimento e dedicação são fundamentais para o sucesso da equipe."
-                ),
+                onClick: () =>
+                  handleSendReminder(
+                    colab.idColaborador,
+                    "Parabéns por concluir sua autoavaliação! Seu comprometimento e dedicação são fundamentais para o sucesso da equipe."
+                  ),
               }))
           )}
       />
