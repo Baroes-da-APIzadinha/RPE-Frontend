@@ -27,11 +27,6 @@ export function BrutalFactsPage() {
     navigate(-1);
   };
   
-  const handleExportPDF = () => {
-    // Aqui seria implementada a lógica para exportar PDF
-    // Por enquanto, apenas um placeholder
-    alert("Funcionalidade de exportação PDF será implementada pelo backend");
-  };
 
   if (loading) {
     return (
@@ -87,13 +82,6 @@ export function BrutalFactsPage() {
           >
             <MdArrowBack style={{ marginRight: '0.5rem' }} />
             Voltar
-          </Button>
-          <Button 
-            onClick={handleExportPDF}
-            variant="primary"
-          >
-            <MdFileDownload style={{ marginRight: '0.5rem' }} />
-            Exportar PDF
           </Button>
         </S.ActionsSection>
       </S.Header>
