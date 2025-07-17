@@ -55,7 +55,9 @@ export function RhDashboard() {
   const dadosUnidade = useConclusionProgressByUnit(cicloAtual?.id ?? "")
   const dadosTrilha = useConclusionProgressByBoard(cicloAtual?.id ?? "")
   const { setReminder } = useSetReminder();
-  const { data: notasDistribuicao } = useNotasDistribuicao(cicloAtual?.id ?? "");
+  const { data: notasDistribuicaoAuto } = useNotasDistribuicao(cicloAtual?.id ?? "", 'AUTOAVALIACAO');
+  const { data: notasDistribuicaoLider } = useNotasDistribuicao(cicloAtual?.id ?? "", 'AVALIACAO_LIDER');
+  const { data: notasDistribuicaoPares } = useNotasDistribuicao(cicloAtual?.id ?? "", 'AVALIACAO_PARES');
   const toggleOptions = [
     { value: 'overview', label: 'Visão Geral', icon: <MdDashboard /> },
     { value: 'analytics', label: 'Análises', icon: <MdBarChart /> }
@@ -259,61 +261,88 @@ export function RhDashboard() {
       <CardContainer>
         <ChartBox
           title="Distribuição de Notas"
-          subtitle="Distribuição das notas de autoavaliação no ciclo atual"
+          subtitle="Distribuição das notas por tipo de avaliação no ciclo atual"
         >
           <ReactApexChart
             type="bar"
-            height={300}
-            width={400}
+            stacked={true}
+            height={240}
+            width={360}
             series={[
               {
-          name: "Quantidade de Avaliações",
-          data: Object.entries(notasDistribuicao).map(([nota, quantidade]) => ({
-            x: parseFloat(nota),
-            y: quantidade
-          }))
+                name: "Autoavaliação",
+                data: Object.entries(notasDistribuicaoAuto).map(([faixa, quantidade]) => ({
+                  x: faixa,
+                  y: quantidade
+                }))
+              },
+              {
+                name: "Avaliação do Líder",
+                data: Object.entries(notasDistribuicaoLider).map(([faixa, quantidade]) => ({
+                  x: faixa,
+                  y: quantidade
+                }))
+              },
+              {
+                name: "Avaliação de Pares",
+                data: Object.entries(notasDistribuicaoPares).map(([faixa, quantidade]) => ({
+                  x: faixa,
+                  y: quantidade
+                }))
               }
             ]}
             options={{
               chart: {
-          toolbar: { show: false },
-          zoom: { enabled: false },
+                toolbar: { show: false },
+                zoom: { enabled: false },
+                stacked: true,
+                height: 240,
               },
               xaxis: {
-          type: "numeric",
-          title: { text: "Nota" },
-          min: 0,
-          max: 5,
-          tickAmount: 10,
-          labels: {
-            formatter: (val: string) => parseFloat(val).toFixed(1)
-          }
+                type: "category",
+                title: { text: "Faixa de Notas" },
+                categories: Object.keys(notasDistribuicaoAuto),
+                labels: {
+                  formatter: (val: string) => val,
+                  rotate: 0,
+                  style: {
+                    fontSize: '11px'
+                  }
+                },
+                tickAmount: Object.keys(notasDistribuicaoAuto).length,
+                axisBorder: {
+                  show: true
+                },
+                axisTicks: {
+                  show: true
+                }
               },
               yaxis: {
-          title: { text: "Quantidade de Avaliações" },
-          min: 0
+                title: { text: "Quantidade de Avaliações" },
+                min: 0
               },
-              colors: [theme.colors.chart.purple],
-              legend: { position: "top" },
+              colors: [theme.colors.chart.purple, theme.colors.chart.blue, theme.colors.chart.green],
+              legend: { 
+                position: "bottom",
+                height: 30,
+                offsetY: -5,
+                fontSize: "11px"
+              },
               dataLabels: { 
-          enabled: true,
-          formatter: (val: any) => val.y > 0 ? val.y.toString() : ''
+                enabled: false
               },
               grid: { show: true },
               tooltip: {
-          custom: ({ seriesIndex, dataPointIndex, w }) => {
-            const nota = w.globals.initialSeries[seriesIndex].data[dataPointIndex].x;
-            const quantidade = w.globals.initialSeries[seriesIndex].data[dataPointIndex].y;
-            return `<div class="arrow_box">
-              <span>Nota: ${nota}</span><br/>
-              <span>Quantidade: ${quantidade}</span>
-            </div>`;
-          }
+                shared: true,
+                intersect: false,
+                y: {
+                  formatter: (val: number) => `${val} avaliações`
+                }
               },
               plotOptions: {
-          bar: {
-            horizontal: false,
-          }
+                bar: {
+                  horizontal: false,
+                }
               }
             }}
           />
